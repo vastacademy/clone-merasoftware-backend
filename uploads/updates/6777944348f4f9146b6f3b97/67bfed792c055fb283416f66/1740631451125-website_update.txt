@@ -1,0 +1,20 @@
+Hospital
+1. Dept. Kaya Chikitsa
+Consulting Doctor’s (Faculty) :
+1. Dr Rajeev Sood ( Add)
+2. Dr Ritesh Chawla ( Ok )
+3. Dr Priyanka Bhatt ( Ok )
+Dr. Pallavi Sharma ( Delete)
+2. Dept. Panchkarma
+Dr Rajeev Sood ( Delete )
+(i) Dr Neha Sharma ( Add )
+(ii) Dr Varun Bhagat (Ok)
+3. Dept. Shalya Tantra
+(i) Dr Paramjeet Singh ( Ok )
+(ii) Dr Mandeep Singh ( Add)
+4. Dept. Shalakya Tantra
+(i) Both Name delete
+Hospital Statistics
+Data sent on Whatsapp
+2025 & 2024 Remaining Data to be completed
+Delete 2022 Data (3 Tables)
