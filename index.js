@@ -25,6 +25,7 @@ const rawAllowedOrigins = [
   'https://portal.merasoftware.com',
   'https://admin.merasoftware.com',
   'https://partner.merasoftware.com',
+  'https://clone-merasoftware-frontend.vercel.app',
   process.env.FORNTEND_URL,
   process.env.FRONTEND_URL,
   process.env.CLIENT_PORTAL_URL,
