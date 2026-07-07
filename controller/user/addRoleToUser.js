@@ -22,7 +22,8 @@ async function addRoleToUserController(req, res) {
       throw new Error("User already has this role");
     }
 
-    user.roles.push(roleLower);
+    // Single role system - replace existing role instead of adding
+    user.roles = [roleLower];
     await user.save();
 
     res.status(200).json({

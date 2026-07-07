@@ -21,9 +21,8 @@ async function userSignUpController (req,res) {
         if(!name){
             throw new Error("Please provide name")
         }
-        if (!role) {
-            throw new Error("Please provide role");
-        }
+        // Default to customer role if not provided (MVP: customer-only)
+        const userRole = role ? role.toLowerCase() : 'customer';
 
         // Password validation
         if (password.length < 6) {
@@ -44,11 +43,11 @@ async function userSignUpController (req,res) {
 
         if (existingUser) {
             // Check if role already exists in roles array
-            if (existingUser.roles.includes(role.toLowerCase())) {
+            if (existingUser.roles.includes(userRole)) {
                 throw new Error("User with this role already exists.");
             } else {
                 // Add new role to roles array
-                existingUser.roles.push(role.toLowerCase());
+                existingUser.roles.push(userRole);
                 await existingUser.save();
 
                 return res.status(200).json({
@@ -60,12 +59,12 @@ async function userSignUpController (req,res) {
             }
         }
 
-        // If user does not exist, create new user with roles array
+        // If user does not exist, create new user with roles array (default: customer)
         const payload = {
             email: normalizedEmail,
             name,
             password: hashPassword,
-            roles: [role.toLowerCase()],
+            roles: [userRole],
             walletBalance: 0,
             referredBy: referredBy ? referredBy : null, // Store the referrer ID
             referrals: [] // Initialize an empty array for tracking referrals
@@ -80,7 +79,7 @@ async function userSignUpController (req,res) {
 
             // Add new referral object with userId, role, and referredDate
             await userModel.findByIdAndUpdate(referredBy, {
-                $addToSet: { referrals: { userId: saveUser._id, role: role.toLowerCase(), referredDate: new Date() } }
+                $addToSet: { referrals: { userId: saveUser._id, role: userRole, referredDate: new Date() } }
             });
         }
 

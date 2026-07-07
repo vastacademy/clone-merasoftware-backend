@@ -1,12 +1,21 @@
 const orderProductModel = require("../../models/orderProductModel")
+const mongoose = require('mongoose');
 
 const getUserOrders = async (req, res) => {
     try {
         // Get the current user's ID from req.userId (which should be set by your auth middleware)
         const userId = req.userId;
-        
+
+        // Convert userId string to MongoDB ObjectId for proper matching
+        let userObjectId;
+        try {
+            userObjectId = mongoose.Types.ObjectId(userId);
+        } catch (e) {
+            userObjectId = userId; // Fallback if already ObjectId
+        }
+
         // Add userId filter to only get orders for the current user
-        const orders = await orderProductModel.find({ userId })
+        const orders = await orderProductModel.find({ userId: userObjectId })
             .populate('userId', 'name email')
             .populate('productId',
                  'serviceName category totalPages validityPeriod updateCount isWebsiteUpdate isMonthlyRenewablePlan yearlyPlanDuration monthlyRenewalCost isUnlimitedUpdates isMonthlyLimitedPlan monthlyUpdateLimit monthlyRenewalPrice')

@@ -4,16 +4,13 @@ const jwt = require('jsonwebtoken');
 
 async function userSignInController (req,res) {
     try {
-        const { email, password, role } = req.body
+        const { email, password } = req.body
 
         if(!email){
             throw new Error("Please provide email")
         }
         if(!password){
             throw new Error("Please provide password")
-        }
-        if(!role){
-            throw new Error("Please provide role")
         }
 
         const user = await userModel.findOne({email}).select('email password name roles walletBalance userDetails bankAccounts');
@@ -22,17 +19,31 @@ async function userSignInController (req,res) {
             throw new Error("User not found")
         }
 
-        if(!user.roles.includes(role.toLowerCase())){
-            throw new Error("User does not have the requested role")
-        }
-
         const checkPassword = await bcrypt.compare(password,user.password)
-        
+
         if(checkPassword) {
+            // Determine user role
+            let userRole = 'customer'; // default
+            if (user.roles && Array.isArray(user.roles)) {
+                if (user.roles.includes('admin')) {
+                    userRole = 'admin';
+                } else if (user.roles.includes('manager')) {
+                    userRole = 'manager';
+                } else if (user.roles.includes('developer')) {
+                    userRole = 'developer';
+                } else if (user.roles.includes('partner')) {
+                    userRole = 'partner';
+                }
+            } else {
+                // Fallback: ensure customer role
+                user.roles = ['customer'];
+                await user.save();
+            }
+
             const tokenData = {
                 _id: user._id,
                 email: user.email,
-                role: role.toLowerCase()
+                role: userRole
             };
 
             const token = await jwt.sign(tokenData, process.env.TOKEN_SECRET_KEY, { expiresIn: '365d' });
@@ -55,7 +66,7 @@ async function userSignInController (req,res) {
                     user: {
                         ...user._doc,
                         password: undefined,
-                        role: role.toLowerCase(),
+                        role: userRole,
                         bankAccounts: user.bankAccounts
                     },
                     walletBalance: user.walletBalance,
