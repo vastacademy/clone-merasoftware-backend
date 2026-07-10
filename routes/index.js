@@ -76,6 +76,8 @@ const getTicketDetailsController = require('../controller/user/getTicketDetailsC
 const replyTicketController = require('../controller/user/replyTicketController');
 const getGeneralUsers = require('../controller/user/getGeneralUsers');
 const getAdminClients = require('../controller/user/getAdminClients');
+const getAdminUserWorkspace = require('../controller/user/getAdminUserWorkspace');
+const deleteOrderController = require('../controller/order/deleteOrder');
 const hideProductController = require('../controller/product/hideProduct');
 const unhideProductController = require('../controller/product/unhideProduct');
 const getHiddenProductsController = require('../controller/product/getHiddenProducts');
@@ -135,6 +137,8 @@ router.get("/partner-customers", authToken, getPartnerCustomers);
 router.post("/signin", userSignInController);
 router.get("/general-users", getGeneralUsers);
 router.get("/admin/clients", authToken, getAdminClients);
+router.get("/admin/user-workspace", authToken, getAdminUserWorkspace);
+router.delete("/admin/delete-order/:orderId", authToken, deleteOrderController);
 router.post('/verify-otp', verifyOtpController);
 router.post('/resend-otp', resendOtpController);
 router.post("/role-switch", authToken, userRoleSwitchController);

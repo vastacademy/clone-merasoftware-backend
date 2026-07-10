@@ -4,9 +4,12 @@ const getOrderDetails = async (req, res) => {
     try {
         const { orderId } = req.params;
         const userId = req.userId;
+        const isAdmin = req.userRole === 'admin';
         
-        // Find the specific order for this user
-        const order = await orderProductModel.findOne({ _id: orderId, userId })
+        const query = isAdmin ? { _id: orderId } : { _id: orderId, userId };
+
+        // Find the specific order for this user or admin
+        const order = await orderProductModel.findOne(query)
             .populate('userId', 'name email address')
             .populate('productId', 'serviceName category totalPages validityPeriod updateCount isWebsiteUpdate price sellingPrice')
             .populate('assignedDeveloper', 'name designation avatar status');
