@@ -1,34 +1,45 @@
 const mongoose = require("mongoose");
-const path = require("path");
+const userModel = require("../../models/userModel");
 const orderModel = require("../../models/orderProductModel");
 const updateRequestModel = require("../../models/updateRequestModel");
 const monthlyInvoiceModel = require("../../models/monthlyInvoiceModel");
 const transactionModel = require("../../models/transactionModel");
 const partnerCommissionModel = require("../../models/partnerCommissionModel");
-const userModel = require("../../models/userModel");
 const GoogleDriveService = require("../../helpers/googleDriveService");
+const buildOrderDeletePlan = require("../../helpers/orderDeletePlan");
 
 let KEY_FILE_PATH;
 if (process.env.NODE_ENV === "production" && process.env.GOOGLE_DRIVE_CREDENTIALS_PATH) {
   KEY_FILE_PATH = process.env.GOOGLE_DRIVE_CREDENTIALS_PATH;
 } else {
-  KEY_FILE_PATH = path.join(__dirname, "../../config/google-drive-credentials.json");
+  KEY_FILE_PATH = require("path").join(__dirname, "../../config/google-drive-credentials.json");
 }
 
 const FOLDER_NAME = "ClientUpdateFiles";
 
-const collectDriveFileIds = (requests) => {
-  const fileIds = new Set();
+const toSelectionSet = (selectedSections) =>
+  new Set((Array.isArray(selectedSections) ? selectedSections : []).map((section) => String(section)));
 
-  for (const request of requests) {
-    for (const file of request?.files || []) {
-      if (file?.driveFileId) {
-        fileIds.add(String(file.driveFileId));
-      }
-    }
+const validateSelection = (plan, selectedSections) => {
+  const requestedSelection = toSelectionSet(selectedSections);
+  const requiredSelection = new Set(plan.requiredSectionKeys);
+
+  if (requestedSelection.size !== requiredSelection.size) {
+    return {
+      valid: false,
+      missing: plan.requiredSectionKeys.filter((key) => !requestedSelection.has(key)),
+      extra: [...requestedSelection].filter((key) => !requiredSelection.has(key)),
+    };
   }
 
-  return [...fileIds];
+  const missing = plan.requiredSectionKeys.filter((key) => !requestedSelection.has(key));
+  const extra = [...requestedSelection].filter((key) => !requiredSelection.has(key));
+
+  return {
+    valid: missing.length === 0 && extra.length === 0,
+    missing,
+    extra,
+  };
 };
 
 const deleteOrderController = async (req, res) => {
@@ -54,27 +65,32 @@ const deleteOrderController = async (req, res) => {
       });
     }
 
-    const orderObjectId = new mongoose.Types.ObjectId(orderId);
-    const order = await orderModel.findById(orderObjectId).populate("productId", "serviceName");
-
-    if (!order) {
+    const plan = await buildOrderDeletePlan(orderId);
+    if (!plan.hasAnyDeleteableRecord) {
       return res.status(404).json({
-        message: "Order not found",
+        message: "Delete target not found",
         error: true,
         success: false,
       });
     }
 
-    const [relatedUpdateRequests, relatedInvoices, relatedTransactions, relatedCommissions] =
-      await Promise.all([
-        updateRequestModel.find({ updatePlanId: orderObjectId }),
-        monthlyInvoiceModel.find({ orderId: orderObjectId }),
-        transactionModel.find({ orderId: orderObjectId }),
-        partnerCommissionModel.find({ orderId: orderObjectId }),
-      ]);
+    const { selectedSections } = req.body || {};
+    const selectionCheck = validateSelection(plan, selectedSections);
+    if (!selectionCheck.valid) {
+      return res.status(400).json({
+        message: "All available delete sections must be selected before deletion",
+        error: true,
+        success: false,
+        data: {
+          missingSections: selectionCheck.missing,
+          extraSections: selectionCheck.extra,
+          requiredSectionKeys: plan.requiredSectionKeys,
+        },
+      });
+    }
 
-    const driveFileIds = collectDriveFileIds(relatedUpdateRequests);
-    const driveService = driveFileIds.length > 0
+    const orderObjectId = new mongoose.Types.ObjectId(orderId);
+    const driveService = plan.driveFileIds.length > 0
       ? new GoogleDriveService(KEY_FILE_PATH, FOLDER_NAME)
       : null;
 
@@ -82,17 +98,15 @@ const deleteOrderController = async (req, res) => {
     transactionStarted = true;
 
     try {
-      for (const fileId of driveFileIds) {
+      for (const fileId of plan.driveFileIds) {
         await driveService.deleteFile(fileId);
       }
 
-      await Promise.all([
-        updateRequestModel.deleteMany({ updatePlanId: orderObjectId }).session(session),
-        monthlyInvoiceModel.deleteMany({ orderId: orderObjectId }).session(session),
-        transactionModel.deleteMany({ orderId: orderObjectId }).session(session),
-        partnerCommissionModel.deleteMany({ orderId: orderObjectId }).session(session),
-        orderModel.deleteOne({ _id: orderObjectId }).session(session),
-      ]);
+      await updateRequestModel.deleteMany({ updatePlanId: orderObjectId }).session(session);
+      await monthlyInvoiceModel.deleteMany({ orderId: orderObjectId }).session(session);
+      await transactionModel.deleteMany({ orderId: orderObjectId }).session(session);
+      await partnerCommissionModel.deleteMany({ orderId: orderObjectId }).session(session);
+      await orderModel.deleteOne({ _id: orderObjectId }).session(session);
 
       await session.commitTransaction();
 
@@ -102,14 +116,9 @@ const deleteOrderController = async (req, res) => {
         error: false,
         data: {
           orderId,
-          serviceName: order.productId?.serviceName || "N/A",
-          deletedCounts: {
-            updateRequests: relatedUpdateRequests.length,
-            invoices: relatedInvoices.length,
-            transactions: relatedTransactions.length,
-            commissions: relatedCommissions.length,
-            driveFiles: driveFileIds.length,
-          },
+          serviceName: plan.serviceName,
+          orderType: plan.orderType,
+          deletedCounts: plan.counts,
         },
       });
     } catch (error) {
