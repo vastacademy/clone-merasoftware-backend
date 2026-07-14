@@ -3,7 +3,7 @@ const userModel = require("../../models/userModel")
 async function userDetailsController (req,res) {
     try {
         console.log("userId", req.userId);
-         const user = await userModel.findById(req.userId).select('name email roles profilePic phone age walletBalance userDetails bankAccounts');
+         const user = await userModel.findById(req.userId).select('name email roles walletBalance userDetails bankAccounts'); 
 
         if (!user) {
             throw new Error("User not found");

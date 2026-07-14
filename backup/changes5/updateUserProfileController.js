@@ -28,10 +28,7 @@ async function updateUserProfileController(req, res) {
         }
 
         res.status(200).json({
-            data: {
-                ...updatedUser._doc,
-                role: req.userRole
-            },
+            data: updatedUser,
             error: false,
             success: true,
             message: "Profile updated successfully"

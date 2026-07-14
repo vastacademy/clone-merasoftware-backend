@@ -62,6 +62,7 @@ const getUserUpdatePlans = require('../controller/user/getUserUpdatePlans');
 const submitUpdateRequest = require('../controller/user/submitUpdateRequest');
 const getUserUpdateRequests = require('../controller/user/getUserUpdateRequests');
 const verifyPaymentController = require('../controller/user/verifyPaymentController');
+const getWalletHistory = require('../controller/user/getWalletHistory');
 const validateCoupon = require('../controller/user/validateCoupon');
 const payInstallment = require('../controller/user/payInstallment');
 const getUserNotifications = require('../controller/user/getUserNotificationsController');
@@ -171,6 +172,7 @@ router.delete("/delete-bank-account/:accountId", authToken, deleteBankAccount);
 router.get("/get-bank-accounts", authToken, getBankAccounts);
 router.get("/user-kyc-status", authToken, getUserKycStatusController);
 
+router.get("/wallet/history", authToken, getWalletHistory)
 router.post("/wallet/verify-payment", authToken, verifyPaymentController)
 
 // product
