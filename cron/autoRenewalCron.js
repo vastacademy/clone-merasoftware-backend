@@ -40,21 +40,20 @@ const processAutoRenewal = async () => {
         const tomorrow = new Date(today);
         tomorrow.setDate(tomorrow.getDate() + 1);
 
-        // Find all monthly limited plans expiring today
-        const expiringPlans = await orderProductModel.find({
+        // Find all monthly limited plans due through today, including missed cron runs.
+        const duePlans = await orderProductModel.find({
             currentMonthExpiryDate: {
-                $gte: today,
                 $lt: tomorrow
             },
             totalYearlyDaysRemaining: { $gt: 0 }
         }).populate('productId').populate('userId');
 
         // Filter for monthly limited plans (after populate)
-        const monthlyLimitedPlans = expiringPlans.filter(plan =>
+        const monthlyLimitedPlans = duePlans.filter(plan =>
             plan.productId && plan.productId.isMonthlyLimitedPlan === true
         );
 
-        console.log(`📊 Found ${expiringPlans.length} plans expiring today`);
+        console.log(`📊 Found ${duePlans.length} plans due for renewal through today`);
         console.log(`🟣 Found ${monthlyLimitedPlans.length} monthly limited plans to renew`);
 
         for (const plan of monthlyLimitedPlans) {
@@ -81,6 +80,12 @@ const processAutoRenewal = async () => {
                 const renewalEndDate = new Date(renewalStartDate);
                 renewalEndDate.setDate(renewalEndDate.getDate() + daysToDeduct);
 
+                const existingInvoice = await monthlyInvoiceModel.findOne({
+                    orderId: plan._id,
+                    renewalPeriodStart: renewalStartDate,
+                    renewalPeriodEnd: renewalEndDate
+                });
+
                 // Update plan with new renewal period
                 plan.currentMonthUpdatesUsed = 0;
                 plan.currentMonthUpdatesRemaining = plan.productId.monthlyUpdateLimit || 1;
@@ -96,6 +101,11 @@ const processAutoRenewal = async () => {
 
                 await plan.save();
                 console.log(`✅ Plan ${plan._id} renewed. Days remaining: ${plan.totalYearlyDaysRemaining}`);
+
+                if (existingInvoice) {
+                    console.log(`ℹ️ Invoice already exists for order ${plan._id} and period ${renewalStartDate.toISOString()} - ${renewalEndDate.toISOString()}. Skipping duplicate invoice.`);
+                    continue;
+                }
 
                 // Generate invoice number
                 const invoiceNumber = await generateInvoiceNumber();
