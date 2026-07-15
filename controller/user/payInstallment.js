@@ -94,12 +94,14 @@ const payInstallment = async (req, res) => {
           userId: order.userId,
           amount: amount,
           status: 'pending',
+          paymentStatus: 'pending-approval',
           description: `Installment #${installmentNumber} for order #${orderId}`,
           transactionId: transactionId,
           isInstallmentPayment: true,
           installmentNumber: parseInt(installmentNumber),
           orderId: orderId,
-          type: 'payment'
+          type: 'payment',
+          sourceType: 'installment'
         };
         
         if (upiTransactionId) {

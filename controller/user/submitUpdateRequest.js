@@ -76,13 +76,12 @@ const submitUpdateRequest = asyncHandler(async (req, res) => {
   // Validate the update plan exists and belongs to the user
   const updatePlan = await orderModel.findOne({
     _id: planId,
-    userId,
-    isActive: true
+    userId
   }).populate('productId');
 
   if (!updatePlan) {
     return res.status(404).json({
-      message: 'Update plan not found or not active',
+      message: 'Update plan not found',
       error: true,
       success: false
     });
@@ -92,6 +91,22 @@ const submitUpdateRequest = asyncHandler(async (req, res) => {
   if (updatePlan.planStatus === 'closed') {
     return res.status(400).json({
       message: 'This plan has been closed and cannot accept updates',
+      error: true,
+      success: false
+    });
+  }
+
+  if (updatePlan.autoRenewalStatus === 'paused') {
+    return res.status(400).json({
+      message: 'This plan is paused because an invoice payment is overdue. Please clear the payment to request updates.',
+      error: true,
+      success: false
+    });
+  }
+
+  if (!updatePlan.isActive) {
+    return res.status(400).json({
+      message: 'This plan is not active and cannot accept updates',
       error: true,
       success: false
     });

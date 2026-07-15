@@ -63,6 +63,7 @@ const submitUpdateRequest = require('../controller/user/submitUpdateRequest');
 const getUserUpdateRequests = require('../controller/user/getUserUpdateRequests');
 const verifyPaymentController = require('../controller/user/verifyPaymentController');
 const getWalletHistory = require('../controller/user/getWalletHistory');
+const { approveTransaction, rejectTransaction } = require('../controller/user/transactionApprovalController');
 const validateCoupon = require('../controller/user/validateCoupon');
 const payInstallment = require('../controller/user/payInstallment');
 const getUserNotifications = require('../controller/user/getUserNotificationsController');
@@ -92,6 +93,14 @@ const getUserKycStatusController = require('../controller/user/getUserKycStatusC
 // New renewal system controllers
 const createRenewalOrder = require('../controller/order/createRenewalOrder');
 const checkPendingRenewal = require('../controller/order/checkPendingRenewal');
+const {
+  updateOverdueInvoices,
+  markInvoiceAsPaid,
+  getPaymentRecordDetail,
+  downloadPaymentRecordInvoice,
+  resendPaymentRecordInvoice,
+  sendPaymentRecordReminder,
+} = require('../controller/invoice/monthlyInvoiceController');
 
 const memoryStorage = multer.memoryStorage();
 
@@ -174,6 +183,8 @@ router.get("/user-kyc-status", authToken, getUserKycStatusController);
 
 router.get("/wallet/history", authToken, getWalletHistory)
 router.post("/wallet/verify-payment", authToken, verifyPaymentController)
+router.post("/wallet/approve-transaction", authToken, approveTransaction)
+router.post("/wallet/reject-transaction", authToken, rejectTransaction)
 
 // product
 router.post("/upload-product", authToken, UploadProductController )
@@ -219,6 +230,12 @@ router.post("/create-renewal", authToken, createRenewalOrder)  // User creates r
 router.get("/check-pending-renewal", authToken, checkPendingRenewal)  // Check if plan has pending renewal
 router.get("/user-renewal-status", authToken, getUserRenewalStatus)
 router.post("/manual-renewal-check", authToken, manualRenewalCheck)
+router.post("/invoices/update-overdue", authToken, updateOverdueInvoices)
+router.post("/invoices/:invoiceId/mark-paid", authToken, markInvoiceAsPaid)
+router.get("/admin/clients/:customerId/payment-records/:recordType/:recordId", authToken, getPaymentRecordDetail)
+router.get("/admin/clients/:customerId/payment-records/:recordType/:recordId/download-invoice", authToken, downloadPaymentRecordInvoice)
+router.post("/admin/clients/:customerId/payment-records/:recordType/:recordId/resend-invoice", authToken, resendPaymentRecordInvoice)
+router.post("/admin/clients/:customerId/payment-records/:recordType/:recordId/reminder", authToken, sendPaymentRecordReminder)
 
 router.get("/get-order", authToken, getUserOrders)
 router.get("/order-details/:orderId", authToken, getOrderDetails)

@@ -7,6 +7,7 @@ const {
     sendAdminAutoRenewalNotification,
     generateMonthlyInvoicePdf
 } = require('../helpers/emailService');
+const { updateOverdueInvoicesAndPausePlans } = require('../helpers/invoiceLifecycle');
 
 // Generate unique invoice number
 const generateInvoiceNumber = async () => {
@@ -33,6 +34,9 @@ const generateInvoiceNumber = async () => {
 const processAutoRenewal = async () => {
     try {
         console.log('🔄 Running auto-renewal cron job at:', new Date().toISOString());
+
+        const overdueResult = await updateOverdueInvoicesAndPausePlans();
+        console.log(`⏸️ Marked ${overdueResult.processed} overdue invoice(s) and paused related plans`);
 
         const today = new Date();
         today.setHours(0, 0, 0, 0);

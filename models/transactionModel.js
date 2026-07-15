@@ -35,6 +35,11 @@ const transactionSchema = new mongoose.Schema(
             enum: ["deposit", "payment", "refund", "renewal"],
             required: true
         },
+        sourceType: {
+            type: String,
+            enum: ["wallet", "order", "installment", "invoice", "renewal"],
+            default: null
+        },
         description: {
             type: String,
             required: true
@@ -48,7 +53,7 @@ const transactionSchema = new mongoose.Schema(
         },
         paymentMethod: {
             type: String,
-            enum: ["wallet", "upi", "combined"],
+            enum: ["wallet", "upi", "combined", "cash", "bank_transfer"],
             default: "upi"
         },
          // Add parentTransactionId for combined payments
@@ -62,6 +67,10 @@ const transactionSchema = new mongoose.Schema(
         verifiedBy: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "user"
+        },
+        verificationDate: {
+            type: Date,
+            default: null
         },
         date: {
             type: Date,
@@ -77,6 +86,11 @@ const transactionSchema = new mongoose.Schema(
         orderId: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "order"
+        },
+        invoiceId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "monthlyInvoice",
+            default: null
         },
         referredBy: {
             type: mongoose.Schema.Types.ObjectId,
@@ -120,6 +134,10 @@ const transactionSchema = new mongoose.Schema(
     { timestamps: true }
 );
 
+transactionSchema.index({ invoiceId: 1 });
+transactionSchema.index({ orderId: 1 });
+transactionSchema.index({ userId: 1, status: 1 });
+transactionSchema.index({ sourceType: 1, status: 1 });
 
 const transactionModel = mongoose.model('transaction', transactionSchema);
 module.exports = transactionModel;

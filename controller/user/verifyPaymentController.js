@@ -10,11 +10,13 @@ const verifyPaymentController = async (req, res) => {
             upiTransactionId,
             isInstallmentPayment,
             orderId,
+            invoiceId,
             installmentNumber,
             type,
             description,
             isPartialInstallmentPayment = false ,
-            paymentMethod
+            paymentMethod,
+            sourceType
         } = req.body;
         
         // Validate required fields
@@ -55,6 +57,20 @@ const verifyPaymentController = async (req, res) => {
                 processedOrderId = String(orderId);
             }
         }
+
+        let processedInvoiceId = null;
+        if (invoiceId) {
+            try {
+                if (mongoose.Types.ObjectId.isValid(invoiceId)) {
+                    processedInvoiceId = new mongoose.Types.ObjectId(invoiceId);
+                } else {
+                    processedInvoiceId = invoiceId;
+                }
+            } catch (error) {
+                console.error("Error converting invoiceId:", error);
+                processedInvoiceId = String(invoiceId);
+            }
+        }
         
         // Determine transaction type
         const transactionType = type || (isInstallmentPayment ? "payment" : "deposit");
@@ -67,6 +83,11 @@ const verifyPaymentController = async (req, res) => {
         
                 // Explicitly identify wallet recharges (no orderId means it's a wallet recharge)
         const isWalletRecharge = !isInstallmentPayment && !orderId;
+        const resolvedSourceType =
+            sourceType ||
+            (processedInvoiceId ? "invoice" : null) ||
+            (isWalletRecharge ? "wallet" : null) ||
+            (installmentNumber ? "installment" : "order");
 
         // Get the referredBy field from the user model
         const user = await userModel.findById(req.userId);
@@ -88,10 +109,12 @@ const verifyPaymentController = async (req, res) => {
             // For wallet recharge without order, use null (allowed by default)
             paymentStatus: isWalletRecharge ? null : 'pending-approval',
             paymentMethod: paymentMethod || 'upi',
+            sourceType: resolvedSourceType,
             date: new Date(),
             // Mark as installment payment for order payments
             isInstallmentPayment: !!isInstallmentPayment || !!orderId,
             orderId: processedOrderId,
+            invoiceId: processedInvoiceId,
             installmentNumber: installmentNumber ? Number(installmentNumber) : null,
             // Add this flag to indicate it's a partial payment
             isPartialInstallmentPayment: isPartialInstallmentPayment,
