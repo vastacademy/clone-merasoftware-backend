@@ -3,60 +3,104 @@ const orderModel = require("../../models/orderProductModel");
 const updateRequestModel = require("../../models/updateRequestModel");
 const transactionModel = require("../../models/transactionModel");
 const monthlyInvoiceModel = require("../../models/monthlyInvoiceModel");
-const TicketModel = require("../../models/ticketModel");
+const ticketModel = require("../../models/ticketModel");
 
 const toTimestamp = (value) => {
-  const timestamp = value ? new Date(value).getTime() : 0;
+  const timestamp = value ? new Date(value).getTime() : NaN;
   return Number.isFinite(timestamp) ? timestamp : 0;
 };
 
-const isActiveOrder = (order) => {
-  if (!order || order.orderVisibility === "pending-approval" || order.orderVisibility === "payment-rejected" || order.orderVisibility === "hidden") {
-    return false;
-  }
-
-  if (["completed", "cancelled", "canceled", "rejected"].includes(order.status)) {
-    return false;
-  }
-
-  if (order.projectProgress >= 100 || order.currentPhase === "completed") {
-    return false;
-  }
-
-  if (order.planStatus === "closed" || order.autoRenewalStatus === "expired") {
-    return false;
-  }
-
-  if (order.isActive === false) {
-    return false;
-  }
-
-  return order.status === "in_progress" || order.isActive === true;
-};
-
-const getLatestActivity = (client, records) => {
-  const activities = [
-    { value: client.updatedAt, type: "client_updated" },
-    { value: client.createdAt, type: "client_created" },
-  ];
-
-  records.forEach(({ items, updatedField = "updatedAt", createdField = "createdAt", type }) => {
-    items.forEach((item) => {
-      activities.push({ value: item?.[updatedField], type });
-      activities.push({ value: item?.[createdField], type: `${type}_created` });
-      if (item?.lastUpdated) activities.push({ value: item.lastUpdated, type });
-      if (item?.date) activities.push({ value: item.date, type });
-      if (item?.invoiceDate) activities.push({ value: item.invoiceDate, type });
-    });
-  });
-
-  return activities.reduce(
-    (latest, activity) => (toTimestamp(activity.value) > latest.timestamp
-      ? { timestamp: toTimestamp(activity.value), value: activity.value, type: activity.type }
-      : latest),
-    { timestamp: 0, value: null, type: null }
+const latestCandidate = (candidates) => {
+  return candidates.reduce(
+    (latest, candidate) => {
+      const timestamp = toTimestamp(candidate.value);
+      return timestamp > latest.timestamp
+        ? { timestamp, value: candidate.value, source: candidate.source }
+        : latest;
+    },
+    { timestamp: 0, value: null, source: "client_created" }
   );
 };
+
+const addRecordActivity = (activityByClient, userId, candidates) => {
+  if (!userId) return;
+
+  const clientId = userId.toString();
+  const current = activityByClient.get(clientId) || {
+    timestamp: 0,
+    value: null,
+    source: "client_created",
+  };
+  const latest = latestCandidate(candidates);
+
+  if (latest.timestamp > current.timestamp) {
+    activityByClient.set(clientId, latest);
+  }
+};
+
+const getOrderActivity = (order) => [
+  { value: order.createdAt, source: "purchase" },
+  { value: order.updatedAt, source: "project_updated" },
+  { value: order.lastUpdated, source: "project_updated" },
+  ...(order.checkpoints || []).map((checkpoint) => ({
+    value: checkpoint.completedAt,
+    source: "checkpoint_completed",
+  })),
+  ...(order.messages || []).map((message) => ({
+    value: message.timestamp,
+    source: "project_message",
+  })),
+  ...(order.monthlyRenewalHistory || []).map((renewal) => ({
+    value: renewal.renewalDate,
+    source: "plan_renewed",
+  })),
+];
+
+const getUpdateRequestActivity = (request) => [
+  { value: request.createdAt, source: "update_request" },
+  { value: request.updatedAt, source: "update_request_updated" },
+  { value: request.completedAt, source: "update_completed" },
+  ...(request.instructions || []).map((item) => ({
+    value: item.timestamp,
+    source: "update_request",
+  })),
+  ...(request.developerNotes || []).map((item) => ({
+    value: item.timestamp,
+    source: "developer_note",
+  })),
+  ...(request.developerMessages || []).map((item) => ({
+    value: item.timestamp,
+    source: "developer_message",
+  })),
+];
+
+const getTransactionActivity = (transaction) => {
+  const eventDate = transaction.paymentStatus === "approved" || transaction.status === "completed"
+    ? transaction.verificationDate || transaction.updatedAt || transaction.createdAt
+    : transaction.paymentStatus === "rejected" || transaction.status === "rejected"
+      ? transaction.rejectedAt || transaction.verificationDate || transaction.updatedAt || transaction.createdAt
+      : transaction.createdAt || transaction.date || transaction.updatedAt;
+
+  return [{ value: eventDate, source: "payment_updated" }];
+};
+
+const getInvoiceActivity = (invoice) => [{
+  value: invoice.status === "paid" ? invoice.paidDate || invoice.updatedAt : invoice.updatedAt || invoice.createdAt,
+  source: invoice.status === "paid" ? "invoice_paid" : "invoice_updated",
+}];
+
+const getTicketActivity = (ticket) => [
+  { value: ticket.createdAt, source: "ticket_created" },
+  { value: ticket.updatedAt, source: "ticket_updated" },
+  ...(ticket.messages || []).map((message) => ({
+    value: message.timestamp,
+    source: "ticket_message",
+  })),
+  ...(ticket.statusHistory || []).map((item) => ({
+    value: item.timestamp,
+    source: "ticket_status_updated",
+  })),
+];
 
 async function getAdminClients(req, res) {
   try {
@@ -73,51 +117,29 @@ async function getAdminClients(req, res) {
       .select("name email phone roles createdAt updatedAt profilePic userDetails walletBalance status referredBy")
       .lean();
 
-    const customerIds = clients.map((client) => client._id);
+    const clientIds = clients.map((client) => client._id);
     const [orders, updateRequests, transactions, invoices, tickets] = await Promise.all([
-      orderModel.find({ userId: { $in: customerIds } }).select("userId status orderVisibility projectProgress currentPhase isActive planStatus autoRenewalStatus createdAt updatedAt lastUpdated").lean(),
-      updateRequestModel.find({ userId: { $in: customerIds } }).select("userId createdAt updatedAt completedAt").lean(),
-      transactionModel.find({ userId: { $in: customerIds } }).select("userId createdAt updatedAt date").lean(),
-      monthlyInvoiceModel.find({ userId: { $in: customerIds } }).select("userId createdAt updatedAt invoiceDate paidDate").lean(),
-      TicketModel.find({ userId: { $in: customerIds } }).select("userId createdAt updatedAt").lean(),
+      orderModel.find({ userId: { $in: clientIds } }).lean(),
+      updateRequestModel.find({ userId: { $in: clientIds } }).lean(),
+      transactionModel.find({ userId: { $in: clientIds } }).lean(),
+      monthlyInvoiceModel.find({ userId: { $in: clientIds } }).lean(),
+      ticketModel.find({ userId: { $in: clientIds } }).lean(),
     ]);
 
-    const recordsByUser = new Map();
-    const addRecords = (items, type) => {
-      items.forEach((item) => {
-        const key = String(item.userId);
-        if (!recordsByUser.has(key)) recordsByUser.set(key, []);
-        recordsByUser.get(key).push({ item, type });
-      });
-    };
-
-    addRecords(orders, "order");
-    addRecords(updateRequests, "update_request");
-    addRecords(transactions, "transaction");
-    addRecords(invoices, "invoice");
-    addRecords(tickets, "ticket");
+    const activityByClient = new Map();
+    orders.forEach((order) => addRecordActivity(activityByClient, order.userId, getOrderActivity(order)));
+    updateRequests.forEach((request) => addRecordActivity(activityByClient, request.userId, getUpdateRequestActivity(request)));
+    transactions.forEach((transaction) => addRecordActivity(activityByClient, transaction.userId, getTransactionActivity(transaction)));
+    invoices.forEach((invoice) => addRecordActivity(activityByClient, invoice.userId, getInvoiceActivity(invoice)));
+    tickets.forEach((ticket) => addRecordActivity(activityByClient, ticket.userId, getTicketActivity(ticket)));
 
     const enrichedClients = clients.map((client) => {
-      const clientRecords = recordsByUser.get(String(client._id)) || [];
-      const clientOrders = clientRecords.filter((record) => record.type === "order").map((record) => record.item);
-      const latestActivity = getLatestActivity(
-        client,
-        clientRecords.map((record) => ({ items: [record.item], type: record.type }))
-      );
-
+      const activity = activityByClient.get(client._id.toString());
       return {
         ...client,
-        hasActiveWork: clientOrders.some(isActiveOrder),
-        latestActivityAt: latestActivity.value || client.updatedAt || client.createdAt || null,
-        latestActivityType: latestActivity.type,
+        latestActivityAt: activity?.value || client.createdAt,
+        latestActivitySource: activity?.source || "client_created",
       };
-    });
-
-    enrichedClients.sort((left, right) => {
-      if (left.hasActiveWork !== right.hasActiveWork) return left.hasActiveWork ? -1 : 1;
-      const activityDifference = toTimestamp(right.latestActivityAt) - toTimestamp(left.latestActivityAt);
-      if (activityDifference) return activityDifference;
-      return (left.name || "").localeCompare(right.name || "", "en", { sensitivity: "base" });
     });
 
     res.json({
