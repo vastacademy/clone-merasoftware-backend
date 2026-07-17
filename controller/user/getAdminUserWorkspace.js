@@ -4,6 +4,7 @@ const orderModel = require("../../models/orderProductModel");
 const updateRequestModel = require("../../models/updateRequestModel");
 const monthlyInvoiceModel = require("../../models/monthlyInvoiceModel");
 const transactionModel = require("../../models/transactionModel");
+const { applyOrderSummary } = require("../../helpers/orderSummary");
 
 const getAdminUserWorkspace = async (req, res) => {
   try {
@@ -26,7 +27,10 @@ const getAdminUserWorkspace = async (req, res) => {
 
     const customerObjectId = new mongoose.Types.ObjectId(customerId);
 
-    const customer = await userModel.findById(customerObjectId);
+    const customer = await userModel
+      .findById(customerObjectId)
+      .select("name email phone status walletBalance createdAt updatedAt")
+      .lean();
     if (!customer) {
       return res.status(404).json({
         message: "Customer not found",
@@ -35,46 +39,22 @@ const getAdminUserWorkspace = async (req, res) => {
       });
     }
 
-    const [orders, transactions, invoices, updateRequests, updatePlans] = await Promise.all([
-      orderModel
-        .find({ userId: customerObjectId })
-        .populate("userId", "name email")
-        .populate(
-          "productId",
-          "serviceName category totalPages validityPeriod updateCount isWebsiteUpdate isMonthlyRenewablePlan yearlyPlanDuration monthlyRenewalCost isUnlimitedUpdates isMonthlyLimitedPlan monthlyUpdateLimit monthlyRenewalPrice"
-        )
-        .populate("assignedDeveloper", "name designation avatar status")
-        .sort({ createdAt: -1 }),
+    const [orders, transactions, invoices, updateRequestCounts] = await Promise.all([
+      applyOrderSummary(orderModel.find({ userId: customerObjectId }).sort({ createdAt: -1 })),
       transactionModel
         .find({ userId: customerObjectId })
-        .populate("userId", "name email")
-        .populate("productId", "serviceName")
-        .populate("verifiedBy", "name email")
+        .select("transactionId upiTransactionId amount status type sourceType paymentMethod invoiceId orderId date createdAt rejectionReason")
         .sort({ createdAt: -1 }),
       monthlyInvoiceModel
         .find({ userId: customerObjectId })
-        .populate("userId", "name email")
-        .populate("orderId", "productId totalPrice price status projectProgress")
+        .select("orderId invoiceNumber amount status invoiceDate dueDate paidDate paymentMethod transactionReference createdAt")
+        .populate("orderId", "productId")
+        .populate({ path: "orderId", populate: { path: "productId", select: "serviceName" } })
         .sort({ createdAt: -1 }),
-      updateRequestModel
-        .find({ userId: customerObjectId })
-        .populate("updatePlanId", "productId")
-        .populate({
-          path: "updatePlanId",
-          populate: {
-            path: "productId",
-            select: "serviceName",
-          },
-        })
-        .populate("assignedDeveloper", "name designation avatar status")
-        .sort({ createdAt: -1 }),
-      orderModel
-        .find({ userId: customerObjectId, "productId.isWebsiteUpdate": true })
-        .populate(
-          "productId",
-          "serviceName validityPeriod updateCount isMonthlyRenewablePlan yearlyPlanDuration monthlyRenewalCost isUnlimitedUpdates"
-        )
-        .sort({ createdAt: -1 }),
+      updateRequestModel.aggregate([
+        { $match: { userId: customerObjectId } },
+        { $group: { _id: null, total: { $sum: 1 }, pending: { $sum: { $cond: [{ $eq: ["$status", "pending"] }, 1, 0] } } } },
+      ]),
     ]);
 
     const isCompletedOrder = (order) =>
@@ -99,7 +79,8 @@ const getAdminUserWorkspace = async (req, res) => {
     const pendingOrders = orders.filter(isPendingOrder);
     const completedOrders = orders.filter(isCompletedOrder);
     const rejectedOrders = orders.filter(isRejectedOrder);
-    const activeUpdatePlans = updatePlans.filter((plan) => plan?.isActive !== false && !plan?.isExpired);
+    const updateCount = updateRequestCounts[0]?.total || 0;
+    const pendingUpdates = updateRequestCounts[0]?.pending || 0;
 
     return res.status(200).json({
       message: "Customer workspace data fetched successfully",
@@ -111,16 +92,17 @@ const getAdminUserWorkspace = async (req, res) => {
         renewals: [],
         transactions,
         invoices,
-        updates: updateRequests,
-        plans: updatePlans,
+        updates: [],
+        plans: [],
         summary: {
           totalOrders: orders.length,
           activeOrders: activeOrders.length,
           pendingOrders: pendingOrders.length,
           completedOrders: completedOrders.length,
           rejectedOrders: rejectedOrders.length,
-          activePlans: activeUpdatePlans.length,
-          pendingUpdates: updateRequests.filter((update) => update?.status === "pending").length,
+          activePlans: orders.filter((order) => order?.productId?.isWebsiteUpdate && order?.isActive !== false).length,
+          updateCount,
+          pendingUpdates,
           walletBalance: customer.walletBalance || 0,
           invoiceCount: invoices.length,
           transactionCount: transactions.length,

@@ -1,5 +1,6 @@
 const orderProductModel = require("../../models/orderProductModel")
 const mongoose = require('mongoose');
+const { applyOrderSummary } = require("../../helpers/orderSummary");
 
 const getUserOrders = async (req, res) => {
     try {
@@ -15,12 +16,9 @@ const getUserOrders = async (req, res) => {
         }
 
         // Add userId filter to only get orders for the current user
-        const orders = await orderProductModel.find({ userId: userObjectId })
-            .populate('userId', 'name email')
-            .populate('productId',
-                 'serviceName category totalPages validityPeriod updateCount isWebsiteUpdate isMonthlyRenewablePlan yearlyPlanDuration monthlyRenewalCost isUnlimitedUpdates isMonthlyLimitedPlan monthlyUpdateLimit monthlyRenewalPrice')
-            .populate('assignedDeveloper', 'name designation avatar status')
-            .sort({ createdAt: -1 });
+        const orders = await applyOrderSummary(
+            orderProductModel.find({ userId: userObjectId }).sort({ createdAt: -1 })
+        );
 
         console.log('Total projects found:', orders.length);
         console.log('Sample project:', orders[0]);

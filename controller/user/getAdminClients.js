@@ -114,16 +114,31 @@ async function getAdminClients(req, res) {
 
     const clients = await userModel
       .find({ roles: "customer" })
-      .select("name email phone roles createdAt updatedAt profilePic userDetails walletBalance status referredBy")
+      .select("name email phone status createdAt")
       .lean();
 
     const clientIds = clients.map((client) => client._id);
     const [orders, updateRequests, transactions, invoices, tickets] = await Promise.all([
-      orderModel.find({ userId: { $in: clientIds } }).lean(),
-      updateRequestModel.find({ userId: { $in: clientIds } }).lean(),
-      transactionModel.find({ userId: { $in: clientIds } }).lean(),
-      monthlyInvoiceModel.find({ userId: { $in: clientIds } }).lean(),
-      ticketModel.find({ userId: { $in: clientIds } }).lean(),
+      orderModel
+        .find({ userId: { $in: clientIds } })
+        .select("userId createdAt updatedAt lastUpdated checkpoints.completedAt messages.timestamp monthlyRenewalHistory.renewalDate")
+        .lean(),
+      updateRequestModel
+        .find({ userId: { $in: clientIds } })
+        .select("userId createdAt updatedAt completedAt instructions.timestamp developerNotes.timestamp developerMessages.timestamp")
+        .lean(),
+      transactionModel
+        .find({ userId: { $in: clientIds } })
+        .select("userId createdAt updatedAt date paymentStatus status verificationDate rejectedAt")
+        .lean(),
+      monthlyInvoiceModel
+        .find({ userId: { $in: clientIds } })
+        .select("userId createdAt updatedAt paidDate status")
+        .lean(),
+      ticketModel
+        .find({ userId: { $in: clientIds } })
+        .select("userId createdAt updatedAt messages.timestamp statusHistory.timestamp")
+        .lean(),
     ]);
 
     const activityByClient = new Map();

@@ -9,7 +9,10 @@ async function allUsers (req,res){
             filter.referredBy = req.query.referredBy;
         }
 
-        const allUsers = await userModel.find(filter);
+        const allUsers = await userModel
+            .find(filter)
+            .select("name email phone profilePic roles walletBalance status createdAt updatedAt")
+            .lean();
 
         res.json({
             message: "All User",
