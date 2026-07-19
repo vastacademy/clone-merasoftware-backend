@@ -21,6 +21,16 @@ const messageSchema = new mongoose.Schema({
     },
     checkpointName: {
         type: String
+    },
+    nodeId: {
+        type: String
+    },
+    runId: {
+        type: String
+    },
+    senderId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'user'
     }
 });
 
@@ -41,6 +51,125 @@ const checkpointProgressSchema = new mongoose.Schema({
     completedAt: Date,
     percentage: Number
 });
+
+const projectRunSchema = new mongoose.Schema({
+    runId: {
+        type: String,
+        required: true
+    },
+    status: {
+        type: String,
+        enum: ['active', 'archived'],
+        default: 'active'
+    },
+    startedAt: {
+        type: Date,
+        default: Date.now
+    },
+    archivedAt: Date,
+    startedBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'user'
+    },
+    archivedBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'user'
+    },
+    showToClient: {
+        type: Boolean,
+        default: false
+    }
+}, { _id: false });
+
+const projectNodeSchema = new mongoose.Schema({
+    nodeId: {
+        type: String,
+        required: true
+    },
+    runId: {
+        type: String,
+        required: true
+    },
+    title: {
+        type: String,
+        required: true,
+        trim: true
+    },
+    cumulativeProgress: {
+        type: Number,
+        required: true,
+        min: 0,
+        max: 100
+    },
+    status: {
+        type: String,
+        enum: ['active', 'deleted', 'archived'],
+        default: 'active'
+    },
+    visibleToClient: {
+        type: Boolean,
+        default: true
+    },
+    createdBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'user',
+        required: true
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now
+    },
+    deletedAt: Date,
+    deletedBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'user'
+    },
+    restoredAt: Date,
+    restoredBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'user'
+    },
+    messageIds: {
+        type: [String],
+        default: []
+    }
+}, { _id: false });
+
+const projectNodeEventSchema = new mongoose.Schema({
+    eventType: {
+        type: String,
+        enum: ['node_created', 'node_deleted', 'node_restored', 'node_visibility_changed', 'project_reset'],
+        required: true
+    },
+    nodeId: String,
+    runId: {
+        type: String,
+        required: true
+    },
+    actorId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'user',
+        required: true
+    },
+    previousProgress: {
+        type: Number,
+        min: 0,
+        max: 100
+    },
+    nextProgress: {
+        type: Number,
+        min: 0,
+        max: 100
+    },
+    metadata: {
+        type: mongoose.Schema.Types.Mixed,
+        default: {}
+    },
+    occurredAt: {
+        type: Date,
+        default: Date.now
+    }
+}, { _id: false });
 
 const installmentSchema = new mongoose.Schema({
     installmentNumber: {
@@ -123,6 +252,28 @@ const orderSchema = new mongoose.Schema({
     isWebsiteProject: {
         type: Boolean,
         default: false
+    },
+    // Canonical dynamic project timeline. Legacy checkpoints remain temporarily
+    // for compatibility while existing orders are migrated safely.
+    projectTimelineVersion: {
+        type: Number,
+        default: 0
+    },
+    projectTimelineInitialized: {
+        type: Boolean,
+        default: false
+    },
+    projectRuns: {
+        type: [projectRunSchema],
+        default: []
+    },
+    projectNodes: {
+        type: [projectNodeSchema],
+        default: []
+    },
+    projectNodeEvents: {
+        type: [projectNodeEventSchema],
+        default: []
     },
     checkpoints: [checkpointProgressSchema],
     messages: [messageSchema],
@@ -344,7 +495,7 @@ orderSchema.pre('save', function(next) {
 
 // Middleware to update projectProgress based on checkpoints
 orderSchema.pre('save', function(next) {
-    if (this.isWebsiteProject && this.checkpoints.length > 0) {
+    if (this.isWebsiteProject && this.projectTimelineVersion === 0 && this.checkpoints.length > 0) {
         const completedCheckpoints = this.checkpoints.filter(cp => cp.completed);
         const totalPercentage = completedCheckpoints.reduce((sum, cp) => sum + cp.percentage, 0);
         this.projectProgress = Math.min(totalPercentage, 100);

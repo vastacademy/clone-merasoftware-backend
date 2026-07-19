@@ -5,6 +5,46 @@ const toPlainObject = (doc) => {
     return typeof doc.toObject === "function" ? doc.toObject() : doc;
 };
 
+const getCustomerTimeline = (orderData) => {
+    if (orderData.projectTimelineVersion !== 1 || !orderData.projectTimelineInitialized) {
+        return {
+            projectRuns: [],
+            projectNodes: [],
+            projectNodeEvents: []
+        };
+    }
+
+    const visibleRuns = (orderData.projectRuns || []).filter(
+        (run) => run.status === 'active' || run.showToClient === true
+    );
+    const visibleRunIds = new Set(visibleRuns.map((run) => run.runId));
+
+    return {
+        projectRuns: visibleRuns.map((run) => ({
+            runId: run.runId,
+            status: run.status,
+            startedAt: run.startedAt,
+            archivedAt: run.archivedAt,
+            showToClient: run.showToClient
+        })),
+        projectNodes: (orderData.projectNodes || [])
+            .filter((node) => visibleRunIds.has(node.runId) && node.visibleToClient === true)
+            .map((node) => ({
+                nodeId: node.nodeId,
+                runId: node.runId,
+                title: node.title,
+                cumulativeProgress: node.cumulativeProgress,
+                status: node.status,
+                visibleToClient: node.visibleToClient,
+                createdAt: node.createdAt,
+                deletedAt: node.deletedAt,
+                restoredAt: node.restoredAt,
+                messageIds: node.messageIds
+            })),
+        projectNodeEvents: []
+    };
+};
+
 const getOrderDetails = async (req, res) => {
     try {
         const { orderId } = req.params;
@@ -46,6 +86,10 @@ const getOrderDetails = async (req, res) => {
             status: status,
             orderNumber: `ORD-${order._id.toString().substr(-4)}`
         };
+
+        if (!isAdmin) {
+            Object.assign(responseData, getCustomerTimeline(orderData));
+        }
 
         res.status(200).json({
             success: true,

@@ -45,6 +45,7 @@ const updateUserProfileController = require('../controller/user/updateUserProfil
 const createOrder = require('../controller/order/createOrder')
 const getUserOrders = require('../controller/order/getUserOrder')
 const getOrderDetails = require('../controller/order/getOrderDetails')
+const projectNodeController = require('../controller/order/projectNodeController')
 const getCompatibleFeaturesController = require('../controller/product/getCompatibleFeatures')
 const getGuestSlidesController = require('../controller/welcomeBanner/getGuestSlidesController')
 const uploadGuestSlidesController = require('../controller/welcomeBanner/uploadGuestSlidesController')
@@ -239,6 +240,11 @@ router.post("/admin/clients/:customerId/payment-records/:recordType/:recordId/re
 
 router.get("/get-order", authToken, getUserOrders)
 router.get("/order-details/:orderId", authToken, getOrderDetails)
+router.post("/admin/projects/:orderId/nodes", authToken, projectNodeController.createProjectNode)
+router.post("/admin/projects/:orderId/nodes/delete", authToken, projectNodeController.deleteProjectNodes)
+router.post("/admin/projects/:orderId/nodes/restore", authToken, projectNodeController.restoreProjectNodes)
+router.post("/admin/projects/:orderId/nodes/visibility", authToken, projectNodeController.setProjectNodeVisibility)
+router.post("/admin/projects/:orderId/nodes/reset", authToken, projectNodeController.resetProjectNodes)
 
 // ads
 router.post("/upload-ad", authToken, UploadAdController)

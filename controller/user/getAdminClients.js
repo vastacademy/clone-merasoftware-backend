@@ -50,6 +50,10 @@ const getOrderActivity = (order) => [
     value: message.timestamp,
     source: "project_message",
   })),
+  ...(order.projectNodeEvents || []).map((event) => ({
+    value: event.occurredAt,
+    source: "project_node_updated",
+  })),
   ...(order.monthlyRenewalHistory || []).map((renewal) => ({
     value: renewal.renewalDate,
     source: "plan_renewed",
@@ -121,7 +125,7 @@ async function getAdminClients(req, res) {
     const [orders, updateRequests, transactions, invoices, tickets] = await Promise.all([
       orderModel
         .find({ userId: { $in: clientIds } })
-        .select("userId createdAt updatedAt lastUpdated checkpoints.completedAt messages.timestamp monthlyRenewalHistory.renewalDate")
+        .select("userId createdAt updatedAt lastUpdated checkpoints.completedAt messages.timestamp projectNodeEvents.occurredAt monthlyRenewalHistory.renewalDate")
         .lean(),
       updateRequestModel
         .find({ userId: { $in: clientIds } })
