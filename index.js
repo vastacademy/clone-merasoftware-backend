@@ -1,4 +1,5 @@
 const express = require('express')
+const http = require('http')
 const cors = require('cors')
 const cookieParser = require('cookie-parser')
 require('dotenv').config()
@@ -8,9 +9,11 @@ const fileCleanupScheduler = require('./helpers/fileCleanupScheduler');
 const { scheduleAutoRenewal } = require('./cron/autoRenewalCron');
 const cron = require("node-cron");
 const axios = require("axios");
+const { initChessSocket } = require('./chess/chessSocket');
 
 
 const app = express()
+const server = http.createServer(app)
 fileCleanupScheduler.scheduleCleanup();
 scheduleAutoRenewal();
 
@@ -38,6 +41,8 @@ const rawAllowedOrigins = [
 const allowedOrigins = rawAllowedOrigins
   .filter(Boolean)
   .map((origin) => origin.replace(/\/$/, ''));
+
+initChessSocket(server, allowedOrigins);
 
 app.use(cors({
   origin(origin, callback) {
@@ -105,7 +110,7 @@ async function startServer() {
   try {
     await connnectDB();
     console.log("Connected to DB");
-    app.listen(PORT, () => {
+    server.listen(PORT, () => {
       console.log("Server is running " + PORT);
     });
   } catch (error) {
