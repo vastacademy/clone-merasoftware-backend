@@ -15,8 +15,18 @@ const checkpointSchema = new mongoose.Schema({
 const productSchema = new mongoose.Schema({
     serviceName: String,
     category: String,
+    startingNodeTitle: String,
     packageIncludes: [String],
-    perfectFor: [String],
+    perfectFor: [{
+      text: {
+        type: String,
+        required: true
+      },
+      icon: {
+        type: String,
+        required: true
+      }
+    }],
     serviceImage: [],
     price: Number,
     sellingPrice: Number,

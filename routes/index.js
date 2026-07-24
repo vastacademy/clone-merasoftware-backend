@@ -91,6 +91,11 @@ const completeUserDetailsController = require('../controller/user/completeUserDe
 const updatePartnerCustomer = require('../controller/user/updatePartnerCustomer');
 const { addBankAccount, updateBankAccount, deleteBankAccount, getBankAccounts } = require('../controller/user/bankAccountController');
 const getUserKycStatusController = require('../controller/user/getUserKycStatusController');
+const {
+  searchPerfectForSuggestions,
+  saveOrIncrementPerfectForSuggestion,
+  deletePerfectForSuggestion
+} = require('../controller/product/perfectForSuggestionController');
 
 // New renewal system controllers
 const createRenewalOrder = require('../controller/order/createRenewalOrder');
@@ -208,6 +213,9 @@ router.post("/hide-product", authToken, hideProductController);
 router.post("/unhide-product", authToken, unhideProductController);
 router.get("/get-hidden-products", authToken, getHiddenProductsController);
 router.get("/all-products", authToken, getAllProductsController);
+router.get("/perfect-for-suggestions", authToken, searchPerfectForSuggestions);
+router.post("/perfect-for-suggestions/save-or-increment", authToken, saveOrIncrementPerfectForSuggestion);
+router.delete("/perfect-for-suggestions/:id", authToken, deletePerfectForSuggestion);
 
 //user add to cart
 router.post("/addtocart", authToken, addToCartController)
