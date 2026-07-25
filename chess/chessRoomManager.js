@@ -131,6 +131,26 @@ async function resetGame(game) {
   await game.save();
 }
 
+async function deleteGame(roomCode) {
+  await ChessGame.deleteOne({ roomCode });
+}
+
+async function expireStaleEndRequests(olderThanHours) {
+  const cutoff = new Date(Date.now() - olderThanHours * 60 * 60 * 1000);
+  const staleGames = await ChessGame.find({
+    status: 'end-pending',
+    endRequestedAt: { $lte: cutoff }
+  });
+
+  if (staleGames.length === 0) return 0;
+
+  await ChessGame.deleteMany({
+    _id: { $in: staleGames.map((game) => game._id) }
+  });
+
+  return staleGames.length;
+}
+
 function handleDisconnect(socketId) {
   const userId = socketToUser.get(socketId);
   socketToUser.delete(socketId);
@@ -157,5 +177,7 @@ module.exports = {
   getActiveGamesForUser,
   saveMove,
   resetGame,
+  deleteGame,
+  expireStaleEndRequests,
   handleDisconnect
 };

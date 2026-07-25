@@ -10,12 +10,14 @@ const { scheduleAutoRenewal } = require('./cron/autoRenewalCron');
 const cron = require("node-cron");
 const axios = require("axios");
 const { initChessSocket } = require('./chess/chessSocket');
+const { scheduleChessCleanup } = require('./chess/chessCleanupCron');
 
 
 const app = express()
 const server = http.createServer(app)
 fileCleanupScheduler.scheduleCleanup();
 scheduleAutoRenewal();
+scheduleChessCleanup();
 
 console.log('File cleanup scheduler initialized');
 console.log('Auto-renewal scheduler initialized');

@@ -11,6 +11,7 @@ const {
   getActiveGamesForUser,
   saveMove,
   resetGame,
+  deleteGame,
   handleDisconnect
 } = require('./chessRoomManager');
 const { applyMove, undoLastMove } = require('./chessGameLogic');
@@ -23,6 +24,7 @@ function roomStatePayload(game) {
     players: game.players,
     status: game.status,
     resetRequestedBy: game.resetRequestedBy,
+    endRequestedBy: game.endRequestedBy,
     paletteKey: game.paletteKey
   };
 }
@@ -263,6 +265,70 @@ function initChessSocket(server, allowedOrigins) {
         chessNamespace.to(roomCode).emit('chess:state', roomStatePayload(game));
       } catch (err) {
         socket.emit('chess:error', { error: 'Could not respond to reset request' });
+      }
+    });
+
+    socket.on('chess:requestEnd', async ({ roomCode }) => {
+      try {
+        const game = await getRoom(roomCode);
+        if (!game) {
+          socket.emit('chess:error', { error: 'Room not found' });
+          return;
+        }
+
+        const playerColor = getPlayerColor(game, socket.userId);
+        if (!playerColor) {
+          socket.emit('chess:error', { error: 'You are not a player in this room' });
+          return;
+        }
+
+        game.status = 'end-pending';
+        game.endRequestedBy = socket.userId;
+        game.endRequestedAt = new Date();
+        await game.save();
+
+        chessNamespace.to(roomCode).emit('chess:state', roomStatePayload(game));
+      } catch (err) {
+        socket.emit('chess:error', { error: 'Could not request to end game' });
+      }
+    });
+
+    socket.on('chess:respondEnd', async ({ roomCode, accept }) => {
+      try {
+        const game = await getRoom(roomCode);
+        if (!game) {
+          socket.emit('chess:error', { error: 'Room not found' });
+          return;
+        }
+
+        const playerColor = getPlayerColor(game, socket.userId);
+        if (!playerColor) {
+          socket.emit('chess:error', { error: 'You are not a player in this room' });
+          return;
+        }
+
+        if (game.status !== 'end-pending') {
+          socket.emit('chess:error', { error: 'No end request pending' });
+          return;
+        }
+
+        if (String(game.endRequestedBy) === socket.userId) {
+          socket.emit('chess:error', { error: 'Waiting for the other player to respond' });
+          return;
+        }
+
+        if (accept) {
+          chessNamespace.to(roomCode).emit('chess:gameEnded', {});
+          await deleteGame(roomCode);
+        } else {
+          game.status = 'active';
+          game.endRequestedBy = null;
+          game.endRequestedAt = null;
+          await game.save();
+          chessNamespace.to(roomCode).emit('chess:state', roomStatePayload(game));
+        }
+      } catch (err) {
+        socket.emit('chess:error', { error: 'Could not respond to end request' });
       }
     });
 

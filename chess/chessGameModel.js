@@ -39,7 +39,7 @@ const chessGameSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ['active', 'reset-pending', 'closed'],
+    enum: ['active', 'reset-pending', 'end-pending', 'closed'],
     default: 'active'
   },
   paletteKey: {
@@ -50,6 +50,15 @@ const chessGameSchema = new mongoose.Schema({
   resetRequestedBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'user',
+    default: null
+  },
+  endRequestedBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'user',
+    default: null
+  },
+  endRequestedAt: {
+    type: Date,
     default: null
   }
 }, { timestamps: true });
