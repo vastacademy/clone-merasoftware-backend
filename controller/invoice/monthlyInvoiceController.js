@@ -53,13 +53,14 @@ const markInvoiceAsPaid = async (req, res) => {
     if (!requireAdmin(req, res)) return;
 
     const { invoiceId } = req.params;
-    const { paymentMethod, transactionReference } = req.body || {};
+    const { paymentMethod, transactionReference, internalNote } = req.body || {};
 
     const result = await markInvoicePaidAndResumePlan({
       invoiceId,
       paymentMethod,
       transactionReference,
       markedPaidBy: req.userId,
+      internalNote: typeof internalNote === "string" ? internalNote.trim() : internalNote,
     });
 
     return res.status(200).json({

@@ -80,6 +80,7 @@ const replyTicketController = require('../controller/user/replyTicketController'
 const getGeneralUsers = require('../controller/user/getGeneralUsers');
 const getAdminClients = require('../controller/user/getAdminClients');
 const getAdminUserWorkspace = require('../controller/user/getAdminUserWorkspace');
+const getMyPaymentWorkspace = require('../controller/user/getMyPaymentWorkspace');
 const deleteOrderController = require('../controller/order/deleteOrder');
 const scanDeleteOrderController = require('../controller/order/scanDeleteOrder');
 const hideProductController = require('../controller/product/hideProduct');
@@ -157,6 +158,7 @@ router.get("/general-users", getGeneralUsers);
 router.get("/admin/clients", authToken, getAdminClients);
 router.get("/admin/project-products", authToken, getAdminProjectProductsController);
 router.get("/admin/user-workspace", authToken, getAdminUserWorkspace);
+router.get("/my-payment-workspace", authToken, getMyPaymentWorkspace);
 router.get("/admin/delete-order/:orderId/scan", authToken, scanDeleteOrderController);
 router.delete("/admin/delete-order/:orderId", authToken, deleteOrderController);
 router.post('/verify-otp', verifyOtpController);

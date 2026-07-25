@@ -80,6 +80,10 @@ const monthlyInvoiceSchema = new mongoose.Schema(
             type: mongoose.Schema.Types.ObjectId,
             ref: "user",
             default: null // Admin who marked it as paid
+        },
+        internalNote: {
+            type: String,
+            default: null // Admin-only comment, never shown to the customer
         }
     },
     { timestamps: true }

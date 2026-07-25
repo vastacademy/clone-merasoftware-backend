@@ -3,7 +3,13 @@ const transactionModel = require('../../models/transactionModel');
 const getWalletHistory = async (req, res) => {
   try {
     const transactions = await transactionModel
-      .find({userId: req.userId})
+      .find({
+        userId: req.userId,
+        $or: [
+          { type: { $in: ['deposit', 'refund'] } },
+          { paymentMethod: 'wallet' },
+        ],
+      })
       .populate('productId', 'serviceName')
       .populate({
         path: 'orderId',

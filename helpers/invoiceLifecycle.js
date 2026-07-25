@@ -142,6 +142,7 @@ const markInvoicePaidAndResumePlan = async ({
   paymentMethod,
   transactionReference,
   markedPaidBy,
+  internalNote,
   transaction = null,
   session = null,
 }) => {
@@ -183,6 +184,9 @@ const markInvoicePaidAndResumePlan = async ({
     invoice.transactionReference ||
     null;
   invoice.markedPaidBy = markedPaidBy || invoice.markedPaidBy || null;
+  if (internalNote !== undefined) {
+    invoice.internalNote = internalNote || null;
+  }
   await invoice.save({ session });
 
   const planResumed = await resumeOrderForPaidInvoice(order, session);
