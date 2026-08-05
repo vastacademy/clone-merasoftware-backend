@@ -451,6 +451,73 @@ const orderSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'user',
         default: null
+    },
+
+    // ---------------------------------------------------------------------
+    // Service Plan System (new, additive). Coexists with the legacy plan
+    // fields above — legacy fields/logic are untouched. isServicePlan is the
+    // switch every enforcement/read path checks to pick the new vs old path.
+    // servicePlanSnapshot freezes the plan template's servicePlan config at
+    // purchase time so a later admin edit to the plan never silently changes
+    // what a customer already bought.
+    // ---------------------------------------------------------------------
+    isServicePlan: {
+        type: Boolean,
+        default: false
+    },
+    servicePlanSnapshot: {
+        planType: String,
+        limitScope: String,
+        manualUnit: String,
+        manualCount: Number,
+        portalAccessCount: Number,
+        filesLimit: Number,
+        validityUnit: String,
+        validityValue: Number,
+        validityInDays: Number,
+        billingCycle: String
+    },
+    servicePlanStartDate: {
+        type: Date,
+        default: null
+    },
+    servicePlanEndDate: {
+        type: Date,
+        default: null
+    },
+    serviceCurrentCycleNumber: {
+        type: Number,
+        default: 1
+    },
+    serviceCurrentCycleStart: {
+        type: Date,
+        default: null
+    },
+    serviceCurrentCycleEnd: {
+        type: Date,
+        default: null
+    },
+    serviceAccessUsedInCycle: {
+        type: Number,
+        default: 0
+    },
+    serviceAccessUsedTotal: {
+        type: Number,
+        default: 0
+    },
+    serviceCycleHistory: {
+        type: [{
+            cycleNumber: Number,
+            cycleStart: Date,
+            cycleEnd: Date,
+            accessUsed: Number
+        }],
+        default: []
+    },
+    servicePlanStatus: {
+        type: String,
+        enum: ['active', 'paused', 'expired', 'cancelled'],
+        default: 'active'
     }
 }, {
     timestamps: true

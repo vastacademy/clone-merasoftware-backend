@@ -16,12 +16,16 @@ const {
 } = require('./chessRoomManager');
 const { applyMove, undoLastMove } = require('./chessGameLogic');
 
-function roomStatePayload(game) {
+async function roomStatePayload(game) {
+  await game.populate('players.white players.black', 'name email');
   return {
     roomCode: game.roomCode,
     board: game.board,
     turn: game.turn,
-    players: game.players,
+    players: {
+      white: game.players.white ? { name: game.players.white.name, email: game.players.white.email } : null,
+      black: game.players.black ? { name: game.players.black.name, email: game.players.black.email } : null
+    },
     status: game.status,
     resetRequestedBy: game.resetRequestedBy,
     endRequestedBy: game.endRequestedBy,
@@ -76,13 +80,18 @@ function initChessSocket(server, allowedOrigins) {
       try {
         const games = await getActiveGamesForUser(socket.userId);
         socket.emit('chess:myGames', {
-          games: games.map((game) => ({
-            roomCode: game.roomCode,
-            turn: game.turn,
-            status: game.status,
-            updatedAt: game.updatedAt,
-            color: getPlayerColor(game, socket.userId)
-          }))
+          games: games.map((game) => {
+            const color = getPlayerColor(game, socket.userId);
+            const opponent = color === 'white' ? game.players.black : game.players.white;
+            return {
+              roomCode: game.roomCode,
+              turn: game.turn,
+              status: game.status,
+              updatedAt: game.updatedAt,
+              color,
+              opponentName: opponent?.name || null
+            };
+          })
         });
       } catch (err) {
         socket.emit('chess:error', { error: 'Could not load your games' });
@@ -96,7 +105,7 @@ function initChessSocket(server, allowedOrigins) {
         socket.join(game.roomCode);
         socket.emit('chess:roomCreated', {
           assignedColor: creatorColor,
-          ...roomStatePayload(game)
+          ...(await roomStatePayload(game))
         });
       } catch (err) {
         socket.emit('chess:error', { error: 'Could not create room' });
@@ -112,11 +121,12 @@ function initChessSocket(server, allowedOrigins) {
         }
 
         socket.join(result.game.roomCode);
+        const payload = await roomStatePayload(result.game);
         socket.emit('chess:joined', {
           assignedColor: result.assignedColor,
-          ...roomStatePayload(result.game)
+          ...payload
         });
-        chessNamespace.to(result.game.roomCode).emit('chess:opponentJoined', roomStatePayload(result.game));
+        chessNamespace.to(result.game.roomCode).emit('chess:opponentJoined', payload);
       } catch (err) {
         socket.emit('chess:error', { error: 'Could not join room' });
       }
@@ -136,17 +146,19 @@ function initChessSocket(server, allowedOrigins) {
         const creatorSocket = [...chessNamespace.sockets.values()]
           .find((s) => s.userId === result.creatorUserId);
         creatorSocket?.join(result.game.roomCode);
+
+        const payload = await roomStatePayload(result.game);
         creatorSocket?.emit('chess:roomCreated', {
           assignedColor: result.creatorColor,
-          ...roomStatePayload(result.game)
+          ...payload
         });
 
         socket.emit('chess:joined', {
           assignedColor: result.joinedColor,
-          ...roomStatePayload(result.game)
+          ...payload
         });
 
-        chessNamespace.to(result.game.roomCode).emit('chess:opponentJoined', roomStatePayload(result.game));
+        chessNamespace.to(result.game.roomCode).emit('chess:opponentJoined', payload);
       } catch (err) {
         socket.emit('chess:error', { error: 'Could not find a match' });
       }
@@ -173,7 +185,7 @@ function initChessSocket(server, allowedOrigins) {
         }
 
         await saveMove(game);
-        chessNamespace.to(roomCode).emit('chess:state', roomStatePayload(game));
+        chessNamespace.to(roomCode).emit('chess:state', await roomStatePayload(game));
       } catch (err) {
         socket.emit('chess:error', { error: 'Could not apply move' });
       }
@@ -200,7 +212,7 @@ function initChessSocket(server, allowedOrigins) {
         }
 
         await saveMove(game);
-        chessNamespace.to(roomCode).emit('chess:state', roomStatePayload(game));
+        chessNamespace.to(roomCode).emit('chess:state', await roomStatePayload(game));
       } catch (err) {
         socket.emit('chess:error', { error: 'Could not undo move' });
       }
@@ -224,7 +236,7 @@ function initChessSocket(server, allowedOrigins) {
         game.resetRequestedBy = socket.userId;
         await game.save();
 
-        chessNamespace.to(roomCode).emit('chess:state', roomStatePayload(game));
+        chessNamespace.to(roomCode).emit('chess:state', await roomStatePayload(game));
       } catch (err) {
         socket.emit('chess:error', { error: 'Could not request reset' });
       }
@@ -262,7 +274,7 @@ function initChessSocket(server, allowedOrigins) {
           await game.save();
         }
 
-        chessNamespace.to(roomCode).emit('chess:state', roomStatePayload(game));
+        chessNamespace.to(roomCode).emit('chess:state', await roomStatePayload(game));
       } catch (err) {
         socket.emit('chess:error', { error: 'Could not respond to reset request' });
       }
@@ -287,7 +299,7 @@ function initChessSocket(server, allowedOrigins) {
         game.endRequestedAt = new Date();
         await game.save();
 
-        chessNamespace.to(roomCode).emit('chess:state', roomStatePayload(game));
+        chessNamespace.to(roomCode).emit('chess:state', await roomStatePayload(game));
       } catch (err) {
         socket.emit('chess:error', { error: 'Could not request to end game' });
       }
@@ -325,7 +337,7 @@ function initChessSocket(server, allowedOrigins) {
           game.endRequestedBy = null;
           game.endRequestedAt = null;
           await game.save();
-          chessNamespace.to(roomCode).emit('chess:state', roomStatePayload(game));
+          chessNamespace.to(roomCode).emit('chess:state', await roomStatePayload(game));
         }
       } catch (err) {
         socket.emit('chess:error', { error: 'Could not respond to end request' });

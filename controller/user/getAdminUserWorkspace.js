@@ -3,6 +3,7 @@ const userModel = require("../../models/userModel");
 const orderModel = require("../../models/orderProductModel");
 const updateRequestModel = require("../../models/updateRequestModel");
 const monthlyInvoiceModel = require("../../models/monthlyInvoiceModel");
+const invoiceModel = require("../../models/invoiceModel");
 const transactionModel = require("../../models/transactionModel");
 const { applyOrderSummary } = require("../../helpers/orderSummary");
 
@@ -39,7 +40,7 @@ const getAdminUserWorkspace = async (req, res) => {
       });
     }
 
-    const [orders, transactions, invoices, updateRequestCounts] = await Promise.all([
+    const [orders, transactions, monthlyInvoices, projectInvoices, updateRequestCounts] = await Promise.all([
       applyOrderSummary(orderModel.find({ userId: customerObjectId }).sort({ createdAt: -1 })),
       transactionModel
         .find({ userId: customerObjectId })
@@ -51,11 +52,21 @@ const getAdminUserWorkspace = async (req, res) => {
         .populate("orderId", "productId")
         .populate({ path: "orderId", populate: { path: "productId", select: "serviceName" } })
         .sort({ createdAt: -1 }),
+      invoiceModel
+        .find({ userId: customerObjectId })
+        .select("orderId invoiceNumber invoiceType amount status invoiceDate dueDate paidDate installmentNumber lineItems paymentMethod transactionReference createdAt")
+        .populate("orderId", "productId")
+        .populate({ path: "orderId", populate: { path: "productId", select: "serviceName" } })
+        .sort({ createdAt: -1 }),
       updateRequestModel.aggregate([
         { $match: { userId: customerObjectId } },
         { $group: { _id: null, total: { $sum: 1 }, pending: { $sum: { $cond: [{ $eq: ["$status", "pending"] }, 1, 0] } } } },
       ]),
     ]);
+
+    const invoices = [...monthlyInvoices, ...projectInvoices].sort(
+      (a, b) => new Date(b.invoiceDate) - new Date(a.invoiceDate)
+    );
 
     const isCompletedOrder = (order) =>
       (order?.projectProgress || 0) >= 100 ||

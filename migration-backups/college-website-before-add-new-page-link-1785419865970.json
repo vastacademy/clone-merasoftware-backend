@@ -1,0 +1,201 @@
+{
+  "isMonthlyRenewablePlan": false,
+  "isUnlimitedUpdates": false,
+  "isMonthlyLimitedPlan": false,
+  "monthlyUpdateLimit": 1,
+  "isServicePlan": false,
+  "_id": "67ca8f78b74653ac7d14d6de",
+  "serviceName": "College Website ",
+  "category": "standard_websites",
+  "packageIncludes": [
+    "premium theme",
+    "free content updates",
+    "free maintenance",
+    "fully customizable",
+    "user friendly"
+  ],
+  "perfectFor": [
+    {
+      "_id": "6a6b585996231c633ecb536d",
+      "text": "education consultants",
+      "icon": "fa:FaBriefcase"
+    },
+    {
+      "_id": "6a6b585996231c633ecb536e",
+      "text": "schools and colleges",
+      "icon": "fa:FaSchool"
+    },
+    {
+      "_id": "6a6b585996231c633ecb536f",
+      "text": "corporate training programs",
+      "icon": "fa:FaBriefcase"
+    },
+    {
+      "_id": "6a6b585996231c633ecb5370",
+      "text": "universities",
+      "icon": "md:MdSchool"
+    },
+    {
+      "_id": "6a6b585996231c633ecb5371",
+      "text": "coaching institutes",
+      "icon": "fa:FaBook"
+    }
+  ],
+  "serviceImage": [
+    "http://res.cloudinary.com/doz5sxyln/image/upload/v1741328149/sfkszabo9qbr9hwudcmd.jpg",
+    "http://res.cloudinary.com/doz5sxyln/image/upload/v1741328153/c2ne5zwbjfkekfcq4iuz.jpg",
+    "http://res.cloudinary.com/doz5sxyln/image/upload/v1741328156/bgpt87uqecumm4al6s4r.jpg",
+    "http://res.cloudinary.com/doz5sxyln/image/upload/v1741328162/dmwqrwvkgceibyl6ueoa.jpg"
+  ],
+  "price": 70000,
+  "sellingPrice": 30000,
+  "formattedDescriptions": [
+    {
+      "content": "<p class=\"mb-4\"> An educational website is an online platform designed to facilitate learning, teaching, and knowledge sharing. It typically serves as a resource for students, educators, and professionals, providing tools and content for various educational purposes</p>",
+      "_id": "67cc0004b91c593a3f27436a"
+    }
+  ],
+  "isWebsiteService": true,
+  "totalPages": 21,
+  "checkpoints": [
+    {
+      "name": "Website Structure ready",
+      "percentage": 2,
+      "_id": "67cc0004b91c593a3f27436b"
+    },
+    {
+      "name": "Header created",
+      "percentage": 5,
+      "_id": "67cc0004b91c593a3f27436c"
+    },
+    {
+      "name": "Footer created",
+      "percentage": 5,
+      "_id": "67cc0004b91c593a3f27436d"
+    },
+    {
+      "name": "Home Page",
+      "percentage": 3.71,
+      "_id": "67cc0004b91c593a3f27436e"
+    },
+    {
+      "name": "About Us Page",
+      "percentage": 3.71,
+      "_id": "67cc0004b91c593a3f27436f"
+    },
+    {
+      "name": "Contact Us Page",
+      "percentage": 3.71,
+      "_id": "67cc0004b91c593a3f274370"
+    },
+    {
+      "name": "Gallery Page",
+      "percentage": 3.71,
+      "_id": "67cc0004b91c593a3f274371"
+    },
+    {
+      "name": "Additional Page 1",
+      "percentage": 3.71,
+      "_id": "67cc0004b91c593a3f274372"
+    },
+    {
+      "name": "Additional Page 2",
+      "percentage": 3.71,
+      "_id": "67cc0004b91c593a3f274373"
+    },
+    {
+      "name": "Additional Page 3",
+      "percentage": 3.71,
+      "_id": "67cc0004b91c593a3f274374"
+    },
+    {
+      "name": "Additional Page 4",
+      "percentage": 3.71,
+      "_id": "67cc0004b91c593a3f274375"
+    },
+    {
+      "name": "Additional Page 5",
+      "percentage": 3.71,
+      "_id": "67cc0004b91c593a3f274376"
+    },
+    {
+      "name": "Additional Page 6",
+      "percentage": 3.71,
+      "_id": "67cc0004b91c593a3f274377"
+    },
+    {
+      "name": "Additional Page 7",
+      "percentage": 3.71,
+      "_id": "67cc0004b91c593a3f274378"
+    },
+    {
+      "name": "Additional Page 8",
+      "percentage": 3.71,
+      "_id": "67cc0004b91c593a3f274379"
+    },
+    {
+      "name": "Additional Page 9",
+      "percentage": 3.71,
+      "_id": "67cc0004b91c593a3f27437a"
+    },
+    {
+      "name": "Additional Page 10",
+      "percentage": 3.71,
+      "_id": "67cc0004b91c593a3f27437b"
+    },
+    {
+      "name": "Additional Page 11",
+      "percentage": 3.71,
+      "_id": "67cc0004b91c593a3f27437c"
+    },
+    {
+      "name": "Additional Page 12",
+      "percentage": 3.71,
+      "_id": "67cc0004b91c593a3f27437d"
+    },
+    {
+      "name": "Additional Page 13",
+      "percentage": 3.71,
+      "_id": "67cc0004b91c593a3f27437e"
+    },
+    {
+      "name": "Additional Page 14",
+      "percentage": 3.71,
+      "_id": "67cc0004b91c593a3f27437f"
+    },
+    {
+      "name": "Additional Page 15",
+      "percentage": 3.71,
+      "_id": "67cc0004b91c593a3f274380"
+    },
+    {
+      "name": "Additional Page 16",
+      "percentage": 3.71,
+      "_id": "67cc0004b91c593a3f274381"
+    },
+    {
+      "name": "Additional Page 17",
+      "percentage": 3.71,
+      "_id": "67cc0004b91c593a3f274382"
+    },
+    {
+      "name": "Final Testing",
+      "percentage": 10,
+      "_id": "67cc0004b91c593a3f274383"
+    }
+  ],
+  "isFeatureUpgrade": false,
+  "compatibleWith": [],
+  "keyBenefits": [],
+  "isWebsiteUpdate": false,
+  "validityPeriod": null,
+  "updateCount": null,
+  "additionalFeatures": [
+    "67a8a783c46161fd031d6ec4",
+    "67a8ab65c46161fd031d714e"
+  ],
+  "createdAt": "2025-03-07T06:17:28.751Z",
+  "updatedAt": "2025-07-07T09:15:31.944Z",
+  "__v": 0,
+  "isHidden": false
+}

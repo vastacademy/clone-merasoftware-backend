@@ -102,8 +102,10 @@ async function getRoom(roomCode) {
 }
 
 function getPlayerColor(game, userId) {
-  if (String(game.players.white) === String(userId)) return 'white';
-  if (String(game.players.black) === String(userId)) return 'black';
+  const whiteId = game.players.white?._id || game.players.white;
+  const blackId = game.players.black?._id || game.players.black;
+  if (whiteId && String(whiteId) === String(userId)) return 'white';
+  if (blackId && String(blackId) === String(userId)) return 'black';
   return null;
 }
 
@@ -111,7 +113,9 @@ async function getActiveGamesForUser(userId) {
   return ChessGame.find({
     status: { $ne: 'closed' },
     $or: [{ 'players.white': userId }, { 'players.black': userId }]
-  }).sort({ updatedAt: -1 });
+  })
+    .sort({ updatedAt: -1 })
+    .populate('players.white players.black', 'name email');
 }
 
 async function saveMove(game) {

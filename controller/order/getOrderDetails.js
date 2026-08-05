@@ -1,4 +1,5 @@
 const orderProductModel = require("../../models/orderProductModel");
+const invoiceModel = require("../../models/invoiceModel");
 
 const toPlainObject = (doc) => {
     if (!doc) return null;
@@ -81,10 +82,24 @@ const getOrderDetails = async (req, res) => {
         
         // Send the complete order details
         const orderData = toPlainObject(order);
+
+        // The earliest unpaid/overdue invoice for this order (installment #1 for partial
+        // payment, or the single invoice for one-time payment) — used by ProjectDetails.js
+        // to show a "Payment Pending" lock. Only invoiceModel (project invoices) is checked
+        // here, not monthlyInvoiceModel (recurring plans), since this endpoint only serves
+        // project orders.
+        const earliestUnpaidInvoice = await invoiceModel
+            .findOne({ orderId: order._id, status: { $in: ['unpaid', 'overdue'] } })
+            .sort({ installmentNumber: 1, invoiceDate: 1 })
+            .select('amount status invoiceNumber installmentNumber')
+            .lean();
+
         const responseData = {
             ...orderData,
             status: status,
-            orderNumber: `ORD-${order._id.toString().substr(-4)}`
+            orderNumber: `ORD-${order._id.toString().substr(-4)}`,
+            hasUnpaidInvoice: Boolean(earliestUnpaidInvoice),
+            unpaidInvoice: earliestUnpaidInvoice || null,
         };
 
         if (!isAdmin) {

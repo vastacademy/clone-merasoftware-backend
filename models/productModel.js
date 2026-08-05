@@ -185,6 +185,70 @@ const productSchema = new mongoose.Schema({
   isHidden: {
     type: Boolean,
     default: false
+  },
+  isCustomClientProject: {
+    type: Boolean,
+    default: false
+  },
+  clientProjectFeatures: [{
+    featureId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'product'
+    },
+    name: String,
+    price: Number
+  }],
+
+  // ---------------------------------------------------------------------
+  // Service Plan System (new, additive). Coexists with the legacy plan
+  // fields above — legacy fields/logic are untouched. isServicePlan is the
+  // switch every enforcement/read path checks to pick the new vs old path.
+  // ---------------------------------------------------------------------
+  isServicePlan: {
+    type: Boolean,
+    default: false
+  },
+  servicePlan: {
+    planType: {
+      type: String,
+      enum: ['website_updates', 'digital_marketing', 'google_business_setup', 'social_media_marketing', 'other']
+    },
+    limitScope: {
+      type: String,
+      enum: ['per_day', 'per_week', 'per_month', 'per_quarter', 'per_6_month', 'per_year', 'per_plan', 'unlimited', 'manual']
+    },
+    manualUnit: {
+      type: String,
+      enum: ['day', 'week', 'month']
+    },
+    manualCount: {
+      type: Number,
+      min: 1
+    },
+    portalAccessCount: {
+      type: Number,
+      min: 1
+    },
+    filesLimit: {
+      type: Number,
+      min: 1
+    },
+    validityUnit: {
+      type: String,
+      enum: ['day', 'week', 'month', 'year']
+    },
+    validityValue: {
+      type: Number,
+      min: 1
+    },
+    validityInDays: {
+      type: Number,
+      min: 1
+    },
+    billingCycle: {
+      type: String,
+      enum: ['weekly', 'monthly', 'quarterly', 'half_yearly', 'yearly']
+    }
   }
 }, {
     timestamps: true

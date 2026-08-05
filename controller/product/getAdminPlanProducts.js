@@ -11,8 +11,8 @@ const getAdminPlanProductsController = async (req, res) => {
     }
 
     const plans = await productModel
-      .find({ category: "website_updates" })
-      .select("_id serviceName category isMonthlyRenewablePlan isMonthlyLimitedPlan validityPeriod updateCount isHidden createdAt updatedAt")
+      .find({ $or: [{ category: "website_updates" }, { isServicePlan: true }] })
+      .select("_id serviceName category isMonthlyRenewablePlan isMonthlyLimitedPlan validityPeriod updateCount isHidden isServicePlan servicePlan createdAt updatedAt")
       .sort({ createdAt: -1 })
       .lean();
 
