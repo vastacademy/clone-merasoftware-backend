@@ -16,6 +16,10 @@ const categoryBasePriceSchema = new mongoose.Schema({
     type: String,
     default: "",
   },
+  startingNodeTitle: {
+    type: String,
+    default: "",
+  },
 }, {
   timestamps: true,
 });

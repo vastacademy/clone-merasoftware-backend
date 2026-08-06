@@ -34,24 +34,6 @@ const messageSchema = new mongoose.Schema({
     }
 });
 
-// Checkpoint progress tracking
-const checkpointProgressSchema = new mongoose.Schema({
-    checkpointId: {
-        type: Number,
-        required: true
-    },
-    name: {
-        type: String,
-        required: true
-    },
-    completed: {
-        type: Boolean,
-        default: false
-    },
-    completedAt: Date,
-    percentage: Number
-});
-
 const projectRunSchema = new mongoose.Schema({
     runId: {
         type: String,
@@ -248,13 +230,16 @@ const orderSchema = new mongoose.Schema({
         min: 0,
         max: 100
     },
-    // New fields for project management
+    // New fields for project management. No schema default — the pre('save') hook
+    // below only derives this from the product category when a caller genuinely
+    // didn't set it (createOrder.js/adminCreateProjectOrder.js always set it directly).
     isWebsiteProject: {
-        type: Boolean,
-        default: false
+        type: Boolean
     },
-    // Canonical dynamic project timeline. Legacy checkpoints remain temporarily
-    // for compatibility while existing orders are migrated safely.
+    // Canonical dynamic project timeline. All website-project orders (new and
+    // pre-existing, migrated via backend/scripts/migratePreExistingOrdersToNodeSystem.js)
+    // are on version 1. The 4 non-website legacy orders remain on version 0 by design —
+    // the node system only supports isWebsiteProject orders.
     projectTimelineVersion: {
         type: Number,
         default: 0
@@ -275,7 +260,6 @@ const orderSchema = new mongoose.Schema({
         type: [projectNodeEventSchema],
         default: []
     },
-    checkpoints: [checkpointProgressSchema],
     messages: [messageSchema],
     currentPhase: {
         type: String,
@@ -524,31 +508,18 @@ const orderSchema = new mongoose.Schema({
 });
 
 orderSchema.pre('save', async function(next) {
-    // Only run when order is first created (isNew) and doesn't already have checkpoints
-    if (this.isNew && this.productId && (!this.checkpoints || this.checkpoints.length === 0)) {
+    // Only run when order is first created (isNew) and isWebsiteProject hasn't been
+    // set explicitly by the caller (createOrder.js/adminCreateProjectOrder.js both set
+    // it directly) — this is a fallback for any other order-creation path.
+    if (this.isNew && this.productId && this.isWebsiteProject === undefined) {
       try {
-        // Fetch the product to get checkpoints
         const product = await mongoose.model('product').findById(this.productId);
-        
         if (product) {
-          // Set isWebsiteProject based on product category
           const websiteCategories = ['standard_websites', 'dynamic_websites', 'cloud_software_development', 'app_development'];
           this.isWebsiteProject = websiteCategories.includes(product.category);
-          
-          // Copy checkpoints from product if they exist
-          if (product.checkpoints && product.checkpoints.length > 0) {
-            console.log('Copying checkpoints from product');
-            this.checkpoints = product.checkpoints.map((cp, index) => ({
-              checkpointId: index + 1,
-              name: cp.name,
-              percentage: cp.percentage,
-              completed: false
-            }));
-            console.log('Order checkpoints after mapping:', JSON.stringify(this.checkpoints));
-          }
         }
       } catch (error) {
-        console.error('Error initializing checkpoints:', error);
+        console.error('Error setting isWebsiteProject:', error);
       }
     }
     next();
@@ -557,16 +528,6 @@ orderSchema.pre('save', async function(next) {
 // Middleware to update lastUpdated
 orderSchema.pre('save', function(next) {
     this.lastUpdated = new Date();
-    next();
-});
-
-// Middleware to update projectProgress based on checkpoints
-orderSchema.pre('save', function(next) {
-    if (this.isWebsiteProject && this.projectTimelineVersion === 0 && this.checkpoints.length > 0) {
-        const completedCheckpoints = this.checkpoints.filter(cp => cp.completed);
-        const totalPercentage = completedCheckpoints.reduce((sum, cp) => sum + cp.percentage, 0);
-        this.projectProgress = Math.min(totalPercentage, 100);
-    }
     next();
 });
 

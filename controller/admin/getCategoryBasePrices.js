@@ -21,7 +21,7 @@ const getCategoryBasePricesController = async (req, res) => {
     const existingByCategory = new Map(existing.map((entry) => [entry.category, entry]));
 
     const data = PROJECT_CATEGORIES.map((category) => (
-      existingByCategory.get(category) || { category, basePrice: 0, description: "" }
+      existingByCategory.get(category) || { category, basePrice: 0, description: "", startingNodeTitle: "" }
     ));
 
     return res.json({

@@ -1,0 +1,3447 @@
+[
+  {
+    "_id": "67ac793d68fca4c7241a3585",
+    "serviceName": "Blogging Website",
+    "category": "dynamic_websites",
+    "packageIncludes": [
+      "unlimited pages",
+      "fully customizable",
+      "admin panel integration",
+      "user friendly",
+      "responsive design",
+      "SEO optimized"
+    ],
+    "perfectFor": [
+      {
+        "text": "freelancers",
+        "icon": "fa:FaUserCircle"
+      },
+      {
+        "text": "schools and colleges",
+        "icon": "fa:FaSchool"
+      },
+      {
+        "text": "tutors and trainers",
+        "icon": "md:MdPerson"
+      },
+      {
+        "text": "entrepreneurs",
+        "icon": "md:MdBusiness"
+      },
+      {
+        "text": "coaching institutes",
+        "icon": "fa:FaBook"
+      },
+      {
+        "text": "skill development centers",
+        "icon": "fa:FaBuilding"
+      },
+      {
+        "text": "digital_content_creators",
+        "icon": "lucide:Video"
+      },
+      {
+        "text": "online_learning_platforms",
+        "icon": "lucide:MonitorPlay"
+      }
+    ],
+    "serviceImage": [
+      "http://res.cloudinary.com/doz5sxyln/image/upload/v1742387687/duh1zjuaafhpsux9zbkn.jpg"
+    ],
+    "price": 80000,
+    "sellingPrice": 35000,
+    "formattedDescriptions": [
+      {
+        "content": "<h2 style=\"line-height: normal\"><span style=\"font-size: 18px\">Description:</span></h2><p class=\"mb-4\" style=\"line-height: normal\">Establish your presence as a thought leader with a dynamic blog website. Whether you are a lifestyle blogger, a business expert, or a niche content creator, a well-designed blog website will help you connect with your audience, share your ideas, and grow your influence. Mera Software offers a tailored solution for creating a blog that is not only visually appealing but also easy to manage.</p><h2 style=\"line-height: normal\"><span style=\"font-size: 18px\">Business Benefits of a Blog Website:</span></h2><ul class=\"list-disc pl-4 mb-2\"><li><p class=\"mb-4\" style=\"line-height: normal\"><strong>Enhanced Online Presence:</strong> Boost your visibility and share your content with a wider audience.</p></li><li><p class=\"mb-4\" style=\"line-height: normal\"><strong>Monetization Opportunities:</strong> Generate revenue through ads, sponsorships, or affiliate marketing.</p></li><li><p class=\"mb-4\" style=\"line-height: normal\"><strong>SEO Advantages:</strong> Regularly updated blogs improve your search engine rankings.</p></li><li><p class=\"mb-4\" style=\"line-height: normal\"><strong>Content Control:</strong> Manage and publish content on your terms.</p></li><li><p class=\"mb-4\" style=\"line-height: normal\"><strong>Engage Readers:</strong> Foster discussions, comments, and interactions through your blog.</p></li></ul><h2 style=\"line-height: normal\"><span style=\"font-size: 18px\">Build Your Dynamic Blog Website with Mera Software:</span></h2><p class=\"mb-4\" style=\"line-height: normal\">At Mera Software, we design blog websites with an intuitive interface and powerful admin panel. Our solutions are scalable, allowing you to add content easily and customize your blog as it grows.<br></p>",
+        "_id": "67dab9eefdff78dd8b22a7f4"
+      },
+      {
+        "content": "<h2 style=\"line-height: normal\"><span style=\"font-size: 18px\">Why Mera Software?</span></h2><ul class=\"list-disc pl-4 mb-2\"><li><p class=\"mb-4\" style=\"line-height: normal\"><strong>Expert Developers:</strong> We craft every website with precision using modern technologies.</p></li><li><p class=\"mb-4\" style=\"line-height: normal\"><strong>End-to-End Support:</strong> From initial concept to final deployment, we assist you at every step.</p></li><li><p class=\"mb-4\" style=\"line-height: normal\"><strong>Flexible Payment Options:</strong> Choose between full payment or our easy installment plan.</p></li><li><p class=\"mb-4\" style=\"line-height: normal\"><strong>Dashboard Access:</strong> Track progress, communicate with developers, and upload content seamlessly.</p></li></ul><h2 style=\"line-height: normal\"><span style=\"font-size: 18px\">Our Process</span></h2><ol class=\"list-decimal pl-4 mb-2\"><li><p class=\"mb-4\" style=\"line-height: normal\"><strong>Consultation:</strong> Understand your goals and expectations.</p></li><li><p class=\"mb-4\" style=\"line-height: normal\"><strong>Design &amp; Development:</strong> Bring your vision to life with a stunning design.</p></li><li><p class=\"mb-4\" style=\"line-height: normal\"><strong>Feedback &amp; Revisions:</strong> Make adjustments to ensure it matches your needs.</p></li><li><p class=\"mb-4\" style=\"line-height: normal\"><strong>Launch:</strong> Deploy the website and make it live.</p></li><li><p class=\"mb-4\" style=\"line-height: normal\"><strong>Post-Launch Support:</strong> Enjoy one month of free content updates.</p></li></ol>",
+        "_id": "67dab9eefdff78dd8b22a7f5"
+      },
+      {
+        "content": "<p class=\"mb-4\" style=\"line-height: normal\"><span style=\"font-size: 18px\"><strong>Important Note:</strong></span></p><p class=\"mb-4\">Once development begins, changes cannot be made until project completion. Additional updates and changes can be requested through our affordable upgrade plans. For further details, refer to our <a target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-blue-600  underline\" href=\"https://www.merasoftware.com/terms-and-conditions\">Terms and Conditions</a>, <a target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-blue-600  underline\" href=\"https://www.merasoftware.com/privacy-policy\">Privacy Policy</a>, and <a target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-blue-600  underline\" href=\"https://www.merasoftware.com/refund-policy\">Refund Policy</a>.</p><hr><p class=\"mb-4\" style=\"line-height: normal\"><span style=\"font-size: 18px\"><strong>Get Started Today!</strong></span></p><p class=\"mb-4\">Ready to create a remarkable online presence? Contact us now and let’s build a stunning portfolio website that captures your essence.</p><p class=\"mb-4\"><a target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-blue-600  underline\" href=\"https://www.merasoftware.com/contact-us\">Contact Us</a> | <a target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-blue-600  underline\" href=\"https://www.merasoftware.com/start-new-project\">Explore Our Plans</a> | View More Projects</p>",
+        "_id": "67dab9eefdff78dd8b22a7f6"
+      }
+    ],
+    "isWebsiteService": false,
+    "totalPages": 4,
+    "checkpoints": [
+      {
+        "name": "Website Structure ready",
+        "percentage": 2,
+        "_id": "67dab9eefdff78dd8b22a7f7"
+      },
+      {
+        "name": "Header created",
+        "percentage": 5,
+        "_id": "67dab9eefdff78dd8b22a7f8"
+      },
+      {
+        "name": "Footer created",
+        "percentage": 5,
+        "_id": "67dab9eefdff78dd8b22a7f9"
+      },
+      {
+        "name": "Home Page",
+        "percentage": 19.5,
+        "_id": "67dab9eefdff78dd8b22a7fa"
+      },
+      {
+        "name": "About Us Page",
+        "percentage": 19.5,
+        "_id": "67dab9eefdff78dd8b22a7fb"
+      },
+      {
+        "name": "Contact Us Page",
+        "percentage": 19.5,
+        "_id": "67dab9eefdff78dd8b22a7fc"
+      },
+      {
+        "name": "Gallery Page",
+        "percentage": 19.5,
+        "_id": "67dab9eefdff78dd8b22a7fd"
+      },
+      {
+        "name": "Final Testing",
+        "percentage": 10,
+        "_id": "67dab9eefdff78dd8b22a7fe"
+      }
+    ],
+    "isFeatureUpgrade": false,
+    "upgradeType": "",
+    "compatibleWith": [],
+    "keyBenefits": [],
+    "additionalFeatures": [
+      "67a8a67fc46161fd031d6dc2",
+      "67a8a704c46161fd031d6e43",
+      "67a8a783c46161fd031d6ec4",
+      "67a8a7e9c46161fd031d6f45"
+    ],
+    "createdAt": "2025-02-12T10:34:37.262Z",
+    "updatedAt": "2025-07-07T05:19:35.379Z",
+    "__v": 0,
+    "isWebsiteUpdate": false,
+    "updateCount": null,
+    "validityPeriod": null,
+    "isHidden": false
+  },
+  {
+    "_id": "67a8a7e9c46161fd031d6f45",
+    "serviceName": "Product Inventory System  ",
+    "category": "feature_upgrades",
+    "packageIncludes": [
+      "efficient stock management",
+      "real time inventory updates",
+      "low stock alerts",
+      "detailed inventory reports",
+      "easy product categorization"
+    ],
+    "perfectFor": [],
+    "serviceImage": [
+      "http://res.cloudinary.com/doz5sxyln/image/upload/v1739106261/fuzxqhizpdqmqf7qrsxz.jpg"
+    ],
+    "price": 25000,
+    "sellingPrice": 14999,
+    "description": "<p class=\"mb-4\">A complete inventory management solution that ensures smooth stock tracking, real-time updates, and efficient product management.  </p>",
+    "websiteTypeDescription": " <h4>Our Objective</h4>\n                   <pTo provide you with a professional, user-friendly, and efficient gallery solution that enhances your website's visual appeal and user engagement. We ensure seamless integration, optimal performance, and complete satisfaction with our development services.</p>",
+    "isWebsiteService": false,
+    "totalPages": 4,
+    "checkpoints": [],
+    "isFeatureUpgrade": true,
+    "upgradeType": "component",
+    "compatibleWith": [
+      "dynamic_websites",
+      "cloud_software_development",
+      "app_development"
+    ],
+    "keyBenefits": [
+      "stock_management",
+      "stock_alerts",
+      "product_organization"
+    ],
+    "additionalFeatures": [],
+    "createdAt": "2025-02-09T13:04:41.604Z",
+    "updatedAt": "2025-03-26T06:45:06.711Z",
+    "__v": 0,
+    "formattedDescriptions": [
+      {
+        "content": "",
+        "_id": "67e3a2722f1de688ecac40bd"
+      }
+    ],
+    "isWebsiteUpdate": false,
+    "updateCount": null,
+    "validityPeriod": null,
+    "isHidden": false
+  },
+  {
+    "_id": "67a8aa69c46161fd031d70c9",
+    "serviceName": " WhatsApp Cloud API Integration  ",
+    "category": "feature_upgrades",
+    "packageIncludes": [
+      "automated notifications",
+      "customizable messages",
+      "whatsapp integration",
+      "order updates",
+      "broadcast messages",
+      "customer engagement",
+      "message analytics"
+    ],
+    "perfectFor": [],
+    "serviceImage": [
+      "http://res.cloudinary.com/doz5sxyln/image/upload/v1739106906/hcshldrxb9mritzko4mi.jpg"
+    ],
+    "price": 18000,
+    "sellingPrice": 9999,
+    "description": "<p class=\"mb-4\">Enable instant communication with customers using WhatsApp integration, allowing businesses to send automated messages and improve engagement.  </p><p class=\"mb-4\"></p>",
+    "websiteTypeDescription": " <h4>Our Objective</h4>\n                   <pTo provide you with a professional, user-friendly, and efficient gallery solution that enhances your website's visual appeal and user engagement. We ensure seamless integration, optimal performance, and complete satisfaction with our development services.</p>",
+    "isWebsiteService": false,
+    "totalPages": 4,
+    "checkpoints": [],
+    "isFeatureUpgrade": true,
+    "upgradeType": "feature",
+    "compatibleWith": [
+      "standard_websites",
+      "cloud_software_development",
+      "app_development"
+    ],
+    "keyBenefits": [
+      "automated_messaging",
+      "quick_response",
+      "whatsApp_integration",
+      "message_templates"
+    ],
+    "additionalFeatures": [],
+    "createdAt": "2025-02-09T13:15:21.061Z",
+    "updatedAt": "2025-03-26T06:45:27.232Z",
+    "__v": 0,
+    "formattedDescriptions": [
+      {
+        "content": "",
+        "_id": "67e3a2872f1de688ecac4178"
+      }
+    ],
+    "isWebsiteUpdate": false,
+    "updateCount": null,
+    "validityPeriod": null,
+    "isHidden": false
+  },
+  {
+    "_id": "67ac6e2768fca4c7241a3539",
+    "serviceName": "Local Service Webiste",
+    "category": "standard_websites",
+    "packageIncludes": [
+      "5 pages",
+      "premium theme",
+      "free content updates",
+      "free maintenance",
+      "mobile optimized"
+    ],
+    "perfectFor": [
+      {
+        "text": "electricians",
+        "icon": "lucide:Zap"
+      },
+      {
+        "text": "florists",
+        "icon": "lucide:Flower"
+      },
+      {
+        "text": "mechanics",
+        "icon": "lucide:Wrench"
+      },
+      {
+        "text": "salons",
+        "icon": "lucide:Scissors"
+      },
+      {
+        "text": "grocery_stores",
+        "icon": "lucide:ShoppingCart"
+      },
+      {
+        "text": "home_service_providers",
+        "icon": "lucide:Home"
+      }
+    ],
+    "serviceImage": [
+      "http://res.cloudinary.com/doz5sxyln/image/upload/v1742378642/zqyudmrjqq7ec1o4i5h6.png"
+    ],
+    "price": 23000,
+    "sellingPrice": 8999,
+    "formattedDescriptions": [
+      {
+        "content": "<p class=\"mb-4\" style=\"line-height: normal\"><span style=\"font-size: 18px\"><strong>Description:</strong></span><br><br>A local service website connects customers with plumbers, electricians, computer technicians, and other home or office service providers. Whether you manage a team of skilled professionals or work independently, this website helps you reach more customers and grow your business.<br><br><br><span style=\"font-size: 18px\"><strong>Business Benefits of a Local Service Website</strong></span></p><ul class=\"list-disc pl-4 mb-2\"><li><p class=\"mb-4\" style=\"line-height: normal\"><strong>Increased Visibility:</strong> Reach more local customers online.</p></li><li><p class=\"mb-4\" style=\"line-height: normal\"><strong>24/7 Availability:</strong> Provide information about your services anytime, anywhere.</p></li><li><p class=\"mb-4\" style=\"line-height: normal\"><strong>Boost Credibility:</strong> A professional website builds trust.</p></li><li><p class=\"mb-4\" style=\"line-height: normal\"><strong>Online Bookings:</strong> Allow customers to book your services online.</p></li><li><p class=\"mb-4\" style=\"line-height: normal\"><strong>Customer Engagement:</strong> Easily showcase your services, offers, and customer testimonials.<br></p><hr></li></ul><h2><span style=\"font-size: 18px\">Build Your Stunning Local Service Website with Mera Software</span></h2><p class=\"mb-4\">At Mera Software, we create customized websites tailored to meet the unique needs of your local service business. Our team ensures that your website reflects your brand, engages your audience, and helps your business grow.</p><h2></h2>",
+        "_id": "67da96b4fdff78dd8b229350"
+      },
+      {
+        "content": "<h2><span style=\"font-size: 18px\">Why Mera Software?</span></h2><ul class=\"list-disc pl-4 mb-2\"><li><p class=\"mb-4\"><strong>Expert Developers:</strong> We craft every website with precision using modern technologies.</p></li><li><p class=\"mb-4\"><strong>End-to-End Support:</strong> From initial concept to final deployment, we assist you at every step.</p></li><li><p class=\"mb-4\"><strong>Flexible Payment Options:</strong> Choose between full payment or our easy installment plan.</p></li><li><p class=\"mb-4\"><strong>Dashboard Access:</strong> Track progress, communicate with developers, and upload content seamlessly.</p></li></ul><h2><span style=\"font-size: 18px\">Our Working Process</span></h2><ol class=\"list-decimal pl-4 mb-2\"><li><p class=\"mb-4\"><strong>Consultation:</strong> Understand your goals and expectations.</p></li><li><p class=\"mb-4\"><strong>Design &amp; Development:</strong> Bring your vision to life with a stunning design.</p></li><li><p class=\"mb-4\"><strong>Feedback &amp; Revisions:</strong> Make adjustments to ensure it matches your needs.</p></li><li><p class=\"mb-4\"><strong>Launch:</strong> Deploy the website and make it live.</p></li><li><p class=\"mb-4\"><strong>Post-Launch Support:</strong> Enjoy one month of free content updates.</p></li></ol>",
+        "_id": "67da96b4fdff78dd8b229351"
+      },
+      {
+        "content": "<h2><span style=\"font-size: 18px\">Important Note:</span></h2><p class=\"mb-4\">Once development begins, changes cannot be made until project completion. Additional updates and changes can be requested through our affordable upgrade plans. For further details, refer to our <a target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-blue-600  underline\" href=\"https://www.merasoftware.com/terms-and-conditions\">Terms and Conditions</a>, <a target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-blue-600  underline\" href=\"https://www.merasoftware.com/privacy-policy\">Privacy Policy</a>, and <a target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-blue-600  underline\" href=\"https://www.merasoftware.com/refund-policy\">Refund Policy</a>.</p><hr><p class=\"mb-4\" style=\"line-height: normal\"><span style=\"font-size: 18px\"><strong>Get Started Today!</strong></span></p><p class=\"mb-4\">Ready to create a remarkable online presence? Contact us now and let’s build a stunning portfolio website that captures your essence.</p><p class=\"mb-4\"><a target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-blue-600  underline\" href=\"https://www.merasoftware.com/contact-us\">Contact Us</a> | <a target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-blue-600  underline\" href=\"https://www.merasoftware.com/start-new-project\">Explore Our Plans</a> | View More Projects</p>",
+        "_id": "67da96b4fdff78dd8b229352"
+      }
+    ],
+    "isWebsiteService": true,
+    "totalPages": 5,
+    "checkpoints": [
+      {
+        "name": "Website Structure ready",
+        "percentage": 2,
+        "_id": "67da96b4fdff78dd8b229353"
+      },
+      {
+        "name": "Header created",
+        "percentage": 5,
+        "_id": "67da96b4fdff78dd8b229354"
+      },
+      {
+        "name": "Footer created",
+        "percentage": 5,
+        "_id": "67da96b4fdff78dd8b229355"
+      },
+      {
+        "name": "Home Page",
+        "percentage": 15.6,
+        "_id": "67da96b4fdff78dd8b229356"
+      },
+      {
+        "name": "About Us Page",
+        "percentage": 15.6,
+        "_id": "67da96b4fdff78dd8b229357"
+      },
+      {
+        "name": "Contact Us Page",
+        "percentage": 15.6,
+        "_id": "67da96b4fdff78dd8b229358"
+      },
+      {
+        "name": "Gallery Page",
+        "percentage": 15.6,
+        "_id": "67da96b4fdff78dd8b229359"
+      },
+      {
+        "name": "Additional Page 1",
+        "percentage": 15.6,
+        "_id": "67da96b4fdff78dd8b22935a"
+      },
+      {
+        "name": "Final Testing",
+        "percentage": 10,
+        "_id": "67da96b4fdff78dd8b22935b"
+      }
+    ],
+    "isFeatureUpgrade": false,
+    "upgradeType": "",
+    "compatibleWith": [],
+    "keyBenefits": [],
+    "additionalFeatures": [
+      "67a8a783c46161fd031d6ec4",
+      "67a8a84cc46161fd031d6fc6",
+      "67a8ab65c46161fd031d714e",
+      "67ab511c7bc4940983e09ac9"
+    ],
+    "createdAt": "2025-02-12T09:47:19.362Z",
+    "updatedAt": "2025-07-07T05:19:35.379Z",
+    "__v": 0,
+    "isWebsiteUpdate": false,
+    "updateCount": null,
+    "validityPeriod": null,
+    "isHidden": false
+  },
+  {
+    "_id": "67ac7c8768fca4c7241a35d9",
+    "serviceName": "Food Ordering Website",
+    "category": "dynamic_websites",
+    "packageIncludes": [
+      "unlimited pages",
+      "complete food menu",
+      "admin panel integration",
+      "fully customizable",
+      "user friendly",
+      "responsive design",
+      "SEO optimized",
+      "free maintenance"
+    ],
+    "perfectFor": [
+      {
+        "text": "food_vendors",
+        "icon": "lucide:UtensilsCrossed"
+      },
+      {
+        "text": "food chains",
+        "icon": "fa:FaStore"
+      },
+      {
+        "text": "fast food outlets",
+        "icon": "fa:FaShoppingBag"
+      },
+      {
+        "text": "food delivery services",
+        "icon": "fa:FaTruck"
+      },
+      {
+        "text": "street food vendors",
+        "icon": "pi:PiBowlFoodLight"
+      },
+      {
+        "text": "small restaurants",
+        "icon": "fa:FaUtensils"
+      },
+      {
+        "text": "indian dhabas",
+        "icon": "fa:FaUtensils"
+      },
+      {
+        "text": "cafes",
+        "icon": "fa:FaCoffee"
+      },
+      {
+        "text": "cloud kitchens",
+        "icon": "fa:FaUtensils"
+      }
+    ],
+    "serviceImage": [
+      "http://res.cloudinary.com/doz5sxyln/image/upload/v1742303801/rwptctbwuklgsi5j0en9.jpg"
+    ],
+    "price": 190000,
+    "sellingPrice": 59999,
+    "formattedDescriptions": [
+      {
+        "content": "<h2 style=\"line-height: normal\"><span style=\"font-size: 18px\">Description</span></h2><p class=\"mb-4\" style=\"line-height: normal\">Enhance your food business with a dynamic food ordering website. Whether you run a restaurant, café, cloud kitchen, or a food delivery service, a customized website will allow customers to browse your menu, place orders, and enjoy a seamless online food ordering experience. Mera Software offers tailored food ordering solutions designed to maximize convenience and boost your business.</p><h2 style=\"line-height: normal\"><span style=\"font-size: 18px\">Business Benefits of a Food Ordering Website</span></h2><ul class=\"list-disc pl-4 mb-2\"><li><p class=\"mb-4\" style=\"line-height: normal\"><strong>Increased Sales:</strong> Provide customers with a convenient online ordering experience.</p></li><li><p class=\"mb-4\" style=\"line-height: normal\"><strong>24/7 Accessibility:</strong> Allow users to place orders anytime, increasing revenue.</p></li><li><p class=\"mb-4\" style=\"line-height: normal\"><strong>Direct Customer Engagement:</strong> Promote special offers and new menu items.</p></li><li><p class=\"mb-4\" style=\"line-height: normal\"><strong>Efficient Order Management:</strong> Track and manage orders with ease.</p></li><li><p class=\"mb-4\" style=\"line-height: normal\"><strong>Customer Loyalty:</strong> Offer discounts, loyalty programs, and personalized deals.</p></li></ul><h2 style=\"line-height: normal\"><span style=\"font-size: 18px\">Build Your Dynamic Food Ordering Website with Mera Software</span></h2><p class=\"mb-4\" style=\"line-height: normal\">At Mera Software, we create interactive and user-friendly food ordering websites equipped with an admin panel. Easily manage your menu, track orders, and customize your site according to your business needs.<br><br></p>",
+        "_id": "67dabb7ffdff78dd8b22abfa"
+      },
+      {
+        "content": "<h2 style=\"line-height: normal\"><span style=\"font-size: 18px\">Why Mera Software?</span></h2><ul class=\"list-disc pl-4 mb-2\"><li><p class=\"mb-4\" style=\"line-height: normal\"><strong>Expert Developers:</strong> We craft every website with precision using modern technologies.</p></li><li><p class=\"mb-4\" style=\"line-height: normal\"><strong>End-to-End Support:</strong> From initial concept to final deployment, we assist you at every step.</p></li><li><p class=\"mb-4\" style=\"line-height: normal\"><strong>Flexible Payment Options:</strong> Choose between full payment or our easy installment plan.</p></li><li><p class=\"mb-4\" style=\"line-height: normal\"><strong>Dashboard Access:</strong> Track progress, communicate with developers, and upload content seamlessly.</p></li></ul><h2 style=\"line-height: normal\"><span style=\"font-size: 18px\">Our Process</span></h2><ol class=\"list-decimal pl-4 mb-2\"><li><p class=\"mb-4\" style=\"line-height: normal\"><strong>Consultation:</strong> Understand your goals and expectations.</p></li><li><p class=\"mb-4\" style=\"line-height: normal\"><strong>Design &amp; Development:</strong> Bring your vision to life with a stunning design.</p></li><li><p class=\"mb-4\" style=\"line-height: normal\"><strong>Feedback &amp; Revisions:</strong> Make adjustments to ensure it matches your needs.</p></li><li><p class=\"mb-4\" style=\"line-height: normal\"><strong>Launch:</strong> Deploy the website and make it live.</p></li><li><p class=\"mb-4\" style=\"line-height: normal\"><strong>Post-Launch Support:</strong> Enjoy one month of free content updates.</p></li></ol>",
+        "_id": "67dabb7ffdff78dd8b22abfb"
+      },
+      {
+        "content": "<p class=\"mb-4\" style=\"line-height: normal\"><span style=\"font-size: 18px\"><strong>Important Note:</strong></span></p><p class=\"mb-4\">Once development begins, changes cannot be made until project completion. Additional updates and changes can be requested through our affordable upgrade plans. For further details, refer to our <a target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-blue-600  underline\" href=\"https://www.merasoftware.com/terms-and-conditions\">Terms and Conditions</a>, <a target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-blue-600  underline\" href=\"https://www.merasoftware.com/privacy-policy\">Privacy Policy</a>, and <a target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-blue-600  underline\" href=\"https://www.merasoftware.com/refund-policy\">Refund Policy</a>.</p><hr><p class=\"mb-4\" style=\"line-height: normal\"><span style=\"font-size: 18px\"><strong>Get Started Today!</strong></span></p><p class=\"mb-4\">Ready to create a remarkable online presence? Contact us now and let’s build a stunning portfolio website that captures your essence.</p><p class=\"mb-4\"><a target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-blue-600  underline\" href=\"https://www.merasoftware.com/contact-us\">Contact Us</a> | <a target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-blue-600  underline\" href=\"https://www.merasoftware.com/start-new-project\">Explore Our Plans</a> | View More Projects</p>",
+        "_id": "67dabb7ffdff78dd8b22abfc"
+      }
+    ],
+    "isWebsiteService": false,
+    "totalPages": 4,
+    "checkpoints": [
+      {
+        "name": "Website Structure ready",
+        "percentage": 2,
+        "_id": "67dabb7ffdff78dd8b22abfd"
+      },
+      {
+        "name": "Header created",
+        "percentage": 5,
+        "_id": "67dabb7ffdff78dd8b22abfe"
+      },
+      {
+        "name": "Footer created",
+        "percentage": 5,
+        "_id": "67dabb7ffdff78dd8b22abff"
+      },
+      {
+        "name": "Home Page",
+        "percentage": 19.5,
+        "_id": "67dabb7ffdff78dd8b22ac00"
+      },
+      {
+        "name": "About Us Page",
+        "percentage": 19.5,
+        "_id": "67dabb7ffdff78dd8b22ac01"
+      },
+      {
+        "name": "Contact Us Page",
+        "percentage": 19.5,
+        "_id": "67dabb7ffdff78dd8b22ac02"
+      },
+      {
+        "name": "Gallery Page",
+        "percentage": 19.5,
+        "_id": "67dabb7ffdff78dd8b22ac03"
+      },
+      {
+        "name": "Final Testing",
+        "percentage": 10,
+        "_id": "67dabb7ffdff78dd8b22ac04"
+      }
+    ],
+    "isFeatureUpgrade": false,
+    "upgradeType": "",
+    "compatibleWith": [],
+    "keyBenefits": [],
+    "additionalFeatures": [
+      "67a8a67fc46161fd031d6dc2",
+      "67a8a704c46161fd031d6e43",
+      "67a8a783c46161fd031d6ec4",
+      "67a8a7e9c46161fd031d6f45"
+    ],
+    "createdAt": "2025-02-12T10:48:39.796Z",
+    "updatedAt": "2025-07-07T05:19:35.379Z",
+    "__v": 0,
+    "isWebsiteUpdate": false,
+    "updateCount": null,
+    "validityPeriod": null,
+    "isHidden": false
+  },
+  {
+    "_id": "67c87bb7a50cbea80270998a",
+    "serviceName": "Local Delivery App",
+    "category": "app_development",
+    "packageIncludes": [
+      "admin panel integration",
+      "fully customizable",
+      "payment gateway",
+      "unlimited products",
+      "SEO optimized",
+      "user friendly"
+    ],
+    "perfectFor": [
+      {
+        "text": "grocery_stores",
+        "icon": "lucide:ShoppingCart"
+      },
+      {
+        "text": "food_vendors",
+        "icon": "lucide:UtensilsCrossed"
+      },
+      {
+        "text": "small_businesses",
+        "icon": "lucide:Store"
+      },
+      {
+        "text": "florists",
+        "icon": "lucide:Flower"
+      }
+    ],
+    "serviceImage": [
+      "http://res.cloudinary.com/doz5sxyln/image/upload/v1741192119/f8ro4txpfddbw8q3hx5x.jpg"
+    ],
+    "price": 200000,
+    "sellingPrice": 119999,
+    "formattedDescriptions": [
+      {
+        "content": "<p class=\"mb-4\">A Local Delivery App enables businesses to offer home delivery services for groceries, food, medicines, or other local products. Customers can place orders, select delivery options, and track their deliveries in real time. The app includes a separate login for delivery agents to update order statuses. Businesses can manage orders, payments, and delivery schedules from the admin panel.</p>",
+        "_id": "67c87bb7a50cbea80270998b"
+      }
+    ],
+    "isWebsiteService": true,
+    "totalPages": 4,
+    "checkpoints": [],
+    "isFeatureUpgrade": false,
+    "upgradeType": "",
+    "compatibleCategories": [],
+    "keyBenefits": [],
+    "isWebsiteUpdate": false,
+    "validityPeriod": null,
+    "updateCount": null,
+    "additionalFeatures": [],
+    "createdAt": "2025-03-05T16:28:39.969Z",
+    "updatedAt": "2025-07-07T05:19:35.379Z",
+    "__v": 0,
+    "isHidden": false
+  },
+  {
+    "_id": "679a08519174d888c5ec6252",
+    "serviceName": "Food Menu Ordering App",
+    "category": "app_development",
+    "packageIncludes": [
+      "admin panel integration",
+      "fully customizable",
+      "payment gateway",
+      "SEO optimized",
+      "unlimited pages",
+      "user friendly",
+      "complete food menu"
+    ],
+    "perfectFor": [
+      {
+        "text": "small restaurants",
+        "icon": "fa:FaUtensils"
+      },
+      {
+        "text": "indian dhabas",
+        "icon": "fa:FaUtensils"
+      },
+      {
+        "text": "cloud kitchens",
+        "icon": "fa:FaUtensils"
+      },
+      {
+        "text": "fast food outlets",
+        "icon": "fa:FaShoppingBag"
+      },
+      {
+        "text": "food delivery services",
+        "icon": "fa:FaTruck"
+      }
+    ],
+    "serviceImage": [
+      "http://res.cloudinary.com/doz5sxyln/image/upload/v1738147845/ibkhvqvlwremeftlwr1w.jpg"
+    ],
+    "price": 180000,
+    "sellingPrice": 84999,
+    "description": "<p class=\"mb-4\"><strong>Features: </strong> </p><ul class=\"list-disc pl-4 mb-4\"><li><p class=\"mb-4\"> User Registration/Login  </p></li><li><p class=\"mb-4\"> Browse and filter food menu  </p></li><li><p class=\"mb-4\"> Cart and order customization  </p></li><li><p class=\"mb-4\"> Payment gateway integration  </p></li><li><p class=\"mb-4\"> Order tracking and delivery status  </p></li><li><p class=\"mb-4\"> Push notifications for updates  </p></li><li><p class=\"mb-4\"> Rating &amp; reviews for food items  </p></li><li><p class=\"mb-4\"> 3-month post-launch support  </p></li></ul>",
+    "websiteTypeDescription": "",
+    "createdAt": "2025-01-29T10:52:01.015Z",
+    "updatedAt": "2025-07-07T05:01:35.082Z",
+    "__v": 0,
+    "additionalFeatures": [],
+    "checkpoints": [
+      {
+        "name": "Website Structure ready",
+        "percentage": 2,
+        "_id": "67c88471a50cbea802709cac"
+      },
+      {
+        "name": "Header created",
+        "percentage": 5,
+        "_id": "67c88471a50cbea802709cad"
+      },
+      {
+        "name": "Footer created",
+        "percentage": 5,
+        "_id": "67c88471a50cbea802709cae"
+      },
+      {
+        "name": "Home Page",
+        "percentage": 19.5,
+        "_id": "67c88471a50cbea802709caf"
+      },
+      {
+        "name": "About Us Page",
+        "percentage": 19.5,
+        "_id": "67c88471a50cbea802709cb0"
+      },
+      {
+        "name": "Contact Us Page",
+        "percentage": 19.5,
+        "_id": "67c88471a50cbea802709cb1"
+      },
+      {
+        "name": "Gallery Page",
+        "percentage": 19.5,
+        "_id": "67c88471a50cbea802709cb2"
+      },
+      {
+        "name": "Final Testing",
+        "percentage": 10,
+        "_id": "67c88471a50cbea802709cb3"
+      }
+    ],
+    "compatibleWith": [],
+    "formattedDescriptions": [],
+    "isFeatureUpgrade": false,
+    "isWebsiteService": true,
+    "keyBenefits": [],
+    "totalPages": 4,
+    "upgradeType": "",
+    "compatibleCategories": [],
+    "isWebsiteUpdate": false,
+    "updateCount": null,
+    "validityPeriod": null,
+    "isHidden": false
+  },
+  {
+    "_id": "67c87aa6a50cbea802709935",
+    "serviceName": "Booking App",
+    "category": "app_development",
+    "packageIncludes": [
+      "user friendly",
+      "unlimited pages",
+      "fully customizable",
+      "admin panel integration",
+      "SEO optimized"
+    ],
+    "perfectFor": [
+      {
+        "text": "salons",
+        "icon": "lucide:Scissors"
+      },
+      {
+        "text": "clinics",
+        "icon": "lucide:Stethoscope"
+      },
+      {
+        "text": "tutors",
+        "icon": "lucide:GraduationCap"
+      },
+      {
+        "text": "electricians",
+        "icon": "lucide:Zap"
+      },
+      {
+        "text": "mechanics",
+        "icon": "lucide:Wrench"
+      },
+      {
+        "text": "home_service_providers",
+        "icon": "lucide:Home"
+      },
+      {
+        "text": "personal_trainers",
+        "icon": "lucide:Dumbbell"
+      }
+    ],
+    "serviceImage": [
+      "http://res.cloudinary.com/doz5sxyln/image/upload/v1741191793/n0dez1of97t3tzbj6y4c.jpg"
+    ],
+    "price": 150000,
+    "sellingPrice": 49999,
+    "formattedDescriptions": [
+      {
+        "content": "<p class=\"mb-4\">A Booking App helps businesses and service providers schedule appointments effortlessly. Customers can browse available services, check availability, and book appointments online. The app sends automatic reminders and notifications to reduce no-shows. The admin panel allows business owners to manage bookings, update availability, and accept online payments.</p>",
+        "_id": "67c87aa6a50cbea802709936"
+      }
+    ],
+    "isWebsiteService": true,
+    "totalPages": 4,
+    "checkpoints": [],
+    "isFeatureUpgrade": false,
+    "upgradeType": "",
+    "compatibleCategories": [],
+    "keyBenefits": [],
+    "isWebsiteUpdate": false,
+    "validityPeriod": null,
+    "updateCount": null,
+    "additionalFeatures": [],
+    "createdAt": "2025-03-05T16:24:06.495Z",
+    "updatedAt": "2025-07-07T05:19:35.379Z",
+    "__v": 0,
+    "isHidden": false
+  },
+  {
+    "_id": "67ab511c7bc4940983e09ac9",
+    "serviceName": "Add New Page",
+    "category": "feature_upgrades",
+    "packageIncludes": [
+      "fast loading",
+      "customized design",
+      "seo friendly",
+      "responsive design",
+      "unlimited pages"
+    ],
+    "perfectFor": [],
+    "serviceImage": [
+      "http://res.cloudinary.com/doz5sxyln/image/upload/v1739280631/kr46om2xar7cik8ki2dc.jpg"
+    ],
+    "price": 3500,
+    "sellingPrice": 1999,
+    "formattedDescriptions": [
+      {
+        "content": "",
+        "_id": "67cc1332b91c593a3f274d8d"
+      }
+    ],
+    "isWebsiteService": false,
+    "totalPages": 4,
+    "checkpoints": [],
+    "isFeatureUpgrade": true,
+    "upgradeType": "component",
+    "compatibleWith": [
+      "standard_websites"
+    ],
+    "keyBenefits": [
+      "custom_design",
+      "user_friendly_interface"
+    ],
+    "additionalFeatures": [],
+    "createdAt": "2025-02-11T13:31:08.600Z",
+    "updatedAt": "2026-07-23T07:04:25.892Z",
+    "__v": 0,
+    "isWebsiteUpdate": false,
+    "updateCount": null,
+    "validityPeriod": null,
+    "isHidden": false
+  },
+  {
+    "_id": "67a8ab65c46161fd031d714e",
+    "serviceName": "Dynamic Gallery",
+    "category": "feature_upgrades",
+    "packageIncludes": [
+      "easy image management",
+      "no code changes",
+      "user friendly panel",
+      "responsive gallery",
+      "image categories",
+      "seo friendly images",
+      "optimized loading"
+    ],
+    "perfectFor": [],
+    "serviceImage": [
+      "http://res.cloudinary.com/doz5sxyln/image/upload/v1739107096/nsy72p5recjyhuu5apkx.jpg"
+    ],
+    "price": 20000,
+    "sellingPrice": 7999,
+    "description": "<p class=\"mb-4\">Dynamic Gallery is a powerful image management system that allows you to create, update, and manage photo galleries on your website. It provides a professional way to showcase your work, products, or portfolio with complete control over the content.</p><ul class=\"list-disc pl-4 mb-4\"><li><p class=\"mb-4\">Easy image upload and management</p></li><li><p class=\"mb-4\">Professional presentation of your work</p></li><li><p class=\"mb-4\">Enhanced user engagement through visual content</p></li></ul>",
+    "websiteTypeDescription": " <h4>Our Objective</h4>\n                   <pTo provide you with a professional, user-friendly, and efficient gallery solution that enhances your website's visual appeal and user engagement. We ensure seamless integration, optimal performance, and complete satisfaction with our development services.</p>",
+    "isWebsiteService": false,
+    "totalPages": 4,
+    "checkpoints": [],
+    "isFeatureUpgrade": true,
+    "upgradeType": "feature",
+    "compatibleWith": [
+      "standard_websites",
+      "mobile_apps"
+    ],
+    "keyBenefits": [
+      "complete_control",
+      "custom_design",
+      "flexible_storage"
+    ],
+    "additionalFeatures": [],
+    "createdAt": "2025-02-09T13:19:33.887Z",
+    "updatedAt": "2025-03-08T09:50:43.287Z",
+    "__v": 0,
+    "formattedDescriptions": [
+      {
+        "content": "",
+        "_id": "67cc12f3b91c593a3f274d2a"
+      }
+    ],
+    "isWebsiteUpdate": false,
+    "updateCount": null,
+    "validityPeriod": null,
+    "isHidden": false
+  },
+  {
+    "_id": "67c8874aa50cbea802709edc",
+    "serviceName": "CMS",
+    "category": "cloud_software_development",
+    "packageIncludes": [
+      "easy profile account management",
+      "detailed audit logs accountability",
+      "instant customer support"
+    ],
+    "perfectFor": [
+      {
+        "text": "small_businesses",
+        "icon": "lucide:Store"
+      },
+      {
+        "text": "entrepreneurs",
+        "icon": "md:MdBusiness"
+      },
+      {
+        "text": "service_providers",
+        "icon": "lucide:HeartHandshake"
+      }
+    ],
+    "serviceImage": [
+      "http://res.cloudinary.com/doz5sxyln/image/upload/v1742971822/supecn3tjshvo4ol6cvt.jpg"
+    ],
+    "price": 240000,
+    "sellingPrice": 105999,
+    "formattedDescriptions": [
+      {
+        "content": "<p class=\"mb-4\"><span style=\"font-size: 22px\"><strong>Description</strong></span>:<br><br><span style=\"font-size: 16px\">A <strong>Complaint Management Software</strong> <strong>(CMS)</strong> is designed to help businesses and organizations efficiently <strong>handle customer complaints</strong>, <strong>service requests</strong>, and <strong>feedback</strong>. It streamlines the process by allowing users to register complaints, track their status, and receive timely updates while businesses can manage and resolve issues efficiently through a centralized system.</span></p><p class=\"mb-4\"><span style=\"font-size: 16px\">This software ensures better customer satisfaction, improved response time, and organized complaint handling, reducing manual effort and miscommunication.</span><br><br><span style=\"font-size: 22px\"><strong>Business Benefits of a CRM-Based CMS System:</strong></span></p><ol class=\"list-decimal pl-4 mb-2\"><li><p class=\"mb-4\"><span style=\"font-size: 16px\"><strong>Centralized Customer Management:</strong> Easily access and manage customer data for personalized interactions and targeted marketing.</span></p></li><li><p class=\"mb-4\"><span style=\"font-size: 16px\"><strong>Enhanced Sales and Marketing:</strong> Track customer journeys, run personalized campaigns, and improve lead conversions.</span></p></li><li><p class=\"mb-4\"><span style=\"font-size: 16px\"><strong>Streamlined Operations:</strong> Automate tasks, reduce manual work, and ensure better collaboration between teams.</span></p></li><li><p class=\"mb-4\"><span style=\"font-size: 16px\"><strong>Data-Driven Decisions:</strong> Generate reports and insights for informed business strategies and growth.</span></p></li><li><p class=\"mb-4\"><span style=\"font-size: 16px\"><strong>Improved Customer Experience:</strong> Provide personalized content, faster support, and proactive customer service.</span></p></li></ol>",
+        "_id": "67e5179de34faaa083dca365"
+      },
+      {
+        "content": "<h2 style=\"line-height: 1.5\"><span style=\"color: rgb(0, 0, 0); font-size: 22px\">We Will Develop Your Software with Expertise</span></h2><p class=\"mb-4\" style=\"line-height: 1.5\"><span style=\"color: rgb(0, 0, 0); font-size: 16px\">At Mera Software, we believe your software should be as unique as your business. </span><span style=\"font-size: 16px\"><br></span><span style=\"color: rgb(202, 0, 0); font-size: 17px\"><strong>What you see here is a general idea of what your software will include and how much it may cost. </strong></span><span style=\"font-size: 16px\"><br><br></span><span style=\"color: rgb(0, 0, 0); font-size: 16px\">Once we get started, </span><span style=\"color: rgb(202, 0, 0); font-size: 17px\"><strong>we’ll work closely with you to understand your specific needs and build your software from scratch.</strong></span><span style=\"color: rgb(0, 0, 0); font-size: 17px\"><strong> </strong></span><span style=\"font-size: 16px\"><br><br></span><span style=\"color: rgb(202, 0, 0); font-size: 17px\"><strong>No shortcuts</strong></span><span style=\"color: rgb(0, 0, 0); font-size: 16px\">, </span><span style=\"color: rgb(202, 0, 0); font-size: 17px\"><strong>just real development done by us.</strong></span><span style=\"color: rgb(0, 0, 0); font-size: 16px\"> </span><a target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-blue-600 \" href=\"https://www.merasoftware.com/disclaimers\"><span style=\"color: rgb(2, 90, 253); font-size: 16px\">Explore Our Working Process.</span></a></p>",
+        "_id": "67e5179de34faaa083dca366"
+      },
+      {
+        "content": "<p class=\"mb-4\" style=\"line-height: normal\"><span style=\"font-size: 22px\"><strong>Why Choose Mera Software?</strong></span></p><ul class=\"list-disc pl-4 mb-2\"><li><p class=\"mb-4\" style=\"line-height: normal\"><span style=\"font-size: 16px\"><strong>Custom Development:</strong> Our team creates software, websites, and apps that fit your business perfectly — no one-size-fits-all solutions.</span></p></li><li><p class=\"mb-4\" style=\"line-height: normal\"><span style=\"font-size: 16px\"><strong>No Automated Builders:</strong> Every piece of code is crafted by our skilled developers to ensure quality and flexibility.</span></p></li><li><p class=\"mb-4\" style=\"line-height: normal\"><span style=\"font-size: 16px\"><strong>Complete Support:</strong> From brainstorming ideas to launching your product, we’re with you every step of the way.</span></p></li><li><p class=\"mb-4\" style=\"line-height: normal\"><span style=\"font-size: 16px\"><strong>Built to Grow:</strong> Our software is designed to scale as your business grows, ensuring long-term success.</span><span style=\"font-size: 17px\"><br></span><br></p></li></ul>",
+        "_id": "67e5179de34faaa083dca367"
+      },
+      {
+        "content": "<p class=\"mb-4\" style=\"line-height: normal\"><span style=\"font-size: 20px\"><strong>Important Note:</strong></span></p><p class=\"mb-4\" style=\"line-height: 1.5\"><span style=\"font-size: 16px\">Once development begins, changes cannot be made until project completion. Additional updates and changes can be requested through our affordable upgrade plans. For further details, refer to our </span><a target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-blue-600  underline\" href=\"https://www.merasoftware.com/terms-and-conditions\"><span style=\"font-size: 16px\">Terms and Conditions</span></a><span style=\"font-size: 16px\">, </span><a target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-blue-600  underline\" href=\"https://www.merasoftware.com/privacy-policy\"><span style=\"font-size: 16px\">Privacy Policy</span></a><span style=\"font-size: 16px\">, and </span><a target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-blue-600  underline\" href=\"https://www.merasoftware.com/refund-policy\"><span style=\"font-size: 16px\">Refund Policy</span></a><span style=\"font-size: 16px\">.</span></p><hr><p class=\"mb-4\" style=\"line-height: 1.5\"><span style=\"font-size: 18px\"><strong>Get Started Today!</strong></span></p><p class=\"mb-4\" style=\"line-height: 1.5\"><span style=\"font-size: 16px\">Ready to create a remarkable online presence? Contact us now and let’s build a stunning portfolio website that captures your essence.</span></p><p class=\"mb-4\" style=\"line-height: 1.5\"><a target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-blue-600  underline\" href=\"https://www.merasoftware.com/contact-us\"><span style=\"font-size: 16px\">Contact Us</span></a><span style=\"font-size: 16px\"> | </span><a target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-blue-600  underline\" href=\"https://www.merasoftware.com/start-new-project\"><span style=\"font-size: 16px\">Explore Our Plans</span></a><span style=\"font-size: 16px\"> | View More Projects</span></p>",
+        "_id": "67e5179de34faaa083dca368"
+      }
+    ],
+    "isWebsiteService": true,
+    "totalPages": 4,
+    "checkpoints": [
+      {
+        "name": "Project Initiation",
+        "percentage": 4,
+        "_id": "67e5179de34faaa083dca369"
+      },
+      {
+        "name": "Core Backend & Database Setup",
+        "percentage": 2,
+        "_id": "67e5179de34faaa083dca36a"
+      },
+      {
+        "name": "Server & database architecture setup",
+        "percentage": 2,
+        "_id": "67e5179de34faaa083dca36b"
+      },
+      {
+        "name": "User roles & authentication system",
+        "percentage": 8,
+        "_id": "67e5179de34faaa083dca36c"
+      },
+      {
+        "name": "Dashboard structure & data flow design",
+        "percentage": 4,
+        "_id": "67e5179de34faaa083dca36d"
+      },
+      {
+        "name": "Basic backend functionality setup",
+        "percentage": 5,
+        "_id": "67e5179de34faaa083dca36e"
+      },
+      {
+        "name": "Core Modules Development",
+        "percentage": 5,
+        "_id": "67e5179de34faaa083dca36f"
+      },
+      {
+        "name": "Frontend Development & UI Implementation",
+        "percentage": 20,
+        "_id": "67e5179de34faaa083dca370"
+      },
+      {
+        "name": "Dashboard & reports visualization",
+        "percentage": 5,
+        "_id": "67e5179de34faaa083dca371"
+      },
+      {
+        "name": "Integration of UI with backend functions",
+        "percentage": 20,
+        "_id": "67e5179de34faaa083dca372"
+      },
+      {
+        "name": "Responsive design for mobile & desktop",
+        "percentage": 5,
+        "_id": "67e5179de34faaa083dca373"
+      },
+      {
+        "name": "User-friendly navigation & search features",
+        "percentage": 2,
+        "_id": "67e5179de34faaa083dca374"
+      },
+      {
+        "name": "Email & SMS Notifications",
+        "percentage": 3,
+        "_id": "67e5179de34faaa083dca375"
+      },
+      {
+        "name": "Role-Based Access Control",
+        "percentage": 3,
+        "_id": "67e5179de34faaa083dca376"
+      },
+      {
+        "name": "Basic Third-Party Integrations",
+        "percentage": 4,
+        "_id": "67e5179de34faaa083dca377"
+      },
+      {
+        "name": "Performance testing across devices",
+        "percentage": 2,
+        "_id": "67e5179de34faaa083dca378"
+      },
+      {
+        "name": "Fixing bugs & security updates",
+        "percentage": 2,
+        "_id": "67e5179de34faaa083dca379"
+      },
+      {
+        "name": "User Acceptance Testing (UAT)",
+        "percentage": 2,
+        "_id": "67e5179de34faaa083dca37a"
+      },
+      {
+        "name": "Final review & approval by client",
+        "percentage": 2,
+        "_id": "67e5179de34faaa083dca37b"
+      },
+      {
+        "name": "Deployment & Launch",
+        "percentage": 0,
+        "_id": "67e5179de34faaa083dca37c"
+      }
+    ],
+    "isFeatureUpgrade": false,
+    "upgradeType": "",
+    "compatibleCategories": [],
+    "keyBenefits": [],
+    "isWebsiteUpdate": false,
+    "validityPeriod": null,
+    "updateCount": null,
+    "additionalFeatures": [
+      "67a8a67fc46161fd031d6dc2",
+      "67a8a7e9c46161fd031d6f45",
+      "67a8aa69c46161fd031d70c9"
+    ],
+    "createdAt": "2025-03-05T17:18:02.183Z",
+    "updatedAt": "2025-07-07T05:19:35.379Z",
+    "__v": 0,
+    "compatibleWith": [],
+    "isHidden": false
+  },
+  {
+    "_id": "67d2a1abbdaae3123b9e9428",
+    "serviceName": "CRM",
+    "category": "cloud_software_development",
+    "packageIncludes": [
+      "easy profile account management",
+      "detailed inventory reports",
+      "real time work activity tracking",
+      "real time payment tracking",
+      "responsive design"
+    ],
+    "perfectFor": [
+      {
+        "text": "entrepreneurs",
+        "icon": "md:MdBusiness"
+      },
+      {
+        "text": "small_businesses",
+        "icon": "lucide:Store"
+      },
+      {
+        "text": "coaching institutes",
+        "icon": "fa:FaBook"
+      },
+      {
+        "text": "immigration consultants",
+        "icon": "fa:FaPlane"
+      },
+      {
+        "text": "service_providers",
+        "icon": "lucide:HeartHandshake"
+      }
+    ],
+    "serviceImage": [
+      "http://res.cloudinary.com/doz5sxyln/image/upload/v1742390443/g1vxkcixnsjppm5skkhf.png"
+    ],
+    "price": 240000,
+    "sellingPrice": 89990,
+    "formattedDescriptions": [
+      {
+        "content": "<h2 style=\"line-height: 1.5\"><span style=\"color: rgb(0, 0, 0); font-size: 20px\">Description</span></h2><p class=\"mb-4\" style=\"line-height: 2\"><span style=\"font-size: 16px\">Optimize your customer relationships with a powerful and dynamic Customer Relationship Management (CRM) system. Whether you run a small business, a large enterprise, or manage service-based operations, Mera Software provides customizable CRM solutions to streamline your workflow, enhance customer satisfaction, and drive business growth.</span></p><h2 style=\"line-height: normal\"><span style=\"font-size: 20px\">Business Benefits of a CRM System</span></h2><ul class=\"list-disc pl-4 mb-2\"><li><p class=\"mb-4\" style=\"line-height: normal\"><span style=\"font-size: 16px\"><strong>Centralized Data Management:</strong> Access and manage all customer information in one place.</span></p></li><li><p class=\"mb-4\" style=\"line-height: normal\"><span style=\"font-size: 16px\"><strong>Improved Customer Service:</strong> Provide faster, more personalized support.</span></p></li><li><p class=\"mb-4\" style=\"line-height: normal\"><span style=\"font-size: 16px\"><strong>Sales Automation:</strong> Track leads, manage sales pipelines, and boost conversions.</span></p></li><li><p class=\"mb-4\" style=\"line-height: normal\"><span style=\"font-size: 16px\"><strong>Data-Driven Insights:</strong> Generate reports and analytics to make informed decisions.</span></p></li><li><p class=\"mb-4\" style=\"line-height: normal\"><span style=\"font-size: 16px\"><strong>Enhanced Collaboration:</strong> Enable teams to work together efficiently with shared data.</span></p></li></ul><p class=\"mb-4\" style=\"line-height: 1.5\"><br></p>",
+        "_id": "67e51786e34faaa083dca21d"
+      },
+      {
+        "content": "<h2 style=\"line-height: 1.5\"><span style=\"color: rgb(0, 0, 0); font-size: 22px\">We Will Develop Your Software with Expertise</span></h2><p class=\"mb-4\" style=\"line-height: 1.5\"><span style=\"color: rgb(0, 0, 0); font-size: 16px\">At Mera Software, we believe your software should be as unique as your business. </span><br><span style=\"color: rgb(0, 0, 0)\"><br></span><span style=\"color: rgb(202, 0, 0); font-size: 16px\">What you see here is a general idea of what your software will include and how much it may cost. </span><br><br><span style=\"color: rgb(0, 0, 0); font-size: 16px\">Once we get started, </span><span style=\"color: rgb(202, 0, 0); font-size: 16px\">we’ll work closely with you to understand your specific needs and build your software from scratch.</span><span style=\"color: rgb(0, 0, 0); font-size: 16px\"><strong> </strong></span><br><br><span style=\"color: rgb(202, 0, 0); font-size: 16px\">No shortcuts</span><span style=\"color: rgb(0, 0, 0); font-size: 16px\">, No automated templates, </span><span style=\"color: rgb(202, 0, 0); font-size: 16px\">just real development done by us.</span><span style=\"color: rgb(0, 0, 0); font-size: 16px\"> </span><a target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-blue-600 \" href=\"https://www.merasoftware.com/disclaimers\"><span style=\"color: rgb(2, 90, 253); font-size: 16px\">Read More</span></a></p><p class=\"mb-4\" style=\"line-height: 1.5\"></p>",
+        "_id": "67e51786e34faaa083dca21e"
+      },
+      {
+        "content": "<p class=\"mb-4\" style=\"line-height: normal\"><span style=\"font-size: 20px\"><strong>Why Choose Mera Software?</strong></span></p><ul class=\"list-disc pl-4 mb-2\"><li><p class=\"mb-4\" style=\"line-height: normal\"><span style=\"font-size: 16px\"><strong>Custom Development:</strong> Our team creates software, websites, and apps that fit your business perfectly — no one-size-fits-all solutions.</span></p></li><li><p class=\"mb-4\" style=\"line-height: normal\"><span style=\"font-size: 16px\"><strong>No Automated Builders:</strong> Every piece of code is crafted by our skilled developers to ensure quality and flexibility.</span></p></li><li><p class=\"mb-4\" style=\"line-height: normal\"><span style=\"font-size: 16px\"><strong>Complete Support:</strong> From brainstorming ideas to launching your product, we’re with you every step of the way.</span></p></li><li><p class=\"mb-4\" style=\"line-height: normal\"><span style=\"font-size: 16px\"><strong>Built to Grow:</strong> Our software is designed to scale as your business grows, ensuring long-term success.</span></p></li></ul><h2 style=\"line-height: 1.5\"><a target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-blue-600 \" href=\"https://www.merasoftware.com/disclaimers\"><span style=\"font-size: 20px\"><br>Our Working Process</span></a></h2><ol class=\"list-decimal pl-4 mb-2\"><li><p class=\"mb-4\" style=\"line-height: 1.5\"><span style=\"font-size: 16px\"><strong>Consultation:</strong> Understand your goals and expectations.</span></p></li><li><p class=\"mb-4\" style=\"line-height: 1.5\"><span style=\"font-size: 16px\"><strong>Design &amp; Development:</strong> Create a customized CRM system aligned with your business needs.</span></p></li><li><p class=\"mb-4\" style=\"line-height: 1.5\"><span style=\"font-size: 16px\"><strong>Feedback &amp; Revisions:</strong> Make adjustments to ensure it meets your requirements.</span></p></li><li><p class=\"mb-4\" style=\"line-height: 1.5\"><span style=\"font-size: 16px\"><strong>Launch:</strong> Deploy the system and provide necessary training.</span></p></li><li><p class=\"mb-4\" style=\"line-height: 1.5\"><span style=\"font-size: 16px\"><strong>Post-Launch Support:</strong> Enjoy one month of free maintenance and support.</span></p></li></ol>",
+        "_id": "67e51786e34faaa083dca21f"
+      },
+      {
+        "content": "<p class=\"mb-4\" style=\"line-height: normal\"><span style=\"font-size: 18px\"><strong>Important Note:</strong></span></p><p class=\"mb-4\" style=\"line-height: 1.5\"><span style=\"font-size: 16px\">Once development begins, changes cannot be made until project completion. Additional updates and changes can be requested through our affordable upgrade plans. For further details, refer to our </span><a target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-blue-600  underline\" href=\"https://www.merasoftware.com/terms-and-conditions\"><span style=\"font-size: 16px\">Terms and Conditions</span></a><span style=\"font-size: 16px\">, </span><a target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-blue-600  underline\" href=\"https://www.merasoftware.com/privacy-policy\"><span style=\"font-size: 16px\">Privacy Policy</span></a><span style=\"font-size: 16px\">, and </span><a target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-blue-600  underline\" href=\"https://www.merasoftware.com/refund-policy\"><span style=\"font-size: 16px\">Refund Policy</span></a><span style=\"font-size: 16px\">.</span></p><hr><p class=\"mb-4\" style=\"line-height: 1.5\"><span style=\"font-size: 18px\"><strong>Get Started Today!</strong></span></p><p class=\"mb-4\" style=\"line-height: 1.5\"><span style=\"font-size: 16px\">Ready to create a remarkable online presence? Contact us now and let’s build a stunning portfolio website that captures your essence.</span></p><p class=\"mb-4\" style=\"line-height: 1.5\"><a target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-blue-600  underline\" href=\"https://www.merasoftware.com/contact-us\"><span style=\"font-size: 16px\">Contact Us</span></a><span style=\"font-size: 16px\"> | </span><a target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-blue-600  underline\" href=\"https://www.merasoftware.com/start-new-project\"><span style=\"font-size: 16px\">Explore Our Plans</span></a><span style=\"font-size: 16px\"> | View More Projects</span></p>",
+        "_id": "67e51786e34faaa083dca220"
+      }
+    ],
+    "isWebsiteService": true,
+    "totalPages": 4,
+    "checkpoints": [
+      {
+        "name": "Project Initiation",
+        "percentage": 4,
+        "_id": "67e51786e34faaa083dca221"
+      },
+      {
+        "name": "Core Backend & Database Setup",
+        "percentage": 2,
+        "_id": "67e51786e34faaa083dca222"
+      },
+      {
+        "name": "Server & database architecture setup",
+        "percentage": 2,
+        "_id": "67e51786e34faaa083dca223"
+      },
+      {
+        "name": "User roles & authentication system",
+        "percentage": 8,
+        "_id": "67e51786e34faaa083dca224"
+      },
+      {
+        "name": "Dashboard structure & data flow design",
+        "percentage": 4,
+        "_id": "67e51786e34faaa083dca225"
+      },
+      {
+        "name": "Basic backend functionality setup",
+        "percentage": 5,
+        "_id": "67e51786e34faaa083dca226"
+      },
+      {
+        "name": "Core Modules Development",
+        "percentage": 5,
+        "_id": "67e51786e34faaa083dca227"
+      },
+      {
+        "name": "Frontend Development & UI Implementation",
+        "percentage": 20,
+        "_id": "67e51786e34faaa083dca228"
+      },
+      {
+        "name": "Dashboard & reports visualization",
+        "percentage": 5,
+        "_id": "67e51786e34faaa083dca229"
+      },
+      {
+        "name": "Integration of UI with backend functions",
+        "percentage": 20,
+        "_id": "67e51786e34faaa083dca22a"
+      },
+      {
+        "name": "Responsive design for mobile & desktop",
+        "percentage": 5,
+        "_id": "67e51786e34faaa083dca22b"
+      },
+      {
+        "name": "User-friendly navigation & search features",
+        "percentage": 2,
+        "_id": "67e51786e34faaa083dca22c"
+      },
+      {
+        "name": "Email & SMS Notifications",
+        "percentage": 3,
+        "_id": "67e51786e34faaa083dca22d"
+      },
+      {
+        "name": "Role-Based Access Control",
+        "percentage": 3,
+        "_id": "67e51786e34faaa083dca22e"
+      },
+      {
+        "name": "Basic Third-Party Integrations",
+        "percentage": 4,
+        "_id": "67e51786e34faaa083dca22f"
+      },
+      {
+        "name": "Performance testing across devices",
+        "percentage": 2,
+        "_id": "67e51786e34faaa083dca230"
+      },
+      {
+        "name": "Fixing bugs & security updates",
+        "percentage": 2,
+        "_id": "67e51786e34faaa083dca231"
+      },
+      {
+        "name": "User Acceptance Testing (UAT)",
+        "percentage": 2,
+        "_id": "67e51786e34faaa083dca232"
+      },
+      {
+        "name": "Final review & approval by client",
+        "percentage": 2,
+        "_id": "67e51786e34faaa083dca233"
+      },
+      {
+        "name": "Deployment & Launch",
+        "percentage": 0,
+        "_id": "67e51786e34faaa083dca234"
+      }
+    ],
+    "isFeatureUpgrade": false,
+    "compatibleWith": [],
+    "keyBenefits": [],
+    "isWebsiteUpdate": false,
+    "validityPeriod": null,
+    "updateCount": null,
+    "additionalFeatures": [
+      "67a8a67fc46161fd031d6dc2",
+      "67a8a7e9c46161fd031d6f45",
+      "67a8aa69c46161fd031d70c9"
+    ],
+    "createdAt": "2025-03-13T09:13:15.117Z",
+    "updatedAt": "2025-07-07T05:19:35.379Z",
+    "__v": 0,
+    "isHidden": false
+  },
+  {
+    "_id": "67ac74ff68fca4c7241a356a",
+    "serviceName": "Educational Website",
+    "category": "standard_websites",
+    "packageIncludes": [
+      "12 pages",
+      "premium theme",
+      "free content updates",
+      "free maintenance",
+      "responsive design",
+      "SEO optimized"
+    ],
+    "perfectFor": [
+      {
+        "text": "schools and colleges",
+        "icon": "fa:FaSchool"
+      },
+      {
+        "text": "universities",
+        "icon": "md:MdSchool"
+      },
+      {
+        "text": "coaching_centers",
+        "icon": "lucide:BookOpen"
+      },
+      {
+        "text": "tutors and trainers",
+        "icon": "md:MdPerson"
+      },
+      {
+        "text": "skill development centers",
+        "icon": "fa:FaBuilding"
+      },
+      {
+        "text": "corporate training programs",
+        "icon": "fa:FaBriefcase"
+      },
+      {
+        "text": "education consultants",
+        "icon": "fa:FaBriefcase"
+      }
+    ],
+    "serviceImage": [
+      "http://res.cloudinary.com/doz5sxyln/image/upload/v1742385860/wnckg8pjaidl17eahyx5.jpg"
+    ],
+    "price": 70000,
+    "sellingPrice": 23000,
+    "formattedDescriptions": [
+      {
+        "content": "<p class=\"mb-4\" style=\"line-height: normal\"><span style=\"font-size: 18px\"><strong>Description:</strong></span><br><br>An educational website designed for colleges and schools to provide important information such as results, admission details, faculty and student records, hostel facilities, and upcoming events. It helps students, teachers, and parents stay updated with academic activities, announcements, and institutional details in one place.<br><br><br><span style=\"font-size: 18px\"><strong>Business Benefits of an Educational Website:</strong></span></p><ul class=\"list-disc pl-4 mb-2\"><li><p class=\"mb-4\" style=\"line-height: normal\"><strong>Enhanced Visibility:</strong> Promote your institution to a wider audience.</p></li><li><p class=\"mb-4\" style=\"line-height: normal\"><strong>Seamless Communication:</strong> Provide important updates, announcements, and resources.</p></li><li><p class=\"mb-4\" style=\"line-height: normal\"><strong>Online Learning Support:</strong> Offer virtual learning, assignments, and quizzes.</p></li><li><p class=\"mb-4\" style=\"line-height: normal\"><strong>Student Management:</strong> Manage admissions, results, and student records efficiently.</p></li><li><p class=\"mb-4\" style=\"line-height: normal\"><strong>Interactive Experience:</strong> Engage students with blogs, newsletters, and event calendars.</p></li></ul><h2 style=\"line-height: normal\"><span style=\"font-size: 18px\">Build Your Stunning Educationl Website with Mera Software:</span></h2><p class=\"mb-4\" style=\"line-height: normal\">At Mera Software, we create customized educational websites designed to support both students and educators. Our user-friendly solutions ensure smooth navigation and an engaging experience for all users.<br></p>",
+        "_id": "67dab3fcfdff78dd8b22a187"
+      },
+      {
+        "content": "<p class=\"mb-4\" style=\"line-height: normal\"><span style=\"font-size: 18px\"><strong>Why Mera Software?</strong></span></p><ul class=\"list-disc pl-4 mb-2\"><li><p class=\"mb-4\" style=\"line-height: normal\"><strong>Expert Developers:</strong> We craft every website with precision using modern technologies.</p></li><li><p class=\"mb-4\" style=\"line-height: normal\">End-<strong>to-End Support: </strong>From initial concept to final deployment, we assist you at every step.</p></li><li><p class=\"mb-4\" style=\"line-height: normal\"><strong>Flexible Payment Options:</strong> Choose between full payment or our easy installment plan.</p></li><li><p class=\"mb-4\" style=\"line-height: normal\"><strong>Dashboard Access: </strong>Track progress, communicate with developers, and upload content seamlessly.</p><hr><p class=\"mb-4\" style=\"line-height: normal\"><br><span style=\"font-size: 18px\"><strong>Our Process:-</strong></span></p><p class=\"mb-4\" style=\"line-height: normal\"><strong>1. Consultation:</strong> Understand your goals and expectations.</p><p class=\"mb-4\" style=\"line-height: normal\"><strong>2. Design &amp; Development: </strong>Bring your vision to life with a stunning design.</p><p class=\"mb-4\" style=\"line-height: normal\"><strong>3. Feedback &amp; Revisions:</strong> Make adjustments to ensure it matches your needs.</p><p class=\"mb-4\" style=\"line-height: normal\"><strong>4. Launch: </strong>Deploy the website and make it live.</p><p class=\"mb-4\" style=\"line-height: normal\"><strong>5. Post-Launch Support:</strong> Enjoy one month of free content updates.</p></li></ul>",
+        "_id": "67dab3fcfdff78dd8b22a188"
+      },
+      {
+        "content": "<p class=\"mb-4\" style=\"line-height: normal\"><span style=\"font-size: 18px\"><strong>Important Note:</strong></span></p><p class=\"mb-4\">Once development begins, changes cannot be made until project completion. Additional updates and changes can be requested through our affordable upgrade plans. For further details, refer to our <a target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-blue-600  underline\" href=\"https://www.merasoftware.com/terms-and-conditions\">Terms and Conditions</a>, <a target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-blue-600  underline\" href=\"https://www.merasoftware.com/privacy-policy\">Privacy Policy</a>, and <a target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-blue-600  underline\" href=\"https://www.merasoftware.com/refund-policy\">Refund Policy</a>.</p><hr><p class=\"mb-4\" style=\"line-height: normal\"><span style=\"font-size: 18px\"><strong>Get Started Today!</strong></span></p><p class=\"mb-4\">Ready to create a remarkable online presence? Contact us now and let’s build a stunning portfolio website that captures your essence.</p><p class=\"mb-4\"><a target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-blue-600  underline\" href=\"https://www.merasoftware.com/contact-us\">Contact Us</a> | <a target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-blue-600  underline\" href=\"https://www.merasoftware.com/start-new-project\">Explore Our Plans</a> | View More Projects</p>",
+        "_id": "67dab3fcfdff78dd8b22a189"
+      }
+    ],
+    "isWebsiteService": true,
+    "totalPages": 12,
+    "checkpoints": [
+      {
+        "name": "Website Structure ready",
+        "percentage": 2,
+        "_id": "67dab3fcfdff78dd8b22a18a"
+      },
+      {
+        "name": "Header created",
+        "percentage": 5,
+        "_id": "67dab3fcfdff78dd8b22a18b"
+      },
+      {
+        "name": "Footer created",
+        "percentage": 5,
+        "_id": "67dab3fcfdff78dd8b22a18c"
+      },
+      {
+        "name": "Home Page",
+        "percentage": 6.5,
+        "_id": "67dab3fcfdff78dd8b22a18d"
+      },
+      {
+        "name": "About Us Page",
+        "percentage": 6.5,
+        "_id": "67dab3fcfdff78dd8b22a18e"
+      },
+      {
+        "name": "Contact Us Page",
+        "percentage": 6.5,
+        "_id": "67dab3fcfdff78dd8b22a18f"
+      },
+      {
+        "name": "Gallery Page",
+        "percentage": 6.5,
+        "_id": "67dab3fcfdff78dd8b22a190"
+      },
+      {
+        "name": "Additional Page 1",
+        "percentage": 6.5,
+        "_id": "67dab3fcfdff78dd8b22a191"
+      },
+      {
+        "name": "Additional Page 2",
+        "percentage": 6.5,
+        "_id": "67dab3fcfdff78dd8b22a192"
+      },
+      {
+        "name": "Additional Page 3",
+        "percentage": 6.5,
+        "_id": "67dab3fcfdff78dd8b22a193"
+      },
+      {
+        "name": "Additional Page 4",
+        "percentage": 6.5,
+        "_id": "67dab3fcfdff78dd8b22a194"
+      },
+      {
+        "name": "Additional Page 5",
+        "percentage": 6.5,
+        "_id": "67dab3fcfdff78dd8b22a195"
+      },
+      {
+        "name": "Additional Page 6",
+        "percentage": 6.5,
+        "_id": "67dab3fcfdff78dd8b22a196"
+      },
+      {
+        "name": "Additional Page 7",
+        "percentage": 6.5,
+        "_id": "67dab3fcfdff78dd8b22a197"
+      },
+      {
+        "name": "Additional Page 8",
+        "percentage": 6.5,
+        "_id": "67dab3fcfdff78dd8b22a198"
+      },
+      {
+        "name": "Final Testing",
+        "percentage": 10,
+        "_id": "67dab3fcfdff78dd8b22a199"
+      }
+    ],
+    "isFeatureUpgrade": false,
+    "upgradeType": "",
+    "compatibleWith": [],
+    "keyBenefits": [],
+    "additionalFeatures": [
+      "67a8a783c46161fd031d6ec4",
+      "67a8a84cc46161fd031d6fc6",
+      "67a8ab65c46161fd031d714e",
+      "67ab511c7bc4940983e09ac9"
+    ],
+    "createdAt": "2025-02-12T10:16:31.792Z",
+    "updatedAt": "2025-07-07T05:19:35.379Z",
+    "__v": 0,
+    "isWebsiteUpdate": false,
+    "updateCount": null,
+    "validityPeriod": null,
+    "isHidden": false
+  },
+  {
+    "_id": "69ea0e37e4b7d9d4e3b94a86",
+    "serviceName": "Basic Update Plan",
+    "category": "website_updates",
+    "packageIncludes": [
+      "free content updates",
+      "single request updates",
+      "modify any content"
+    ],
+    "perfectFor": [],
+    "serviceImage": [
+      "http://res.cloudinary.com/doz5sxyln/image/upload/v1776946598/vqaky6xpe28evqdldfyq.jpg"
+    ],
+    "price": 9000,
+    "sellingPrice": 3500,
+    "formattedDescriptions": [
+      {
+        "content": "<p class=\"mb-4\" style=\"line-height: normal\"><strong>Includes:</strong><br>✅ <strong>Total 2 updates</strong> per <strong>month</strong><br>✅ Static content updates (text changes, notifications, minor information updates)<br>✅ Image uploads (gallery or other sections)<br>✅ Updates for statistics, reports, schedules, or attendance (if applicable)</p><p class=\"mb-4\"><strong>Not Included:</strong> <br>❌ Adding new pages or sections</p>",
+        "_id": "69ea0e37e4b7d9d4e3b94a87"
+      }
+    ],
+    "isWebsiteService": false,
+    "totalPages": 4,
+    "checkpoints": [],
+    "isFeatureUpgrade": false,
+    "compatibleWith": [
+      "website_updates"
+    ],
+    "keyBenefits": [],
+    "isWebsiteUpdate": true,
+    "validityPeriod": 30,
+    "updateCount": 2,
+    "isMonthlyRenewablePlan": false,
+    "yearlyPlanDuration": null,
+    "monthlyRenewalCost": null,
+    "isUnlimitedUpdates": false,
+    "isMonthlyLimitedPlan": false,
+    "monthlyUpdateLimit": null,
+    "monthlyRenewalPrice": null,
+    "additionalFeatures": [],
+    "isHidden": false,
+    "createdAt": "2026-04-23T12:19:03.061Z",
+    "updatedAt": "2026-04-23T12:19:03.061Z",
+    "__v": 0
+  },
+  {
+    "_id": "67ac823268fca4c7241a3685",
+    "serviceName": "Inventory Management System",
+    "category": "cloud_software_development",
+    "packageIncludes": [
+      "premium theme",
+      "free content updates",
+      "free maintenance",
+      "user friendly",
+      "mobile optimized",
+      "fully customizable",
+      "admin panel integration"
+    ],
+    "perfectFor": [
+      {
+        "text": "freelancers",
+        "icon": "fa:FaUserCircle"
+      }
+    ],
+    "serviceImage": [
+      "http://res.cloudinary.com/doz5sxyln/image/upload/v1739358730/ddedwamgh7ocme83neam.jpg"
+    ],
+    "price": 420000,
+    "sellingPrice": 200000,
+    "formattedDescriptions": [
+      {
+        "content": "<p class=\"mb-4\">An Inventory Management System is a software solution designed to help businesses track, manage, and optimize their stock levels in real time. It automates stock monitoring, prevents overstocking or shortages, and ensures smooth supply chain operations.</p><p class=\"mb-4\">With features like barcode scanning, automated restocking, real-time inventory tracking, and detailed reporting, it helps businesses improve efficiency, reduce costs, and streamline operations. Whether for retail, manufacturing, or warehouses, an Inventory Management System is essential for maintaining accurate stock control and business growth.</p>",
+        "_id": "67e517f4e34faaa083dca823"
+      }
+    ],
+    "isWebsiteService": false,
+    "totalPages": 4,
+    "checkpoints": [
+      {
+        "name": "Project Initiation",
+        "percentage": 4,
+        "_id": "67e517f4e34faaa083dca824"
+      },
+      {
+        "name": "Core Backend & Database Setup",
+        "percentage": 2,
+        "_id": "67e517f4e34faaa083dca825"
+      },
+      {
+        "name": "Server & database architecture setup",
+        "percentage": 2,
+        "_id": "67e517f4e34faaa083dca826"
+      },
+      {
+        "name": "User roles & authentication system",
+        "percentage": 8,
+        "_id": "67e517f4e34faaa083dca827"
+      },
+      {
+        "name": "Dashboard structure & data flow design",
+        "percentage": 4,
+        "_id": "67e517f4e34faaa083dca828"
+      },
+      {
+        "name": "Basic backend functionality setup",
+        "percentage": 5,
+        "_id": "67e517f4e34faaa083dca829"
+      },
+      {
+        "name": "Core Modules Development",
+        "percentage": 5,
+        "_id": "67e517f4e34faaa083dca82a"
+      },
+      {
+        "name": "Frontend Development & UI Implementation",
+        "percentage": 20,
+        "_id": "67e517f4e34faaa083dca82b"
+      },
+      {
+        "name": "Dashboard & reports visualization",
+        "percentage": 5,
+        "_id": "67e517f4e34faaa083dca82c"
+      },
+      {
+        "name": "Integration of UI with backend functions",
+        "percentage": 20,
+        "_id": "67e517f4e34faaa083dca82d"
+      },
+      {
+        "name": "Responsive design for mobile & desktop",
+        "percentage": 5,
+        "_id": "67e517f4e34faaa083dca82e"
+      },
+      {
+        "name": "User-friendly navigation & search features",
+        "percentage": 2,
+        "_id": "67e517f4e34faaa083dca82f"
+      },
+      {
+        "name": "Email & SMS Notifications",
+        "percentage": 3,
+        "_id": "67e517f4e34faaa083dca830"
+      },
+      {
+        "name": "Role-Based Access Control",
+        "percentage": 3,
+        "_id": "67e517f4e34faaa083dca831"
+      },
+      {
+        "name": "Basic Third-Party Integrations",
+        "percentage": 4,
+        "_id": "67e517f4e34faaa083dca832"
+      },
+      {
+        "name": "Performance testing across devices",
+        "percentage": 2,
+        "_id": "67e517f4e34faaa083dca833"
+      },
+      {
+        "name": "Fixing bugs & security updates",
+        "percentage": 2,
+        "_id": "67e517f4e34faaa083dca834"
+      },
+      {
+        "name": "User Acceptance Testing (UAT)",
+        "percentage": 2,
+        "_id": "67e517f4e34faaa083dca835"
+      },
+      {
+        "name": "Final review & approval by client",
+        "percentage": 2,
+        "_id": "67e517f4e34faaa083dca836"
+      },
+      {
+        "name": "Deployment & Launch",
+        "percentage": 0,
+        "_id": "67e517f4e34faaa083dca837"
+      }
+    ],
+    "isFeatureUpgrade": false,
+    "upgradeType": "",
+    "compatibleWith": [],
+    "keyBenefits": [],
+    "additionalFeatures": [],
+    "createdAt": "2025-02-12T11:12:50.291Z",
+    "updatedAt": "2025-03-27T09:18:44.175Z",
+    "__v": 0,
+    "isWebsiteUpdate": false,
+    "updateCount": null,
+    "validityPeriod": null,
+    "isHidden": "false"
+  },
+  {
+    "_id": "67a8a704c46161fd031d6e43",
+    "serviceName": "Payment Gateway",
+    "category": "feature_upgrades",
+    "packageIncludes": [
+      "seamless online payment",
+      "multiple payment methods",
+      "secure encrypted transactions",
+      "real time payment tracking",
+      "enhanced user experience"
+    ],
+    "perfectFor": [],
+    "serviceImage": [
+      "http://res.cloudinary.com/doz5sxyln/image/upload/v1739106028/zqny6ilv4na1oxwbtks3.jpg"
+    ],
+    "price": 15000,
+    "sellingPrice": 9999,
+    "description": "<p class=\"mb-4\">A secure and reliable payment gateway that simplifies online transactions, ensuring a smooth and hassle-free payment experience for businesses and customers.  </p>",
+    "websiteTypeDescription": " <h4>Our Objective</h4>\n                   <pTo provide you with a professional, user-friendly, and efficient gallery solution that enhances your website's visual appeal and user engagement. We ensure seamless integration, optimal performance, and complete satisfaction with our development services.</p>",
+    "isWebsiteService": false,
+    "totalPages": 4,
+    "checkpoints": [],
+    "isFeatureUpgrade": true,
+    "upgradeType": "feature",
+    "compatibleWith": [
+      "dynamic_websites",
+      "web_applications",
+      "mobile_apps"
+    ],
+    "keyBenefits": [
+      "secure_transactions",
+      "multiple_payment_methods",
+      "transaction_tracking",
+      "fraud_protection"
+    ],
+    "additionalFeatures": [],
+    "createdAt": "2025-02-09T13:00:52.035Z",
+    "updatedAt": "2025-03-08T09:42:43.199Z",
+    "__v": 0,
+    "formattedDescriptions": [
+      {
+        "content": "",
+        "_id": "67cc1113b91c593a3f274adf"
+      }
+    ],
+    "isWebsiteUpdate": false,
+    "updateCount": null,
+    "validityPeriod": null,
+    "isHidden": false
+  },
+  {
+    "_id": "67c878cea50cbea802709710",
+    "serviceName": "Ecommerce App",
+    "category": "app_development",
+    "packageIncludes": [
+      "admin panel integration",
+      "fully customizable",
+      "payment gateway",
+      "unlimited products",
+      "SEO optimized",
+      "user friendly"
+    ],
+    "perfectFor": [
+      {
+        "text": "retailers",
+        "icon": "lucide:Store"
+      },
+      {
+        "text": "wholesalers",
+        "icon": "lucide:PackageOpen"
+      },
+      {
+        "text": "grocery_stores",
+        "icon": "lucide:ShoppingCart"
+      },
+      {
+        "text": "clothing_stores",
+        "icon": "lucide:Shirt"
+      },
+      {
+        "text": "mobile_electronics_sellers",
+        "icon": "lucide:Smartphone"
+      },
+      {
+        "text": "furniture_shops",
+        "icon": "lucide:Sofa"
+      }
+    ],
+    "serviceImage": [
+      "http://res.cloudinary.com/doz5sxyln/image/upload/v1741191360/m8va1naba3scqgwyno6v.jpg"
+    ],
+    "price": 200000,
+    "sellingPrice": 119999,
+    "formattedDescriptions": [
+      {
+        "content": "<p class=\"mb-4\">An E-commerce App allows businesses to sell their products online with a seamless shopping experience. Customers can browse products, add items to their cart, and place orders with secure payment options. The app provides order tracking, user accounts, and push notifications for promotions. Business owners can manage their products, orders, and customer interactions through an admin panel.</p>",
+        "_id": "67c878cea50cbea802709711"
+      }
+    ],
+    "isWebsiteService": true,
+    "totalPages": 4,
+    "checkpoints": [],
+    "isFeatureUpgrade": false,
+    "upgradeType": "",
+    "compatibleCategories": [],
+    "keyBenefits": [],
+    "isWebsiteUpdate": false,
+    "validityPeriod": null,
+    "updateCount": null,
+    "additionalFeatures": [],
+    "createdAt": "2025-03-05T16:16:14.212Z",
+    "updatedAt": "2025-03-05T16:16:14.212Z",
+    "__v": 0,
+    "isHidden": "false"
+  },
+  {
+    "_id": "67ab52027bc4940983e09b05",
+    "serviceName": "Portfolio Website",
+    "category": "standard_websites",
+    "packageIncludes": [
+      "7 pages",
+      "premium theme",
+      "free content updates",
+      "free maintenance",
+      "mobile optimized",
+      "SEO optimized"
+    ],
+    "perfectFor": [
+      {
+        "text": "professional portfolios",
+        "icon": "fa:FaBriefcase"
+      },
+      {
+        "text": "job seekers",
+        "icon": "fa:FaUsers"
+      },
+      {
+        "text": "personal branding",
+        "icon": "fa:FaUserCircle"
+      },
+      {
+        "text": "freelancers",
+        "icon": "fa:FaUserCircle"
+      },
+      {
+        "text": "entrepreneurs",
+        "icon": "md:MdBusiness"
+      },
+      {
+        "text": "immigration consultants",
+        "icon": "fa:FaPlane"
+      },
+      {
+        "text": "small_businesses",
+        "icon": "lucide:Store"
+      }
+    ],
+    "serviceImage": [
+      "http://res.cloudinary.com/doz5sxyln/image/upload/v1742379046/tbmgrflr8xy93uthgdmf.jpg"
+    ],
+    "price": 25500,
+    "sellingPrice": 12999,
+    "formattedDescriptions": [
+      {
+        "content": "<p class=\"mb-4\"><span style=\"font-size: 18px\"><strong>Description:-</strong></span></p><p class=\"mb-4\">A portfolio website is a personal or professional online space designed to showcase your skills, experiences, and accomplishments. It typically includes sections like an about page, project gallery, resume, contact form, and client testimonials. Ideal for freelancers, designers, developers, photographers, and other professionals, it serves as a digital resume, helping visitors understand your expertise and offering a platform to attract clients, collaborators, or potential employers. With interactive elements, modern design, and easy navigation, a portfolio website effectively highlights your work and personal brand.<br></p><hr><p class=\"mb-4\" style=\"line-height: normal\"><span style=\"font-size: 18px\"><strong>Business Benefits of a Portfolio Website:</strong></span></p><p class=\"mb-4\" style=\"line-height: normal\"><strong>1. Increased Visibility:</strong> Attracts potential clients through search engines and online platforms.</p><p class=\"mb-4\" style=\"line-height: normal\"><strong>2. Lead Generation:</strong> Provides a direct way for clients to contact you through forms, chat, or contact details.</p><p class=\"mb-4\" style=\"line-height: normal\"><strong>3. Showcases Expertise:</strong> Builds trust by displaying your successful projects, testimonials, and case studies.</p><p class=\"mb-4\" style=\"line-height: normal\"><strong>4. Improved Brand Image:</strong> Creates a professional impression, increasing credibility and authority in your industry.</p><p class=\"mb-4\" style=\"line-height: normal\"><strong>5. Faster Decision-Making:</strong> Clients can view your work and make informed decisions quickly.</p><p class=\"mb-4\" style=\"line-height: normal\"><strong>6. Competitive Advantage: </strong>Stand out from competitors with a customized and interactive showcase of your offerings.</p><p class=\"mb-4\" style=\"line-height: normal\"><strong>7. Cost-Effective Promotion:</strong> Reduces reliance on paid advertising by organically attracting leads.</p><p class=\"mb-4\" style=\"line-height: normal\"><strong>8. Easier Portfolio Sharing:</strong> Quickly share your work with prospects via a single link, streamlining client outreach.</p>",
+        "_id": "67daa422fdff78dd8b229954"
+      },
+      {
+        "content": "<p class=\"mb-4\" style=\"line-height: normal\"><span style=\"font-size: 18px\"><strong>Build Your Stunning Portfolio Website with Mera Software</strong></span></p><p class=\"mb-4\">A portfolio website is your digital identity, showcasing your work, skills, and achievements to the world. Whether you're a freelancer, agency, artist, or business owner, a well-designed portfolio website can leave a lasting impression and attract more opportunities.<br><br><br><span style=\"font-size: 18px\"><strong>Why Mera Software?</strong></span></p><ul class=\"list-disc pl-4 mb-2\"><li><p class=\"mb-4\" style=\"line-height: normal\"><strong>Expert Developers:</strong> We craft every website with precision using modern technologies.</p></li><li><p class=\"mb-4\" style=\"line-height: normal\">End-<strong>to-End Support: </strong>From initial concept to final deployment, we assist you at every step.</p></li><li><p class=\"mb-4\" style=\"line-height: normal\"><strong>Flexible Payment Options:</strong> Choose between full payment or our easy installment plan.</p></li><li><p class=\"mb-4\" style=\"line-height: normal\"><strong>Dashboard Access: </strong>Track progress, communicate with developers, and upload content seamlessly.<br></p><hr><p class=\"mb-4\" style=\"line-height: normal\"><br><span style=\"font-size: 18px\"><strong>Our Process:-</strong></span></p><p class=\"mb-4\" style=\"line-height: normal\"><strong>1. Consultation:</strong> Understand your goals and expectations.</p><p class=\"mb-4\" style=\"line-height: normal\"><strong>2. Design &amp; Development: </strong>Bring your vision to life with a stunning design.</p><p class=\"mb-4\" style=\"line-height: normal\"><strong>3. Feedback &amp; Revisions:</strong> Make adjustments to ensure it matches your needs.</p><p class=\"mb-4\" style=\"line-height: normal\"><strong>4. Launch: </strong>Deploy the website and make it live.</p><p class=\"mb-4\" style=\"line-height: normal\"><strong>5. Post-Launch Support:</strong> Enjoy one month of free content updates.<br><br></p></li></ul>",
+        "_id": "67daa422fdff78dd8b229955"
+      },
+      {
+        "content": "<p class=\"mb-4\" style=\"line-height: normal\"><span style=\"font-size: 18px\"><strong>Important Note:</strong></span></p><p class=\"mb-4\">Once development begins, changes cannot be made until project completion. Additional updates and changes can be requested through our affordable upgrade plans. For further details, refer to our <a target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-blue-600  underline\" href=\"https://www.merasoftware.com/terms-and-conditions\">Terms and Conditions</a>, <a target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-blue-600  underline\" href=\"https://www.merasoftware.com/privacy-policy\">Privacy Policy</a>, and <a target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-blue-600  underline\" href=\"https://www.merasoftware.com/refund-policy\">Refund Policy</a>.<br></p><hr><p class=\"mb-4\" style=\"line-height: normal\"><span style=\"font-size: 18px\"><strong>Get Started Today!</strong></span></p><p class=\"mb-4\">Ready to create a remarkable online presence? Contact us now and let’s build a stunning portfolio website that captures your essence.</p><p class=\"mb-4\"><a target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-blue-600  underline\" href=\"https://www.merasoftware.com/contact-us\">Contact Us</a> | <a target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-blue-600  underline\" href=\"https://www.merasoftware.com/start-new-project\">Explore Our Plans</a> | View More Projects</p>",
+        "_id": "67daa422fdff78dd8b229956"
+      }
+    ],
+    "isWebsiteService": true,
+    "totalPages": 7,
+    "checkpoints": [
+      {
+        "name": "Website Structure ready",
+        "percentage": 2,
+        "_id": "67daa422fdff78dd8b229957"
+      },
+      {
+        "name": "Header created",
+        "percentage": 5,
+        "_id": "67daa422fdff78dd8b229958"
+      },
+      {
+        "name": "Footer created",
+        "percentage": 5,
+        "_id": "67daa422fdff78dd8b229959"
+      },
+      {
+        "name": "Home Page",
+        "percentage": 11.14,
+        "_id": "67daa422fdff78dd8b22995a"
+      },
+      {
+        "name": "About Us Page",
+        "percentage": 11.14,
+        "_id": "67daa422fdff78dd8b22995b"
+      },
+      {
+        "name": "Contact Us Page",
+        "percentage": 11.14,
+        "_id": "67daa422fdff78dd8b22995c"
+      },
+      {
+        "name": "Gallery Page",
+        "percentage": 11.14,
+        "_id": "67daa422fdff78dd8b22995d"
+      },
+      {
+        "name": "Additional Page 1",
+        "percentage": 11.14,
+        "_id": "67daa422fdff78dd8b22995e"
+      },
+      {
+        "name": "Additional Page 2",
+        "percentage": 11.14,
+        "_id": "67daa422fdff78dd8b22995f"
+      },
+      {
+        "name": "Additional Page 3",
+        "percentage": 11.14,
+        "_id": "67daa422fdff78dd8b229960"
+      },
+      {
+        "name": "Final Testing",
+        "percentage": 10,
+        "_id": "67daa422fdff78dd8b229961"
+      }
+    ],
+    "isFeatureUpgrade": false,
+    "upgradeType": "",
+    "compatibleWith": [],
+    "keyBenefits": [],
+    "additionalFeatures": [
+      "67a8a783c46161fd031d6ec4",
+      "67a8a84cc46161fd031d6fc6",
+      "67a8ab65c46161fd031d714e",
+      "67ab511c7bc4940983e09ac9"
+    ],
+    "createdAt": "2025-02-11T13:34:58.653Z",
+    "updatedAt": "2025-07-07T05:19:35.379Z",
+    "__v": 0,
+    "isWebsiteUpdate": false,
+    "updateCount": null,
+    "validityPeriod": null,
+    "isHidden": false
+  },
+  {
+    "_id": "67ca8f78b74653ac7d14d6de",
+    "serviceName": "College Website ",
+    "category": "standard_websites",
+    "packageIncludes": [
+      "premium theme",
+      "free content updates",
+      "free maintenance",
+      "fully customizable",
+      "user friendly"
+    ],
+    "perfectFor": [
+      {
+        "text": "education consultants",
+        "icon": "fa:FaBriefcase"
+      },
+      {
+        "text": "schools and colleges",
+        "icon": "fa:FaSchool"
+      },
+      {
+        "text": "corporate training programs",
+        "icon": "fa:FaBriefcase"
+      },
+      {
+        "text": "universities",
+        "icon": "md:MdSchool"
+      },
+      {
+        "text": "coaching institutes",
+        "icon": "fa:FaBook"
+      }
+    ],
+    "serviceImage": [
+      "http://res.cloudinary.com/doz5sxyln/image/upload/v1741328149/sfkszabo9qbr9hwudcmd.jpg",
+      "http://res.cloudinary.com/doz5sxyln/image/upload/v1741328153/c2ne5zwbjfkekfcq4iuz.jpg",
+      "http://res.cloudinary.com/doz5sxyln/image/upload/v1741328156/bgpt87uqecumm4al6s4r.jpg",
+      "http://res.cloudinary.com/doz5sxyln/image/upload/v1741328162/dmwqrwvkgceibyl6ueoa.jpg"
+    ],
+    "price": 70000,
+    "sellingPrice": 30000,
+    "formattedDescriptions": [
+      {
+        "content": "<p class=\"mb-4\"> An educational website is an online platform designed to facilitate learning, teaching, and knowledge sharing. It typically serves as a resource for students, educators, and professionals, providing tools and content for various educational purposes</p>",
+        "_id": "67cc0004b91c593a3f27436a"
+      }
+    ],
+    "isWebsiteService": true,
+    "totalPages": 21,
+    "checkpoints": [
+      {
+        "name": "Website Structure ready",
+        "percentage": 2,
+        "_id": "67cc0004b91c593a3f27436b"
+      },
+      {
+        "name": "Header created",
+        "percentage": 5,
+        "_id": "67cc0004b91c593a3f27436c"
+      },
+      {
+        "name": "Footer created",
+        "percentage": 5,
+        "_id": "67cc0004b91c593a3f27436d"
+      },
+      {
+        "name": "Home Page",
+        "percentage": 3.71,
+        "_id": "67cc0004b91c593a3f27436e"
+      },
+      {
+        "name": "About Us Page",
+        "percentage": 3.71,
+        "_id": "67cc0004b91c593a3f27436f"
+      },
+      {
+        "name": "Contact Us Page",
+        "percentage": 3.71,
+        "_id": "67cc0004b91c593a3f274370"
+      },
+      {
+        "name": "Gallery Page",
+        "percentage": 3.71,
+        "_id": "67cc0004b91c593a3f274371"
+      },
+      {
+        "name": "Additional Page 1",
+        "percentage": 3.71,
+        "_id": "67cc0004b91c593a3f274372"
+      },
+      {
+        "name": "Additional Page 2",
+        "percentage": 3.71,
+        "_id": "67cc0004b91c593a3f274373"
+      },
+      {
+        "name": "Additional Page 3",
+        "percentage": 3.71,
+        "_id": "67cc0004b91c593a3f274374"
+      },
+      {
+        "name": "Additional Page 4",
+        "percentage": 3.71,
+        "_id": "67cc0004b91c593a3f274375"
+      },
+      {
+        "name": "Additional Page 5",
+        "percentage": 3.71,
+        "_id": "67cc0004b91c593a3f274376"
+      },
+      {
+        "name": "Additional Page 6",
+        "percentage": 3.71,
+        "_id": "67cc0004b91c593a3f274377"
+      },
+      {
+        "name": "Additional Page 7",
+        "percentage": 3.71,
+        "_id": "67cc0004b91c593a3f274378"
+      },
+      {
+        "name": "Additional Page 8",
+        "percentage": 3.71,
+        "_id": "67cc0004b91c593a3f274379"
+      },
+      {
+        "name": "Additional Page 9",
+        "percentage": 3.71,
+        "_id": "67cc0004b91c593a3f27437a"
+      },
+      {
+        "name": "Additional Page 10",
+        "percentage": 3.71,
+        "_id": "67cc0004b91c593a3f27437b"
+      },
+      {
+        "name": "Additional Page 11",
+        "percentage": 3.71,
+        "_id": "67cc0004b91c593a3f27437c"
+      },
+      {
+        "name": "Additional Page 12",
+        "percentage": 3.71,
+        "_id": "67cc0004b91c593a3f27437d"
+      },
+      {
+        "name": "Additional Page 13",
+        "percentage": 3.71,
+        "_id": "67cc0004b91c593a3f27437e"
+      },
+      {
+        "name": "Additional Page 14",
+        "percentage": 3.71,
+        "_id": "67cc0004b91c593a3f27437f"
+      },
+      {
+        "name": "Additional Page 15",
+        "percentage": 3.71,
+        "_id": "67cc0004b91c593a3f274380"
+      },
+      {
+        "name": "Additional Page 16",
+        "percentage": 3.71,
+        "_id": "67cc0004b91c593a3f274381"
+      },
+      {
+        "name": "Additional Page 17",
+        "percentage": 3.71,
+        "_id": "67cc0004b91c593a3f274382"
+      },
+      {
+        "name": "Final Testing",
+        "percentage": 10,
+        "_id": "67cc0004b91c593a3f274383"
+      }
+    ],
+    "isFeatureUpgrade": false,
+    "compatibleWith": [],
+    "keyBenefits": [],
+    "isWebsiteUpdate": false,
+    "validityPeriod": null,
+    "updateCount": null,
+    "additionalFeatures": [
+      "67a8a783c46161fd031d6ec4",
+      "67a8ab65c46161fd031d714e",
+      "67ab511c7bc4940983e09ac9",
+      "67a8a84cc46161fd031d6fc6"
+    ],
+    "createdAt": "2025-03-07T06:17:28.751Z",
+    "updatedAt": "2026-07-30T13:57:45.972Z",
+    "__v": 0,
+    "isHidden": false
+  },
+  {
+    "_id": "67e3be7f2f1de688ecac56e5",
+    "serviceName": "CRM Based CMS",
+    "category": "cloud_software_development",
+    "packageIncludes": [
+      "easy profile account management",
+      "detailed audit logs accountability",
+      "instant customer support"
+    ],
+    "perfectFor": [
+      {
+        "text": "small_businesses",
+        "icon": "lucide:Store"
+      },
+      {
+        "text": "entrepreneurs",
+        "icon": "md:MdBusiness"
+      },
+      {
+        "text": "service_providers",
+        "icon": "lucide:HeartHandshake"
+      }
+    ],
+    "serviceImage": [
+      "http://res.cloudinary.com/doz5sxyln/image/upload/v1742978576/qrpmgsvbfr4zzdvukm8y.jpg"
+    ],
+    "price": 280000,
+    "sellingPrice": 115900,
+    "formattedDescriptions": [
+      {
+        "content": "<p class=\"mb-4\" style=\"line-height: normal\"><span style=\"font-size: 22px\"><strong>Description</strong></span>:<br><br><span style=\"font-size: 16px\">A <strong>Complaint Management Software</strong> <strong>(CMS)</strong> is designed to help businesses and organizations efficiently <strong>handle customer complaints</strong>, <strong>service requests</strong>, and <strong>feedback</strong>. It streamlines the process by allowing users to register complaints, track their status, and receive timely updates while businesses can manage and resolve issues efficiently through a centralized system.</span></p><p class=\"mb-4\"><span style=\"font-size: 16px\">This software ensures better customer satisfaction, improved response time, and organized complaint handling, reducing manual effort and miscommunication.</span><br><br><span style=\"font-size: 22px\"><strong>Business Benefits of a CRM-Based CMS System:</strong></span></p><ol class=\"list-decimal pl-4 mb-2\"><li><p class=\"mb-4\"><span style=\"font-size: 16px\"><strong>Centralized Customer Management:</strong> Easily access and manage customer data for personalized interactions and targeted marketing.</span></p></li><li><p class=\"mb-4\"><span style=\"font-size: 16px\"><strong>Enhanced Sales and Marketing:</strong> Track customer journeys, run personalized campaigns, and improve lead conversions.</span></p></li><li><p class=\"mb-4\"><span style=\"font-size: 16px\"><strong>Streamlined Operations:</strong> Automate tasks, reduce manual work, and ensure better collaboration between teams.</span></p></li><li><p class=\"mb-4\"><span style=\"font-size: 16px\"><strong>Data-Driven Decisions:</strong> Generate reports and insights for informed business strategies and growth.</span></p></li><li><p class=\"mb-4\"><span style=\"font-size: 16px\"><strong>Improved Customer Experience:</strong> Provide personalized content, faster support, and proactive customer service.</span></p></li></ol>",
+        "_id": "67e5054ce34faaa083dc8ad9"
+      },
+      {
+        "content": "<h2 style=\"line-height: 1.5\"><span style=\"color: rgb(0, 0, 0); font-size: 22px\">We Will Develop Your Software with Expertise</span></h2><p class=\"mb-4\" style=\"line-height: 1.5\"><span style=\"color: rgb(0, 0, 0); font-size: 16px\">At Mera Software, we believe your software should be as unique as your business. </span><span style=\"font-size: 16px\"><br></span><span style=\"color: rgb(202, 0, 0); font-size: 17px\"><strong>What you see here is a general idea of what your software will include and how much it may cost. </strong></span><span style=\"font-size: 16px\"><br><br></span><span style=\"color: rgb(0, 0, 0); font-size: 16px\">Once we get started, </span><span style=\"color: rgb(202, 0, 0); font-size: 17px\"><strong>we’ll work closely with you to understand your specific needs and build your software from scratch.</strong></span><span style=\"color: rgb(0, 0, 0); font-size: 17px\"><strong> </strong></span><span style=\"font-size: 16px\"><br><br></span><span style=\"color: rgb(202, 0, 0); font-size: 17px\"><strong>No shortcuts</strong></span><span style=\"color: rgb(0, 0, 0); font-size: 16px\">, </span><span style=\"color: rgb(202, 0, 0); font-size: 17px\"><strong>just real development done by us.</strong></span><span style=\"color: rgb(0, 0, 0); font-size: 16px\"> </span><a target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-blue-600 \" href=\"https://www.merasoftware.com/disclaimers\"><span style=\"color: rgb(2, 90, 253); font-size: 16px\">Explore Our Working Process.</span></a></p>",
+        "_id": "67e5054ce34faaa083dc8ada"
+      },
+      {
+        "content": "<p class=\"mb-4\" style=\"line-height: normal\"><span style=\"font-size: 22px\"><strong>Why Choose Mera Software?</strong></span></p><ul class=\"list-disc pl-4 mb-2\"><li><p class=\"mb-4\" style=\"line-height: normal\"><span style=\"font-size: 16px\"><strong>Custom Development:</strong> Our team creates software, websites, and apps that fit your business perfectly — no one-size-fits-all solutions.</span></p></li><li><p class=\"mb-4\" style=\"line-height: normal\"><span style=\"font-size: 16px\"><strong>No Automated Builders:</strong> Every piece of code is crafted by our skilled developers to ensure quality and flexibility.</span></p></li><li><p class=\"mb-4\" style=\"line-height: normal\"><span style=\"font-size: 16px\"><strong>Complete Support:</strong> From brainstorming ideas to launching your product, we’re with you every step of the way.</span></p></li><li><p class=\"mb-4\" style=\"line-height: normal\"><span style=\"font-size: 16px\"><strong>Built to Grow:</strong> Our software is designed to scale as your business grows, ensuring long-term success.</span><span style=\"font-size: 17px\"><br></span></p></li></ul>",
+        "_id": "67e5054ce34faaa083dc8adb"
+      },
+      {
+        "content": "<p class=\"mb-4\" style=\"line-height: normal\"><span style=\"font-size: 20px\"><strong>Important Note:</strong></span></p><p class=\"mb-4\" style=\"line-height: 1.5\"><span style=\"font-size: 16px\">Once development begins, changes cannot be made until project completion. Additional updates and changes can be requested through our affordable upgrade plans. For further details, refer to our </span><a target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-blue-600  underline\" href=\"https://www.merasoftware.com/terms-and-conditions\"><span style=\"font-size: 16px\">Terms and Conditions</span></a><span style=\"font-size: 16px\">, </span><a target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-blue-600  underline\" href=\"https://www.merasoftware.com/privacy-policy\"><span style=\"font-size: 16px\">Privacy Policy</span></a><span style=\"font-size: 16px\">, and </span><a target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-blue-600  underline\" href=\"https://www.merasoftware.com/refund-policy\"><span style=\"font-size: 16px\">Refund Policy</span></a><span style=\"font-size: 16px\">.</span></p><hr><p class=\"mb-4\" style=\"line-height: 1.5\"><span style=\"font-size: 18px\"><strong>Get Started Today!</strong></span></p><p class=\"mb-4\" style=\"line-height: 1.5\"><span style=\"font-size: 16px\">Ready to create a remarkable online presence? Contact us now and let’s build a stunning portfolio website that captures your essence.</span></p><p class=\"mb-4\" style=\"line-height: 1.5\"><a target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-blue-600  underline\" href=\"https://www.merasoftware.com/contact-us\"><span style=\"font-size: 16px\">Contact Us</span></a><span style=\"font-size: 16px\"> | </span><a target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-blue-600  underline\" href=\"https://www.merasoftware.com/start-new-project\"><span style=\"font-size: 16px\">Explore Our Plans</span></a><span style=\"font-size: 16px\"> | View More Projects</span></p>",
+        "_id": "67e5054ce34faaa083dc8adc"
+      }
+    ],
+    "isWebsiteService": true,
+    "totalPages": 4,
+    "checkpoints": [
+      {
+        "name": "Project Initiation",
+        "percentage": 4,
+        "_id": "67e5054ce34faaa083dc8add"
+      },
+      {
+        "name": "Core Backend & Database Setup",
+        "percentage": 2,
+        "_id": "67e5054ce34faaa083dc8ade"
+      },
+      {
+        "name": "Server & database architecture setup",
+        "percentage": 2,
+        "_id": "67e5054ce34faaa083dc8adf"
+      },
+      {
+        "name": "User roles & authentication system",
+        "percentage": 8,
+        "_id": "67e5054ce34faaa083dc8ae0"
+      },
+      {
+        "name": "Dashboard structure & data flow design",
+        "percentage": 4,
+        "_id": "67e5054ce34faaa083dc8ae1"
+      },
+      {
+        "name": "Basic backend functionality setup",
+        "percentage": 5,
+        "_id": "67e5054ce34faaa083dc8ae2"
+      },
+      {
+        "name": "Core Modules Development",
+        "percentage": 5,
+        "_id": "67e5054ce34faaa083dc8ae3"
+      },
+      {
+        "name": "Frontend Development & UI Implementation",
+        "percentage": 20,
+        "_id": "67e5054ce34faaa083dc8ae4"
+      },
+      {
+        "name": "Dashboard & reports visualization",
+        "percentage": 5,
+        "_id": "67e5054ce34faaa083dc8ae5"
+      },
+      {
+        "name": "Integration of UI with backend functions",
+        "percentage": 20,
+        "_id": "67e5054ce34faaa083dc8ae6"
+      },
+      {
+        "name": "Responsive design for mobile & desktop",
+        "percentage": 5,
+        "_id": "67e5054ce34faaa083dc8ae7"
+      },
+      {
+        "name": "User-friendly navigation & search features",
+        "percentage": 2,
+        "_id": "67e5054ce34faaa083dc8ae8"
+      },
+      {
+        "name": "Email & SMS Notifications",
+        "percentage": 3,
+        "_id": "67e5054ce34faaa083dc8ae9"
+      },
+      {
+        "name": "Role-Based Access Control",
+        "percentage": 3,
+        "_id": "67e5054ce34faaa083dc8aea"
+      },
+      {
+        "name": "Basic Third-Party Integrations",
+        "percentage": 4,
+        "_id": "67e5054ce34faaa083dc8aeb"
+      },
+      {
+        "name": "Performance testing across devices",
+        "percentage": 2,
+        "_id": "67e5054ce34faaa083dc8aec"
+      },
+      {
+        "name": "Fixing bugs & security updates",
+        "percentage": 2,
+        "_id": "67e5054ce34faaa083dc8aed"
+      },
+      {
+        "name": "User Acceptance Testing (UAT)",
+        "percentage": 2,
+        "_id": "67e5054ce34faaa083dc8aee"
+      },
+      {
+        "name": "Final review & approval by client",
+        "percentage": 2,
+        "_id": "67e5054ce34faaa083dc8aef"
+      },
+      {
+        "name": "Deployment & Launch",
+        "percentage": 0,
+        "_id": "67e5054ce34faaa083dc8af0"
+      }
+    ],
+    "isFeatureUpgrade": false,
+    "compatibleWith": [],
+    "keyBenefits": [],
+    "isWebsiteUpdate": false,
+    "validityPeriod": null,
+    "updateCount": null,
+    "additionalFeatures": [
+      "67a8a67fc46161fd031d6dc2",
+      "67a8a7e9c46161fd031d6f45",
+      "67a8aa69c46161fd031d70c9"
+    ],
+    "createdAt": "2025-03-26T08:44:47.596Z",
+    "updatedAt": "2025-07-07T05:19:35.379Z",
+    "__v": 0,
+    "isHidden": false
+  },
+  {
+    "_id": "68be6ece1a07c283050dbae4",
+    "serviceName": "Support Portal - Single Update",
+    "category": "website_updates",
+    "packageIncludes": [
+      "modify any content",
+      "update information",
+      "file updates included"
+    ],
+    "perfectFor": [],
+    "serviceImage": [
+      "http://res.cloudinary.com/doz5sxyln/image/upload/v1757310240/wxwottjfrp73pblyonyg.jpg"
+    ],
+    "price": 2500,
+    "sellingPrice": 2249,
+    "formattedDescriptions": [
+      {
+        "content": "<p class=\"mb-4\" style=\"line-height: normal\"><strong>Includes:</strong><br>✅ <strong>1 update</strong> for <strong>7 days</strong><br>✅ Static content updates (text changes, notifications, minor information updates)<br>✅ Image uploads (gallery or other sections)<br>✅ Updates for statistics, reports, schedules, or attendance (if applicable)</p><p class=\"mb-4\"><strong>Not Included:</strong> <br>❌ Adding new pages or sections</p>",
+        "_id": "68be8ac5fb4b199f2a11cdac"
+      }
+    ],
+    "isWebsiteService": false,
+    "totalPages": 4,
+    "checkpoints": [],
+    "isFeatureUpgrade": false,
+    "compatibleWith": [
+      "website_updates"
+    ],
+    "keyBenefits": [],
+    "isWebsiteUpdate": true,
+    "validityPeriod": 7,
+    "updateCount": 1,
+    "additionalFeatures": [],
+    "isHidden": false,
+    "createdAt": "2025-09-08T05:51:10.294Z",
+    "updatedAt": "2025-09-08T07:50:29.738Z",
+    "__v": 0
+  },
+  {
+    "_id": "68d3ab00bcc4dfda0707458c",
+    "serviceName": "Yearly Website Updates Plan - Monthly Renewable",
+    "category": "website_updates",
+    "packageIncludes": [
+      "modify any content",
+      "free content updates",
+      "file updates included"
+    ],
+    "perfectFor": [],
+    "serviceImage": [
+      "http://res.cloudinary.com/doz5sxyln/image/upload/v1776246113/fzske18stl29k767bl72.webp"
+    ],
+    "price": 12000,
+    "sellingPrice": 9000,
+    "formattedDescriptions": [
+      {
+        "content": "<p class=\"mb-4\" style=\"line-height: normal\"><span style=\"color: rgb(206, 145, 120)\">Get unlimited website updates with our revolutionary yearly plan! Pay once for the yearly subscription and then renew monthly as needed. Perfect for businesses that require regular website maintenance and updates throughout the year.</span></p>",
+        "_id": "69df5d646afafc60d9723756"
+      }
+    ],
+    "isWebsiteService": false,
+    "totalPages": 4,
+    "checkpoints": [],
+    "isFeatureUpgrade": false,
+    "compatibleWith": [],
+    "keyBenefits": [],
+    "isWebsiteUpdate": true,
+    "validityPeriod": 30,
+    "updateCount": 999999,
+    "isMonthlyRenewablePlan": true,
+    "yearlyPlanDuration": 365,
+    "monthlyRenewalCost": 8000,
+    "isUnlimitedUpdates": true,
+    "additionalFeatures": [],
+    "isHidden": false,
+    "createdAt": "2025-09-24T08:25:36.618Z",
+    "updatedAt": "2026-04-15T09:41:56.928Z",
+    "__v": 0,
+    "isMonthlyLimitedPlan": false,
+    "monthlyRenewalPrice": null,
+    "monthlyUpdateLimit": 1
+  },
+  {
+    "_id": "67ac812268fca4c7241a365e",
+    "serviceName": "Learning Management System",
+    "category": "cloud_software_development",
+    "packageIncludes": [
+      "premium theme",
+      "free content updates",
+      "free maintenance",
+      "fully customizable",
+      "user friendly"
+    ],
+    "perfectFor": [
+      {
+        "text": "exam preparation platforms",
+        "icon": "md:MdMenuBook"
+      },
+      {
+        "text": "e-learning platforms",
+        "icon": "md:MdComputer"
+      }
+    ],
+    "serviceImage": [
+      "http://res.cloudinary.com/doz5sxyln/image/upload/v1739358237/ibskguvyimb5ga5z0xbt.jpg"
+    ],
+    "price": 340000,
+    "sellingPrice": 150000,
+    "formattedDescriptions": [],
+    "isWebsiteService": false,
+    "totalPages": 4,
+    "checkpoints": [
+      {
+        "name": "Project Initiation",
+        "percentage": 4,
+        "_id": "67e517e1e34faaa083dca6f3"
+      },
+      {
+        "name": "Core Backend & Database Setup",
+        "percentage": 2,
+        "_id": "67e517e1e34faaa083dca6f4"
+      },
+      {
+        "name": "Server & database architecture setup",
+        "percentage": 2,
+        "_id": "67e517e1e34faaa083dca6f5"
+      },
+      {
+        "name": "User roles & authentication system",
+        "percentage": 8,
+        "_id": "67e517e1e34faaa083dca6f6"
+      },
+      {
+        "name": "Dashboard structure & data flow design",
+        "percentage": 4,
+        "_id": "67e517e1e34faaa083dca6f7"
+      },
+      {
+        "name": "Basic backend functionality setup",
+        "percentage": 5,
+        "_id": "67e517e1e34faaa083dca6f8"
+      },
+      {
+        "name": "Core Modules Development",
+        "percentage": 5,
+        "_id": "67e517e1e34faaa083dca6f9"
+      },
+      {
+        "name": "Frontend Development & UI Implementation",
+        "percentage": 20,
+        "_id": "67e517e1e34faaa083dca6fa"
+      },
+      {
+        "name": "Dashboard & reports visualization",
+        "percentage": 5,
+        "_id": "67e517e1e34faaa083dca6fb"
+      },
+      {
+        "name": "Integration of UI with backend functions",
+        "percentage": 20,
+        "_id": "67e517e1e34faaa083dca6fc"
+      },
+      {
+        "name": "Responsive design for mobile & desktop",
+        "percentage": 5,
+        "_id": "67e517e1e34faaa083dca6fd"
+      },
+      {
+        "name": "User-friendly navigation & search features",
+        "percentage": 2,
+        "_id": "67e517e1e34faaa083dca6fe"
+      },
+      {
+        "name": "Email & SMS Notifications",
+        "percentage": 3,
+        "_id": "67e517e1e34faaa083dca6ff"
+      },
+      {
+        "name": "Role-Based Access Control",
+        "percentage": 3,
+        "_id": "67e517e1e34faaa083dca700"
+      },
+      {
+        "name": "Basic Third-Party Integrations",
+        "percentage": 4,
+        "_id": "67e517e1e34faaa083dca701"
+      },
+      {
+        "name": "Performance testing across devices",
+        "percentage": 2,
+        "_id": "67e517e1e34faaa083dca702"
+      },
+      {
+        "name": "Fixing bugs & security updates",
+        "percentage": 2,
+        "_id": "67e517e1e34faaa083dca703"
+      },
+      {
+        "name": "User Acceptance Testing (UAT)",
+        "percentage": 2,
+        "_id": "67e517e1e34faaa083dca704"
+      },
+      {
+        "name": "Final review & approval by client",
+        "percentage": 2,
+        "_id": "67e517e1e34faaa083dca705"
+      },
+      {
+        "name": "Deployment & Launch",
+        "percentage": 0,
+        "_id": "67e517e1e34faaa083dca706"
+      }
+    ],
+    "isFeatureUpgrade": false,
+    "upgradeType": "",
+    "compatibleWith": [],
+    "keyBenefits": [],
+    "additionalFeatures": [],
+    "createdAt": "2025-02-12T11:08:18.593Z",
+    "updatedAt": "2025-03-27T09:18:25.244Z",
+    "__v": 0,
+    "compatibleCategories": [],
+    "isWebsiteUpdate": false,
+    "updateCount": null,
+    "validityPeriod": null,
+    "isHidden": "false"
+  },
+  {
+    "_id": "67c8832da50cbea802709ba2",
+    "serviceName": "Membership & Subscription App",
+    "category": "app_development",
+    "packageIncludes": [
+      "admin panel integration",
+      "fully customizable",
+      "payment gateway",
+      "SEO optimized",
+      "user management",
+      "user friendly",
+      "unlimited pages"
+    ],
+    "perfectFor": [
+      {
+        "text": "gyms",
+        "icon": "lucide:Activity"
+      },
+      {
+        "text": "coaching_centers",
+        "icon": "lucide:BookOpen"
+      },
+      {
+        "text": "personal_trainers",
+        "icon": "lucide:Dumbbell"
+      },
+      {
+        "text": "digital_content_creators",
+        "icon": "lucide:Video"
+      },
+      {
+        "text": "online_learning_platforms",
+        "icon": "lucide:MonitorPlay"
+      },
+      {
+        "text": "small_businesses",
+        "icon": "lucide:Store"
+      }
+    ],
+    "serviceImage": [
+      "http://res.cloudinary.com/doz5sxyln/image/upload/v1741194018/jl2dneysrfljj80kggx0.jpg"
+    ],
+    "price": 200000,
+    "sellingPrice": 119999,
+    "formattedDescriptions": [
+      {
+        "content": "<p class=\"mb-4\">A Membership &amp; Subscription App allows businesses to offer exclusive content, services, or discounts to subscribed members. Customers can sign up for memberships, renew subscriptions, and receive automated renewal reminders. The admin panel allows businesses to manage members, track subscriptions, and send targeted notifications. Ideal for gyms, coaching centers, and content creators.</p>",
+        "_id": "67c8832da50cbea802709ba3"
+      }
+    ],
+    "isWebsiteService": true,
+    "totalPages": 4,
+    "checkpoints": [],
+    "isFeatureUpgrade": false,
+    "upgradeType": "",
+    "compatibleCategories": [],
+    "keyBenefits": [],
+    "isWebsiteUpdate": false,
+    "validityPeriod": null,
+    "updateCount": null,
+    "additionalFeatures": [],
+    "createdAt": "2025-03-05T17:00:29.502Z",
+    "updatedAt": "2025-07-07T08:55:33.590Z",
+    "__v": 0,
+    "isHidden": false
+  },
+  {
+    "_id": "67a8a67fc46161fd031d6dc2",
+    "serviceName": "User Management",
+    "category": "feature_upgrades",
+    "packageIncludes": [
+      "seamless multi user access",
+      "controlled role based permissions",
+      "enhanced security authentication",
+      "easy profile account management",
+      "real time work activity tracking",
+      "detailed audit logs accountability"
+    ],
+    "perfectFor": [],
+    "serviceImage": [
+      "http://res.cloudinary.com/doz5sxyln/image/upload/v1739105796/jnmypvkvngahozzlq0gg.jpg"
+    ],
+    "price": 70000,
+    "sellingPrice": 25999,
+    "description": "<p class=\"mb-4\">A powerful user management system that helps businesses control user access, track activities, and maintain a systematic workflow for better efficiency.  </p>",
+    "websiteTypeDescription": " <h4>Our Objective</h4>\n                   <pTo provide you with a professional, user-friendly, and efficient gallery solution that enhances your website's visual appeal and user engagement. We ensure seamless integration, optimal performance, and complete satisfaction with our development services.</p>",
+    "isWebsiteService": false,
+    "totalPages": 4,
+    "checkpoints": [],
+    "isFeatureUpgrade": true,
+    "upgradeType": "component",
+    "compatibleWith": [
+      "dynamic_websites",
+      "cloud_software_development",
+      "app_development"
+    ],
+    "keyBenefits": [
+      "create_and_delete_users",
+      "track_activities",
+      "access_control",
+      "workload_management",
+      "secure_management",
+      "team_collaboration"
+    ],
+    "additionalFeatures": [],
+    "createdAt": "2025-02-09T12:58:39.302Z",
+    "updatedAt": "2026-07-23T07:04:25.892Z",
+    "__v": 0,
+    "formattedDescriptions": [
+      {
+        "content": "<p class=\"mb-4\"><span style=\"font-size: 18px\"><strong>Description:</strong></span><br>We will integrate a <strong>User Management System</strong> into your <strong>dynamic website, mobile app, or cloud software</strong>. This system will allow you to create users with <strong>different access levels</strong> and track their activities in real-time.</p><hr><p class=\"mb-4\"><span style=\"font-size: 20px\"><strong>Features:-</strong></span><br>✅ <strong>Create and manage multiple users</strong> with different permissions<br>✅ <strong>Monitor user activity</strong> and track work progress<br>✅ <strong>Prevent unauthorized actions</strong>, ensuring transparency &amp; security<br>✅ <strong>Improve workflow efficiency</strong> and eliminate chances of errors or cheating</p><p class=\"mb-4\">Once integrated, this system will <strong>change the way your software operates</strong>, improving security and work tracking. We will also provide <strong>training</strong> on how to use it effectively.</p>",
+        "_id": "67dfe22dff87806f30986700"
+      }
+    ],
+    "isWebsiteUpdate": false,
+    "updateCount": null,
+    "validityPeriod": null,
+    "isHidden": false
+  },
+  {
+    "_id": "67ac6b2d68fca4c7241a3516",
+    "serviceName": "Restaurant Website",
+    "category": "standard_websites",
+    "packageIncludes": [
+      "5 pages",
+      "complete food menu",
+      "premium theme",
+      "free content updates",
+      "free maintenance",
+      "mobile optimized"
+    ],
+    "perfectFor": [
+      {
+        "text": "small restaurants",
+        "icon": "fa:FaUtensils"
+      },
+      {
+        "text": "cafes",
+        "icon": "fa:FaCoffee"
+      },
+      {
+        "text": "indian dhabas",
+        "icon": "fa:FaUtensils"
+      },
+      {
+        "text": "fast food outlets",
+        "icon": "fa:FaShoppingBag"
+      },
+      {
+        "text": "food chains",
+        "icon": "fa:FaStore"
+      },
+      {
+        "text": "street food vendors",
+        "icon": "pi:PiBowlFoodLight"
+      }
+    ],
+    "serviceImage": [
+      "http://res.cloudinary.com/doz5sxyln/image/upload/v1742373393/wh8c5obponqbqy5ewyuh.jpg"
+    ],
+    "price": 23000,
+    "sellingPrice": 8999,
+    "formattedDescriptions": [
+      {
+        "content": "<p class=\"mb-4\"><span style=\"font-size: 18px\"><strong>Description:</strong></span><br>A simple and visually appealing restaurant website that displays the menu, restaurant details, and contact information. Perfect for showcasing dishes, operating hours, and location without the need for frequent updates.<br><br><span style=\"font-size: 18px\"><strong>Business Benefits of a Restaurant Website:</strong></span></p><ol class=\"list-decimal pl-4 mb-2\"><li><p class=\"mb-4\" style=\"line-height: normal\"><strong>Enhanced Online Presence:</strong> Improve visibility and attract more customers through search engines and social media.</p></li><li><p class=\"mb-4\" style=\"line-height: normal\"><strong>24/7 Availability:</strong> Provide customers with access to your menu, location, and contact information at all times.</p></li><li><p class=\"mb-4\" style=\"line-height: normal\"><strong>Increased Reservations:</strong> Allow diners to book tables directly through an integrated reservation system.</p></li><li><p class=\"mb-4\" style=\"line-height: normal\"><strong>Showcase Your Menu:</strong> Display your dishes with high-quality images, descriptions, and pricing.</p></li><li><p class=\"mb-4\" style=\"line-height: normal\"><strong>Boost Customer Engagement:</strong> Offer promotions, share events, and collect feedback through your website.</p></li><li><p class=\"mb-4\" style=\"line-height: normal\"><strong>Online Ordering:</strong> Facilitate delivery and takeaway services with an easy-to-use online ordering system.</p></li><li><p class=\"mb-4\" style=\"line-height: normal\"><strong>Brand Building:</strong> Enhance your brand’s identity with a professional, visually appealing website.</p></li><li><p class=\"mb-4\" style=\"line-height: normal\"><strong>Customer Insights:</strong> Gather data on visitor behavior to optimize your services and marketing strategies.<br></p></li></ol>",
+        "_id": "67da9514fdff78dd8b2290d0"
+      },
+      {
+        "content": "<p class=\"mb-4\" style=\"line-height: normal\"><span style=\"font-size: 18px\"><strong>Build Your Stunning Restaurant Website with Mera Software:</strong> <br></span><br>At Mera Software, we provide customizable solutions to bring your restaurant online. Our development process ensures you get a tailored website that reflects your restaurant’s unique style and offerings. Whether you're a small café, a fine-dining establishment, or a fast-food chain, we’ve got you covered.<br><br></p><hr><p class=\"mb-4\" style=\"line-height: normal\"><br><br><span style=\"font-size: 18px\"><strong>Why Mera Software?</strong></span></p><ul class=\"list-disc pl-4 mb-2\"><li><p class=\"mb-4\" style=\"line-height: normal\"><strong>Expert Developers:</strong> We craft every website with precision using modern technologies.</p></li><li><p class=\"mb-4\" style=\"line-height: normal\">End-<strong>to-End Support: </strong>From initial concept to final deployment, we assist you at every step.</p></li><li><p class=\"mb-4\" style=\"line-height: normal\"><strong>Flexible Payment Options:</strong> Choose between full payment or our easy installment plan.</p></li><li><p class=\"mb-4\" style=\"line-height: normal\"><strong>Dashboard Access: </strong>Track progress, communicate with developers, and upload content seamlessly.<br></p><hr><p class=\"mb-4\" style=\"line-height: normal\"><br><span style=\"font-size: 18px\"><strong>Our Process:</strong></span></p><p class=\"mb-4\" style=\"line-height: normal\"><strong>1. Consultation:</strong> Understand your goals and expectations.</p><p class=\"mb-4\" style=\"line-height: normal\"><strong>2. Design &amp; Development: </strong>Bring your vision to life with a stunning design.</p><p class=\"mb-4\" style=\"line-height: normal\"><strong>3. Feedback &amp; Revisions:</strong> Make adjustments to ensure it matches your needs.</p><p class=\"mb-4\" style=\"line-height: normal\"><strong>4. Launch: </strong>Deploy the website and make it live.</p><p class=\"mb-4\" style=\"line-height: normal\"><strong>5. Post-Launch Support:</strong> Enjoy one month of free content updates.<br></p></li></ul>",
+        "_id": "67da9514fdff78dd8b2290d1"
+      },
+      {
+        "content": "<p class=\"mb-4\" style=\"line-height: normal\"><span style=\"font-size: 18px\"><strong>Important Note:</strong></span></p><p class=\"mb-4\">Once development begins, changes cannot be made until project completion. Additional updates and changes can be requested through our affordable upgrade plans. For further details, refer to our <a target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-blue-600  underline\" href=\"https://www.merasoftware.com/terms-and-conditions\">Terms and Conditions</a>, <a target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-blue-600  underline\" href=\"https://www.merasoftware.com/privacy-policy\">Privacy Policy</a>, and <a target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-blue-600  underline\" href=\"https://www.merasoftware.com/refund-policy\">Refund Policy</a>.</p><hr><p class=\"mb-4\" style=\"line-height: normal\"><span style=\"font-size: 18px\"><strong>Get Started Today!</strong></span></p><p class=\"mb-4\">Ready to create a remarkable online presence? Contact us now and let’s build a stunning portfolio website that captures your essence.</p><p class=\"mb-4\"><a target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-blue-600  underline\" href=\"https://www.merasoftware.com/contact-us\">Contact Us</a> | <a target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-blue-600  underline\" href=\"https://www.merasoftware.com/start-new-project\">Explore Our Plans</a> | View More Projects</p>",
+        "_id": "67da9514fdff78dd8b2290d2"
+      }
+    ],
+    "isWebsiteService": true,
+    "totalPages": 5,
+    "checkpoints": [
+      {
+        "name": "Website Structure ready",
+        "percentage": 2,
+        "_id": "67da9514fdff78dd8b2290d3"
+      },
+      {
+        "name": "Header created",
+        "percentage": 5,
+        "_id": "67da9514fdff78dd8b2290d4"
+      },
+      {
+        "name": "Footer created",
+        "percentage": 5,
+        "_id": "67da9514fdff78dd8b2290d5"
+      },
+      {
+        "name": "Home Page",
+        "percentage": 15.6,
+        "_id": "67da9514fdff78dd8b2290d6"
+      },
+      {
+        "name": "About Us Page",
+        "percentage": 15.6,
+        "_id": "67da9514fdff78dd8b2290d7"
+      },
+      {
+        "name": "Contact Us Page",
+        "percentage": 15.6,
+        "_id": "67da9514fdff78dd8b2290d8"
+      },
+      {
+        "name": "Gallery Page",
+        "percentage": 15.6,
+        "_id": "67da9514fdff78dd8b2290d9"
+      },
+      {
+        "name": "Additional Page 1",
+        "percentage": 15.6,
+        "_id": "67da9514fdff78dd8b2290da"
+      },
+      {
+        "name": "Final Testing",
+        "percentage": 10,
+        "_id": "67da9514fdff78dd8b2290db"
+      }
+    ],
+    "isFeatureUpgrade": false,
+    "upgradeType": "",
+    "compatibleWith": [],
+    "keyBenefits": [],
+    "additionalFeatures": [
+      "67a8a84cc46161fd031d6fc6",
+      "67a8ab65c46161fd031d714e",
+      "67ab511c7bc4940983e09ac9",
+      "67a8a783c46161fd031d6ec4"
+    ],
+    "createdAt": "2025-02-12T09:34:37.113Z",
+    "updatedAt": "2025-07-07T05:19:35.379Z",
+    "__v": 0,
+    "isWebsiteUpdate": false,
+    "updateCount": null,
+    "validityPeriod": null,
+    "isHidden": false
+  },
+  {
+    "_id": "67a8a783c46161fd031d6ec4",
+    "serviceName": "Live Chat",
+    "category": "feature_upgrades",
+    "packageIncludes": [
+      "instant customer support",
+      "multi agent collaboration",
+      "visitor tracking insights",
+      "mobile app support",
+      "chat history analytics",
+      "customizable chat widget",
+      "multi language support"
+    ],
+    "perfectFor": [],
+    "serviceImage": [
+      "http://res.cloudinary.com/doz5sxyln/image/upload/v1739106163/nijskkbafxx029m0zogn.jpg"
+    ],
+    "price": 20000,
+    "sellingPrice": 4999,
+    "description": "<p class=\"mb-4\">Enhance customer interaction with a live chat system that provides real-time support, quick query resolution, and seamless communication.  </p>",
+    "websiteTypeDescription": " <h4>Our Objective</h4>\n                   <pTo provide you with a professional, user-friendly, and efficient gallery solution that enhances your website's visual appeal and user engagement. We ensure seamless integration, optimal performance, and complete satisfaction with our development services.</p>",
+    "isWebsiteService": false,
+    "totalPages": 4,
+    "checkpoints": [],
+    "isFeatureUpgrade": true,
+    "upgradeType": "feature",
+    "compatibleWith": [
+      "standard_websites",
+      "dynamic_websites",
+      "mobile_apps"
+    ],
+    "keyBenefits": [
+      "real_time_support",
+      "instant_resolution",
+      "team_collaboration",
+      "chat_history"
+    ],
+    "additionalFeatures": [],
+    "createdAt": "2025-02-09T13:03:00.006Z",
+    "updatedAt": "2025-03-23T09:37:49.461Z",
+    "__v": 0,
+    "formattedDescriptions": [],
+    "isWebsiteUpdate": false,
+    "updateCount": null,
+    "validityPeriod": null,
+    "isHidden": false
+  },
+  {
+    "_id": "67a8a84cc46161fd031d6fc6",
+    "serviceName": "Dynamic Page with Panel  ",
+    "category": "feature_upgrades",
+    "packageIncludes": [
+      "easy content updates",
+      "no coding required",
+      "user friendly panel",
+      "real time website updates",
+      "seo friendly meta tags"
+    ],
+    "perfectFor": [],
+    "serviceImage": [
+      "http://res.cloudinary.com/doz5sxyln/image/upload/v1739106350/pi68mr3xonwbiblf035u.jpg"
+    ],
+    "price": 8000,
+    "sellingPrice": 3999,
+    "description": "<p class=\"mb-4\">A feature that allows easy content updates on static pages through a dynamic panel, making website management seamless and efficient.  </p>",
+    "websiteTypeDescription": " <h4>Our Objective</h4>\n                   <pTo provide you with a professional, user-friendly, and efficient gallery solution that enhances your website's visual appeal and user engagement. We ensure seamless integration, optimal performance, and complete satisfaction with our development services.</p>",
+    "isWebsiteService": false,
+    "totalPages": 4,
+    "checkpoints": [],
+    "isFeatureUpgrade": true,
+    "upgradeType": "feature",
+    "compatibleWith": [
+      "standard_websites"
+    ],
+    "keyBenefits": [
+      "dynamic_panel",
+      "content_modification",
+      "user_friendly_interface",
+      "no_code_updates",
+      "flexible_customization"
+    ],
+    "additionalFeatures": [],
+    "createdAt": "2025-02-09T13:06:20.522Z",
+    "updatedAt": "2025-03-08T09:48:10.411Z",
+    "__v": 0,
+    "formattedDescriptions": [
+      {
+        "content": "",
+        "_id": "67cc125ab91c593a3f274c67"
+      }
+    ],
+    "isWebsiteUpdate": false,
+    "updateCount": null,
+    "validityPeriod": null,
+    "isHidden": false
+  },
+  {
+    "_id": "67ac7a8468fca4c7241a3594",
+    "serviceName": "Ecommerce Website",
+    "category": "dynamic_websites",
+    "packageIncludes": [
+      "unlimited products",
+      "fully customizable",
+      "admin panel integration",
+      "user friendly",
+      "responsive design",
+      "SEO optimized",
+      "free maintenance"
+    ],
+    "perfectFor": [
+      {
+        "text": "entrepreneurs",
+        "icon": "md:MdBusiness"
+      },
+      {
+        "text": "small_businesses",
+        "icon": "lucide:Store"
+      },
+      {
+        "text": "retailers",
+        "icon": "lucide:Store"
+      },
+      {
+        "text": "wholesalers",
+        "icon": "lucide:PackageOpen"
+      },
+      {
+        "text": "grocery_stores",
+        "icon": "lucide:ShoppingCart"
+      },
+      {
+        "text": "clothing_stores",
+        "icon": "lucide:Shirt"
+      },
+      {
+        "text": "medical_stores",
+        "icon": "fa:FaPills"
+      }
+    ],
+    "serviceImage": [
+      "http://res.cloudinary.com/doz5sxyln/image/upload/v1742388622/dhgihgs9h9brwju0bkxk.jpg"
+    ],
+    "price": 250000,
+    "sellingPrice": 89999,
+    "formattedDescriptions": [
+      {
+        "content": "<p class=\"mb-4\" style=\"line-height: normal\"><span style=\"font-size: 18px\"><strong>Description:</strong></span><br><br>An e-commerce website allows businesses to sell products online with features like product listings, secure payments, order tracking, and customer management. It provides a seamless shopping experience, making it easy for sellers to update inventory and engage with buyers.<br><br>Business Benefits of an E-commerce Website</p><ul class=\"list-disc pl-4 mb-2\"><li><p class=\"mb-4\" style=\"line-height: normal\"><strong>Global Reach:</strong> Expand your market and sell to customers beyond geographical boundaries.</p></li><li><p class=\"mb-4\" style=\"line-height: normal\"><strong>24/7 Sales:</strong> Your store remains open all day, every day, boosting revenue potential.</p></li><li><p class=\"mb-4\" style=\"line-height: normal\"><strong>Convenient Shopping:</strong> Provide a smooth and intuitive shopping experience from any device.</p></li><li><p class=\"mb-4\" style=\"line-height: normal\"><strong>Easy Product Management:</strong> Manage your inventory, categories, and product details effortlessly.</p></li><li><p class=\"mb-4\" style=\"line-height: normal\"><strong>Secure Payments:</strong> Offer multiple secure payment options for customer convenience.</p></li></ul><h2 style=\"line-height: normal\"><span style=\"font-size: 18px\">Build Your Dynamic E-commerce Website with Mera Software</span></h2><p class=\"mb-4\" style=\"line-height: normal\">Mera Software creates fully dynamic e-commerce websites equipped with an admin panel, allowing you to manage your store efficiently. From product uploads to order tracking, experience complete control over your business.<br><br>Why Mera Software?</p><ul class=\"list-disc pl-4 mb-2\"><li><p class=\"mb-4\" style=\"line-height: normal\"><strong>Expert Developers:</strong> We craft every website with precision using modern technologies.</p></li><li><p class=\"mb-4\" style=\"line-height: normal\"><strong>End-to-End Support:</strong> From initial concept to final deployment, we assist you at every step.</p></li><li><p class=\"mb-4\" style=\"line-height: normal\"><strong>Flexible Payment Options:</strong> Choose between full payment or our easy installment plan.</p></li><li><p class=\"mb-4\" style=\"line-height: normal\"><strong>Dashboard Access:</strong> Track progress, communicate with developers, and upload content seamlessly.</p></li></ul><h2 style=\"line-height: normal\"><span style=\"font-size: 18px\">Our Process</span></h2><ol class=\"list-decimal pl-4 mb-2\"><li><p class=\"mb-4\" style=\"line-height: normal\"><strong>Consultation:</strong> Understand your goals and expectations.</p></li><li><p class=\"mb-4\" style=\"line-height: normal\"><strong>Design &amp; Development:</strong> Bring your vision to life with a stunning design.</p></li><li><p class=\"mb-4\" style=\"line-height: normal\"><strong>Feedback &amp; Revisions:</strong> Make adjustments to ensure it matches your needs.</p></li><li><p class=\"mb-4\" style=\"line-height: normal\"><strong>Launch:</strong> Deploy the website and make it live.</p></li><li><p class=\"mb-4\" style=\"line-height: normal\"><strong>Post-Launch Support:</strong> Enjoy one month of free content updates.</p></li></ol>",
+        "_id": "67dabe36fdff78dd8b22af66"
+      },
+      {
+        "content": "<p class=\"mb-4\" style=\"line-height: normal\"><span style=\"font-size: 18px\"><strong>Important Note:</strong></span></p><p class=\"mb-4\">Once development begins, changes cannot be made until project completion. Additional updates and changes can be requested through our affordable upgrade plans. For further details, refer to our <a target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-blue-600  underline\" href=\"https://www.merasoftware.com/terms-and-conditions\">Terms and Conditions</a>, <a target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-blue-600  underline\" href=\"https://www.merasoftware.com/privacy-policy\">Privacy Policy</a>, and <a target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-blue-600  underline\" href=\"https://www.merasoftware.com/refund-policy\">Refund Policy</a>.</p><hr><p class=\"mb-4\" style=\"line-height: normal\"><span style=\"font-size: 18px\"><strong>Get Started Today!</strong></span></p><p class=\"mb-4\">Ready to create a remarkable online presence? Contact us now and let’s build a stunning portfolio website that captures your essence.</p><p class=\"mb-4\"><a target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-blue-600  underline\" href=\"https://www.merasoftware.com/contact-us\">Contact Us</a> | <a target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-blue-600  underline\" href=\"https://www.merasoftware.com/start-new-project\">Explore Our Plans</a> | View More Projects</p>",
+        "_id": "67dabe36fdff78dd8b22af67"
+      }
+    ],
+    "isWebsiteService": false,
+    "totalPages": 4,
+    "checkpoints": [
+      {
+        "name": "Website Structure ready",
+        "percentage": 2,
+        "_id": "67dabe36fdff78dd8b22af68"
+      },
+      {
+        "name": "Header created",
+        "percentage": 5,
+        "_id": "67dabe36fdff78dd8b22af69"
+      },
+      {
+        "name": "Footer created",
+        "percentage": 5,
+        "_id": "67dabe36fdff78dd8b22af6a"
+      },
+      {
+        "name": "Home Page",
+        "percentage": 19.5,
+        "_id": "67dabe36fdff78dd8b22af6b"
+      },
+      {
+        "name": "About Us Page",
+        "percentage": 19.5,
+        "_id": "67dabe36fdff78dd8b22af6c"
+      },
+      {
+        "name": "Contact Us Page",
+        "percentage": 19.5,
+        "_id": "67dabe36fdff78dd8b22af6d"
+      },
+      {
+        "name": "Gallery Page",
+        "percentage": 19.5,
+        "_id": "67dabe36fdff78dd8b22af6e"
+      },
+      {
+        "name": "Final Testing",
+        "percentage": 10,
+        "_id": "67dabe36fdff78dd8b22af6f"
+      }
+    ],
+    "isFeatureUpgrade": false,
+    "upgradeType": "",
+    "compatibleWith": [],
+    "keyBenefits": [],
+    "additionalFeatures": [
+      "67a8a704c46161fd031d6e43",
+      "67a8a783c46161fd031d6ec4",
+      "67a8a7e9c46161fd031d6f45",
+      "67a8a67fc46161fd031d6dc2"
+    ],
+    "createdAt": "2025-02-12T10:40:04.033Z",
+    "updatedAt": "2025-07-07T05:19:35.379Z",
+    "__v": 0,
+    "isWebsiteUpdate": false,
+    "updateCount": null,
+    "validityPeriod": null,
+    "isHidden": false
+  },
+  {
+    "_id": "67ac7b9c68fca4c7241a35c8",
+    "serviceName": "Appointment Booking Website",
+    "category": "dynamic_websites",
+    "packageIncludes": [
+      "unlimited pages",
+      "mobile optimized",
+      "user friendly",
+      "SEO optimized",
+      "admin panel integration",
+      "fully customizable",
+      "free maintenance"
+    ],
+    "perfectFor": [
+      {
+        "text": "entrepreneurs",
+        "icon": "md:MdBusiness"
+      },
+      {
+        "text": "immigration consultants",
+        "icon": "fa:FaPlane"
+      },
+      {
+        "text": "travel agencies",
+        "icon": "fa:FaPlane"
+      },
+      {
+        "text": "visa service providers",
+        "icon": "fa:FaPlane"
+      },
+      {
+        "text": "study abroad consultants",
+        "icon": "fa:FaGraduationCap"
+      },
+      {
+        "text": "education consultants",
+        "icon": "fa:FaBriefcase"
+      },
+      {
+        "text": "small_businesses",
+        "icon": "lucide:Store"
+      },
+      {
+        "text": "gyms",
+        "icon": "lucide:Activity"
+      },
+      {
+        "text": "clinics",
+        "icon": "lucide:Stethoscope"
+      }
+    ],
+    "serviceImage": [
+      "http://res.cloudinary.com/doz5sxyln/image/upload/v1742304303/vpn3kdj8xjdecnic7f6o.png"
+    ],
+    "price": 210000,
+    "sellingPrice": 58999,
+    "formattedDescriptions": [
+      {
+        "content": "<h2 style=\"line-height: normal\"><span style=\"font-size: 18px\">Description</span></h2><p class=\"mb-4\" style=\"line-height: normal\">Streamline your scheduling process with a dynamic appointment booking website. Whether you run a hospital, clinic, consultancy, salon, or are a professional service provider like a doctor, architect, or therapist, a customized booking website will allow clients to schedule appointments with ease. Mera Software offers intuitive solutions designed to save time, reduce no-shows, and enhance customer satisfaction.</p><h2 style=\"line-height: normal\"><span style=\"font-size: 18px\">Business Benefits of an Appointment Booking Website</span></h2><ul class=\"list-disc pl-4 mb-2\"><li><p class=\"mb-4\" style=\"line-height: normal\"><strong>24/7 Availability:</strong> Let clients book appointments anytime, even outside business hours.</p></li><li><p class=\"mb-4\" style=\"line-height: normal\"><strong>Automated Scheduling:</strong> Reduce administrative work with automated confirmations and reminders.</p></li><li><p class=\"mb-4\" style=\"line-height: normal\"><strong>Enhanced Customer Experience:</strong> Provide a seamless and hassle-free booking experience.</p></li><li><p class=\"mb-4\" style=\"line-height: normal\"><strong>Improved Efficiency:</strong> Optimize resource management with an organized booking system.</p></li><li><p class=\"mb-4\" style=\"line-height: normal\"><strong>Increased Revenue:</strong> Minimize missed appointments with timely reminders.</p></li></ul><h2 style=\"line-height: normal\"><span style=\"font-size: 18px\">Build Your Dynamic Appointment Booking Website with Mera Software</span></h2><p class=\"mb-4\" style=\"line-height: normal\">At Mera Software, we create easy-to-manage appointment booking websites equipped with an admin panel. Effortlessly manage your schedule, track bookings, and provide a smooth experience for your clients.<br></p>",
+        "_id": "67daba82fdff78dd8b22a9f1"
+      },
+      {
+        "content": "<h2 style=\"line-height: normal\"><span style=\"font-size: 18px\">Why Mera Software?</span></h2><ul class=\"list-disc pl-4 mb-2\"><li><p class=\"mb-4\" style=\"line-height: normal\"><strong>Expert Developers:</strong> We craft every website with precision using modern technologies.</p></li><li><p class=\"mb-4\" style=\"line-height: normal\"><strong>End-to-End Support:</strong> From initial concept to final deployment, we assist you at every step.</p></li><li><p class=\"mb-4\" style=\"line-height: normal\"><strong>Flexible Payment Options:</strong> Choose between full payment or our easy installment plan.</p></li><li><p class=\"mb-4\" style=\"line-height: normal\"><strong>Dashboard Access:</strong> Track progress, communicate with developers, and upload content seamlessly.</p></li></ul><h2 style=\"line-height: normal\"><span style=\"font-size: 18px\">Our Process</span></h2><ol class=\"list-decimal pl-4 mb-2\"><li><p class=\"mb-4\" style=\"line-height: normal\"><strong>Consultation:</strong> Understand your goals and expectations.</p></li><li><p class=\"mb-4\" style=\"line-height: normal\"><strong>Design &amp; Development:</strong> Bring your vision to life with a stunning design.</p></li><li><p class=\"mb-4\" style=\"line-height: normal\"><strong>Feedback &amp; Revisions:</strong> Make adjustments to ensure it matches your needs.</p></li><li><p class=\"mb-4\" style=\"line-height: normal\"><strong>Launch:</strong> Deploy the website and make it live.</p></li><li><p class=\"mb-4\" style=\"line-height: normal\"><strong>Post-Launch Support:</strong> Enjoy one month of free content updates.</p></li></ol>",
+        "_id": "67daba82fdff78dd8b22a9f2"
+      },
+      {
+        "content": "<p class=\"mb-4\" style=\"line-height: normal\"><span style=\"font-size: 18px\"><strong>Important Note:</strong></span></p><p class=\"mb-4\">Once development begins, changes cannot be made until project completion. Additional updates and changes can be requested through our affordable upgrade plans. For further details, refer to our <a target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-blue-600  underline\" href=\"https://www.merasoftware.com/terms-and-conditions\">Terms and Conditions</a>, <a target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-blue-600  underline\" href=\"https://www.merasoftware.com/privacy-policy\">Privacy Policy</a>, and <a target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-blue-600  underline\" href=\"https://www.merasoftware.com/refund-policy\">Refund Policy</a>.</p><hr><p class=\"mb-4\" style=\"line-height: normal\"><span style=\"font-size: 18px\"><strong>Get Started Today!</strong></span></p><p class=\"mb-4\">Ready to create a remarkable online presence? Contact us now and let’s build a stunning portfolio website that captures your essence.</p><p class=\"mb-4\"><a target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-blue-600  underline\" href=\"https://www.merasoftware.com/contact-us\">Contact Us</a> | <a target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-blue-600  underline\" href=\"https://www.merasoftware.com/start-new-project\">Explore Our Plans</a> | View More Projects</p>",
+        "_id": "67daba82fdff78dd8b22a9f3"
+      }
+    ],
+    "isWebsiteService": false,
+    "totalPages": 4,
+    "checkpoints": [
+      {
+        "name": "Website Structure ready",
+        "percentage": 2,
+        "_id": "67daba82fdff78dd8b22a9f4"
+      },
+      {
+        "name": "Header created",
+        "percentage": 5,
+        "_id": "67daba82fdff78dd8b22a9f5"
+      },
+      {
+        "name": "Footer created",
+        "percentage": 5,
+        "_id": "67daba82fdff78dd8b22a9f6"
+      },
+      {
+        "name": "Home Page",
+        "percentage": 19.5,
+        "_id": "67daba82fdff78dd8b22a9f7"
+      },
+      {
+        "name": "About Us Page",
+        "percentage": 19.5,
+        "_id": "67daba82fdff78dd8b22a9f8"
+      },
+      {
+        "name": "Contact Us Page",
+        "percentage": 19.5,
+        "_id": "67daba82fdff78dd8b22a9f9"
+      },
+      {
+        "name": "Gallery Page",
+        "percentage": 19.5,
+        "_id": "67daba82fdff78dd8b22a9fa"
+      },
+      {
+        "name": "Final Testing",
+        "percentage": 10,
+        "_id": "67daba82fdff78dd8b22a9fb"
+      }
+    ],
+    "isFeatureUpgrade": false,
+    "upgradeType": "",
+    "compatibleWith": [],
+    "keyBenefits": [],
+    "additionalFeatures": [
+      "67a8a67fc46161fd031d6dc2",
+      "67a8a704c46161fd031d6e43",
+      "67a8a783c46161fd031d6ec4",
+      "67a8a7e9c46161fd031d6f45"
+    ],
+    "createdAt": "2025-02-12T10:44:44.407Z",
+    "updatedAt": "2025-07-08T13:10:23.136Z",
+    "__v": 0,
+    "isWebsiteUpdate": false,
+    "updateCount": null,
+    "validityPeriod": null,
+    "isHidden": false
+  },
+  {
+    "_id": "6929b83cdac6d75bbef01ac8",
+    "serviceName": "Standard Plan",
+    "category": "website_updates",
+    "packageIncludes": [
+      "update information",
+      "modify any content",
+      "single request updates"
+    ],
+    "perfectFor": [],
+    "serviceImage": [
+      "http://res.cloudinary.com/doz5sxyln/image/upload/v1764341781/kp2lzungccupoce8x9j1.jpg"
+    ],
+    "price": 8000,
+    "sellingPrice": 3000,
+    "formattedDescriptions": [
+      {
+        "content": "<p class=\"mb-4\" style=\"line-height: normal\"><strong>Includes:</strong><br>✅ <strong>Total 2 updates</strong> per <strong>month</strong><br>✅ Static content updates (text changes, notifications, minor information updates)<br>✅ Image uploads (gallery or other sections)<br>✅ Updates for statistics, reports, schedules, or attendance (if applicable)</p><p class=\"mb-4\"><strong>Not Included:</strong> <br>❌ Adding new pages or sections</p>",
+        "_id": "69d33f506afafc60d971df5c"
+      }
+    ],
+    "isWebsiteService": false,
+    "totalPages": 4,
+    "checkpoints": [],
+    "isFeatureUpgrade": false,
+    "compatibleWith": [],
+    "keyBenefits": [],
+    "isWebsiteUpdate": true,
+    "validityPeriod": 30,
+    "updateCount": 24,
+    "isMonthlyRenewablePlan": false,
+    "yearlyPlanDuration": 365,
+    "monthlyRenewalCost": null,
+    "isUnlimitedUpdates": false,
+    "isMonthlyLimitedPlan": true,
+    "monthlyUpdateLimit": 2,
+    "monthlyRenewalPrice": 3000,
+    "additionalFeatures": [],
+    "isHidden": false,
+    "createdAt": "2025-11-28T14:57:00.860Z",
+    "updatedAt": "2026-04-06T05:06:24.349Z",
+    "__v": 0
+  },
+  {
+    "_id": "69f42dbc6f8943f2c409e150",
+    "serviceName": "Website Single Section Addition",
+    "category": "website_updates",
+    "packageIncludes": [
+      "easy content updates"
+    ],
+    "perfectFor": [],
+    "serviceImage": [
+      "http://res.cloudinary.com/doz5sxyln/image/upload/v1777609953/wkdxmhun1ir4ckwf1vlj.jpg"
+    ],
+    "price": 1000,
+    "sellingPrice": 600,
+    "formattedDescriptions": [
+      {
+        "content": "<p class=\"mb-4\" style=\"line-height: normal\">This service allows you to add one new section to any part of your website. The section can include multiple images and text, arranged in a clean and structured layout for better presentation.</p><p class=\"mb-4\"><strong><u>Note:</u></strong> This service is applicable for adding only one section. Multiple sections are not included and will require separate requests.</p>",
+        "_id": "69f42e2a6f8943f2c409e600"
+      }
+    ],
+    "isWebsiteService": false,
+    "totalPages": 4,
+    "checkpoints": [],
+    "isFeatureUpgrade": false,
+    "compatibleWith": [
+      "website_updates"
+    ],
+    "keyBenefits": [],
+    "isWebsiteUpdate": true,
+    "validityPeriod": 2,
+    "updateCount": 1,
+    "isMonthlyRenewablePlan": false,
+    "yearlyPlanDuration": null,
+    "monthlyRenewalCost": null,
+    "isUnlimitedUpdates": false,
+    "isMonthlyLimitedPlan": false,
+    "monthlyUpdateLimit": null,
+    "monthlyRenewalPrice": null,
+    "additionalFeatures": [],
+    "isHidden": false,
+    "createdAt": "2026-05-01T04:36:12.944Z",
+    "updatedAt": "2026-05-01T04:38:02.331Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a625e49a0928df0c6172fe9",
+    "serviceName": "test website ",
+    "category": "dynamic_websites",
+    "startingNodeTitle": "starting ",
+    "packageIncludes": [
+      "premium theme",
+      "free maintenance",
+      "4 pages"
+    ],
+    "perfectFor": [
+      {
+        "text": "business_directories",
+        "icon": "lucide:ListChecks",
+        "_id": "6a625e49a0928df0c6172fea"
+      },
+      {
+        "text": "second_hand_goods_sellers",
+        "icon": "lucide:Recycle",
+        "_id": "6a625e49a0928df0c6172feb"
+      },
+      {
+        "text": "service_providers",
+        "icon": "lucide:HeartHandshake",
+        "_id": "6a625e49a0928df0c6172fec"
+      },
+      {
+        "text": "salons",
+        "icon": "lucide:Scissors",
+        "_id": "6a625e49a0928df0c6172fed"
+      },
+      {
+        "text": "shopkeepers",
+        "icon": "lucide:BadgePercent",
+        "_id": "6a625e49a0928df0c6172fee"
+      },
+      {
+        "text": "schools and colleges",
+        "icon": "fa:FaSchool",
+        "_id": "6a625e49a0928df0c6172fef"
+      }
+    ],
+    "serviceImage": [
+      "https://res.cloudinary.com/doz5sxyln/image/upload/v1784831554/queiqwnivjhn8ircjksw.jpg"
+    ],
+    "price": 5000,
+    "sellingPrice": 2500,
+    "formattedDescriptions": [
+      {
+        "content": "<p class=\"mb-4\" style=\"line-height: normal\">testing testing description test </p>",
+        "_id": "6a625e49a0928df0c6172ff0"
+      }
+    ],
+    "isWebsiteService": true,
+    "totalPages": 4,
+    "isFeatureUpgrade": false,
+    "compatibleWith": [],
+    "keyBenefits": [],
+    "isWebsiteUpdate": false,
+    "isMonthlyRenewablePlan": false,
+    "isUnlimitedUpdates": false,
+    "isMonthlyLimitedPlan": false,
+    "monthlyUpdateLimit": 1,
+    "additionalFeatures": [
+      "67ab511c7bc4940983e09ac9",
+      "67a8ab65c46161fd031d714e",
+      "67a8a84cc46161fd031d6fc6",
+      "67a8a783c46161fd031d6ec4",
+      "67a8a704c46161fd031d6e43",
+      "67a8a67fc46161fd031d6dc2",
+      "67a8aa69c46161fd031d70c9"
+    ],
+    "isHidden": false,
+    "checkpoints": [
+      {
+        "name": "Website Structure ready",
+        "percentage": 2,
+        "_id": "6a625e49a0928df0c6172ff1"
+      },
+      {
+        "name": "Header created",
+        "percentage": 5,
+        "_id": "6a625e49a0928df0c6172ff2"
+      },
+      {
+        "name": "Footer created",
+        "percentage": 5,
+        "_id": "6a625e49a0928df0c6172ff3"
+      },
+      {
+        "name": "Home Page",
+        "percentage": 19.5,
+        "_id": "6a625e49a0928df0c6172ff4"
+      },
+      {
+        "name": "About Us Page",
+        "percentage": 19.5,
+        "_id": "6a625e49a0928df0c6172ff5"
+      },
+      {
+        "name": "Contact Us Page",
+        "percentage": 19.5,
+        "_id": "6a625e49a0928df0c6172ff6"
+      },
+      {
+        "name": "Gallery Page",
+        "percentage": 19.5,
+        "_id": "6a625e49a0928df0c6172ff7"
+      },
+      {
+        "name": "Final Testing",
+        "percentage": 10,
+        "_id": "6a625e49a0928df0c6172ff8"
+      }
+    ],
+    "createdAt": "2026-07-23T18:32:41.369Z",
+    "updatedAt": "2026-07-23T18:32:41.369Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a6308fca249f9b86e9ef189",
+    "serviceName": "test software",
+    "category": "cloud_software_development",
+    "startingNodeTitle": "starting test ",
+    "packageIncludes": [
+      "premium theme",
+      "free content updates",
+      "free maintenance",
+      "fully customizable"
+    ],
+    "perfectFor": [
+      {
+        "text": "freelancers",
+        "icon": "fa:FaUserCircle",
+        "_id": "6a6308fca249f9b86e9ef18a"
+      },
+      {
+        "text": "small restaurants",
+        "icon": "fa:FaUtensils",
+        "_id": "6a6308fca249f9b86e9ef18b"
+      },
+      {
+        "text": "small_businesses",
+        "icon": "lucide:Store",
+        "_id": "6a6308fca249f9b86e9ef18c"
+      },
+      {
+        "text": "schools and colleges",
+        "icon": "fa:FaSchool",
+        "_id": "6a6308fca249f9b86e9ef18d"
+      },
+      {
+        "text": "business_directories",
+        "icon": "lucide:ListChecks",
+        "_id": "6a6308fca249f9b86e9ef18e"
+      }
+    ],
+    "serviceImage": [
+      "https://res.cloudinary.com/doz5sxyln/image/upload/v1784875255/x8i3srfp68wcpuz8yq1h.jpg"
+    ],
+    "price": 10000,
+    "sellingPrice": 7500,
+    "formattedDescriptions": [
+      {
+        "content": "<p class=\"mb-4\" style=\"line-height: normal\">eh website vich sare features add kite ne koi nahi shadeya </p>",
+        "_id": "6a6308fca249f9b86e9ef18f"
+      }
+    ],
+    "isWebsiteService": true,
+    "isFeatureUpgrade": false,
+    "compatibleWith": [],
+    "keyBenefits": [],
+    "isWebsiteUpdate": false,
+    "isMonthlyRenewablePlan": false,
+    "isUnlimitedUpdates": false,
+    "isMonthlyLimitedPlan": false,
+    "monthlyUpdateLimit": 1,
+    "additionalFeatures": [
+      "67ab511c7bc4940983e09ac9",
+      "67a8ab65c46161fd031d714e",
+      "67a8aa69c46161fd031d70c9",
+      "67a8a84cc46161fd031d6fc6",
+      "67a8a7e9c46161fd031d6f45",
+      "67a8a783c46161fd031d6ec4",
+      "67a8a704c46161fd031d6e43",
+      "67a8a67fc46161fd031d6dc2"
+    ],
+    "isHidden": false,
+    "checkpoints": [
+      {
+        "name": "Project Initiation",
+        "percentage": 4,
+        "_id": "6a6308fca249f9b86e9ef190"
+      },
+      {
+        "name": "Core Backend & Database Setup",
+        "percentage": 2,
+        "_id": "6a6308fca249f9b86e9ef191"
+      },
+      {
+        "name": "Server & database architecture setup",
+        "percentage": 2,
+        "_id": "6a6308fca249f9b86e9ef192"
+      },
+      {
+        "name": "User roles & authentication system",
+        "percentage": 8,
+        "_id": "6a6308fca249f9b86e9ef193"
+      },
+      {
+        "name": "Dashboard structure & data flow design",
+        "percentage": 4,
+        "_id": "6a6308fca249f9b86e9ef194"
+      },
+      {
+        "name": "Basic backend functionality setup",
+        "percentage": 5,
+        "_id": "6a6308fca249f9b86e9ef195"
+      },
+      {
+        "name": "Core Modules Development",
+        "percentage": 5,
+        "_id": "6a6308fca249f9b86e9ef196"
+      },
+      {
+        "name": "Frontend Development & UI Implementation",
+        "percentage": 20,
+        "_id": "6a6308fca249f9b86e9ef197"
+      },
+      {
+        "name": "Dashboard & reports visualization",
+        "percentage": 5,
+        "_id": "6a6308fca249f9b86e9ef198"
+      },
+      {
+        "name": "Integration of UI with backend functions",
+        "percentage": 20,
+        "_id": "6a6308fca249f9b86e9ef199"
+      },
+      {
+        "name": "Responsive design for mobile & desktop",
+        "percentage": 5,
+        "_id": "6a6308fca249f9b86e9ef19a"
+      },
+      {
+        "name": "User-friendly navigation & search features",
+        "percentage": 2,
+        "_id": "6a6308fca249f9b86e9ef19b"
+      },
+      {
+        "name": "Email & SMS Notifications",
+        "percentage": 3,
+        "_id": "6a6308fca249f9b86e9ef19c"
+      },
+      {
+        "name": "Role-Based Access Control",
+        "percentage": 3,
+        "_id": "6a6308fca249f9b86e9ef19d"
+      },
+      {
+        "name": "Basic Third-Party Integrations",
+        "percentage": 4,
+        "_id": "6a6308fca249f9b86e9ef19e"
+      },
+      {
+        "name": "Performance testing across devices",
+        "percentage": 2,
+        "_id": "6a6308fca249f9b86e9ef19f"
+      },
+      {
+        "name": "Fixing bugs & security updates",
+        "percentage": 2,
+        "_id": "6a6308fca249f9b86e9ef1a0"
+      },
+      {
+        "name": "User Acceptance Testing (UAT)",
+        "percentage": 2,
+        "_id": "6a6308fca249f9b86e9ef1a1"
+      },
+      {
+        "name": "Final review & approval by client",
+        "percentage": 2,
+        "_id": "6a6308fca249f9b86e9ef1a2"
+      },
+      {
+        "name": "Deployment & Launch",
+        "percentage": 0,
+        "_id": "6a6308fca249f9b86e9ef1a3"
+      }
+    ],
+    "createdAt": "2026-07-24T06:41:00.714Z",
+    "updatedAt": "2026-07-24T06:41:00.714Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a69e73e4c8bd395b009fdb5",
+    "serviceName": "Website update plan Yearly",
+    "category": "service_plan",
+    "packageIncludes": [],
+    "serviceImage": [],
+    "price": 12000,
+    "sellingPrice": 9000,
+    "formattedDescriptions": [],
+    "isWebsiteService": false,
+    "isFeatureUpgrade": false,
+    "compatibleWith": [],
+    "keyBenefits": [],
+    "isWebsiteUpdate": false,
+    "isMonthlyRenewablePlan": false,
+    "isUnlimitedUpdates": false,
+    "isMonthlyLimitedPlan": false,
+    "monthlyUpdateLimit": 1,
+    "additionalFeatures": [],
+    "isHidden": false,
+    "isServicePlan": true,
+    "servicePlan": {
+      "planType": "website_updates",
+      "limitScope": "per_quarter",
+      "portalAccessCount": 6,
+      "filesLimit": 20,
+      "validityUnit": "year",
+      "validityValue": 1,
+      "validityInDays": 365,
+      "billingCycle": "quarterly"
+    },
+    "perfectFor": [],
+    "checkpoints": [],
+    "createdAt": "2026-07-29T11:42:54.897Z",
+    "updatedAt": "2026-07-29T11:42:54.897Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a743ef62f88080ced6b8ad0",
+    "serviceName": "Standard Website",
+    "category": "standard_websites",
+    "startingNodeTitle": "Collectin Documentation",
+    "packageIncludes": [],
+    "serviceImage": [],
+    "price": 19497,
+    "sellingPrice": 6500,
+    "isWebsiteService": true,
+    "totalPages": 5,
+    "isFeatureUpgrade": false,
+    "compatibleWith": [],
+    "keyBenefits": [],
+    "isWebsiteUpdate": false,
+    "isMonthlyRenewablePlan": false,
+    "isUnlimitedUpdates": false,
+    "isMonthlyLimitedPlan": false,
+    "monthlyUpdateLimit": 1,
+    "additionalFeatures": [],
+    "isHidden": true,
+    "isCustomClientProject": true,
+    "clientProjectFeatures": [
+      {
+        "featureId": "67a8a783c46161fd031d6ec4",
+        "name": "Live Chat",
+        "price": 4999,
+        "_id": "6a743ef62f88080ced6b8ad1"
+      },
+      {
+        "featureId": "67a8a84cc46161fd031d6fc6",
+        "name": "Dynamic Page with Panel  ",
+        "price": 3999,
+        "_id": "6a743ef62f88080ced6b8ad2"
+      },
+      {
+        "featureId": "67a8ab65c46161fd031d714e",
+        "name": "Dynamic Gallery",
+        "price": 7999,
+        "_id": "6a743ef62f88080ced6b8ad3"
+      }
+    ],
+    "isServicePlan": false,
+    "perfectFor": [],
+    "formattedDescriptions": [],
+    "checkpoints": [
+      {
+        "name": "Website Structure ready",
+        "percentage": 2,
+        "_id": "6a743ef62f88080ced6b8ad4"
+      },
+      {
+        "name": "Header created",
+        "percentage": 5,
+        "_id": "6a743ef62f88080ced6b8ad5"
+      },
+      {
+        "name": "Footer created",
+        "percentage": 5,
+        "_id": "6a743ef62f88080ced6b8ad6"
+      },
+      {
+        "name": "Home Page",
+        "percentage": 15.6,
+        "_id": "6a743ef62f88080ced6b8ad7"
+      },
+      {
+        "name": "About Us Page",
+        "percentage": 15.6,
+        "_id": "6a743ef62f88080ced6b8ad8"
+      },
+      {
+        "name": "Contact Us Page",
+        "percentage": 15.6,
+        "_id": "6a743ef62f88080ced6b8ad9"
+      },
+      {
+        "name": "Gallery Page",
+        "percentage": 15.6,
+        "_id": "6a743ef62f88080ced6b8ada"
+      },
+      {
+        "name": "Additional Page 1",
+        "percentage": 15.6,
+        "_id": "6a743ef62f88080ced6b8adb"
+      },
+      {
+        "name": "Final Testing",
+        "percentage": 10,
+        "_id": "6a743ef62f88080ced6b8adc"
+      }
+    ],
+    "createdAt": "2026-08-06T07:59:50.469Z",
+    "updatedAt": "2026-08-06T07:59:50.469Z",
+    "__v": 0
+  }
+]

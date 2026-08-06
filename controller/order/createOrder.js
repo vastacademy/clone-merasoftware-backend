@@ -1,7 +1,11 @@
 const orderProductModel = require("../../models/orderProductModel");
 const productModel = require("../../models/productModel");
+const categoryBasePriceModel = require("../../models/categoryBasePriceModel");
 const { sendPurchaseConfirmationEmail, sendMonthlyLimitedPlanActivationEmail, generateInvoicePdf, sendAdminPurchaseConfirmationEmail, sendAdminUPIPendingNotification } = require("../../helpers/emailService");
 const { createPurchaseNotification } = require("../../helpers/notificationService");
+const { initializeProjectTimeline } = require("../../helpers/projectNodeService");
+
+const DEFAULT_STARTING_NODE_TITLE = "Project Started";
 
 const createOrder = async (req, res) => {
   try {
@@ -38,7 +42,6 @@ if (!product) {
 }
 
 console.log('Product full data:', JSON.stringify(product));
-console.log('Product checkpoints from DB:', JSON.stringify(product.checkpoints));
 console.log('Product category from DB:', product.category);
 
     // Check if it's a website service
@@ -175,64 +178,7 @@ console.log('Product category from DB:', product.category);
       orderData.paymentComplete = paymentMethod === 'wallet';
     }
 
-    // If it's a website service, add checkpoints
     if (isWebsiteService) {
-      console.log('Inside isWebsiteService condition, category:', product.category);
-
-      if (product.category === 'cloud_software_development') {
-        console.log('Inside cloud_software_development condition');
-    console.log('Product checkpoints before mapping:', JSON.stringify(product.checkpoints));
-
-        // Use cloud software checkpoints directly from the product
-        orderData.checkpoints = product.checkpoints.map((cp, index) => ({
-          checkpointId: index + 1,
-          name: cp.name,
-          percentage: cp.percentage,
-          completed: false
-        }));
-        console.log('Checkpoints after mapping for cloud software:', JSON.stringify(orderData.checkpoints));
-      } else {
-        console.log('Using standard website checkpoints instead of cloud_software_development');
-      // Fixed checkpoints
-      const structureCheckpoints = [
-        { checkpointId: 1, name: "Website Structure ready", percentage: 2, completed: false },
-        { checkpointId: 2, name: "Header created", percentage: 5, completed: false },
-        { checkpointId: 3, name: "Footer created", percentage: 5, completed: false },
-      ];
-
-      // Calculate percentage for pages
-      const remainingPercentage = 78;
-      const percentagePerPage = Number((remainingPercentage / product.totalPages).toFixed(2));
-
-      // Generate page checkpoints
-      const pageCheckpoints = Array.from(
-        { length: product.totalPages },
-        (_, index) => ({
-          checkpointId: index + 4,
-          name: index < 4 ? 
-            ["Home Page", "About Us Page", "Contact Us Page", "Gallery Page"][index] :
-            `Additional Page ${index - 3}`,
-          percentage: percentagePerPage,
-          completed: false
-        })
-      );
-
-      // Final testing checkpoint
-      const finalCheckpoint = [
-        { 
-          checkpointId: product.totalPages + 4,
-          name: "Final Testing",
-          percentage: 10,
-          completed: false
-        }
-      ];
-
-      orderData.checkpoints = [
-        ...structureCheckpoints,
-        ...pageCheckpoints,
-        ...finalCheckpoint
-      ];
-    }
       orderData.projectProgress = 0;
       orderData.messages = [];
     }
@@ -372,7 +318,13 @@ console.log('Product category from DB:', product.category);
     }
 
     const order = new orderProductModel(orderData);
-    console.log('Final order checkpoints before saving:', JSON.stringify(order.checkpoints));
+
+    if (isWebsiteService) {
+      const categoryBasePrice = await categoryBasePriceModel.findOne({ category: product.category }).lean();
+      const startingNodeTitle = categoryBasePrice?.startingNodeTitle?.trim() || DEFAULT_STARTING_NODE_TITLE;
+      initializeProjectTimeline({ order, startingNodeTitle, actorId: userId });
+    }
+
     await order.save();
 
     // Fetch the saved order with populated fields

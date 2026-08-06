@@ -17,7 +17,7 @@ const updateCategoryBasePriceController = async (req, res) => {
       });
     }
 
-    const { category, basePrice, description } = req.body;
+    const { category, basePrice, description, startingNodeTitle } = req.body;
 
     if (!PROJECT_CATEGORIES.includes(category)) {
       return res.status(400).json({
@@ -38,7 +38,12 @@ const updateCategoryBasePriceController = async (req, res) => {
 
     const updated = await categoryBasePriceModel.findOneAndUpdate(
       { category },
-      { category, basePrice: numericBasePrice, description: description || "" },
+      {
+        category,
+        basePrice: numericBasePrice,
+        description: description || "",
+        startingNodeTitle: (startingNodeTitle || "").trim(),
+      },
       { new: true, upsert: true }
     );
 
