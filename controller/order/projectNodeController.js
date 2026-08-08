@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const orderProductModel = require("../../models/orderProductModel");
 const {
   appendProjectNode,
+  editProjectNode,
   resetProjectTimeline,
   restoreProjectNodes,
   setProjectNodeVisibility,
@@ -83,6 +84,42 @@ const createProjectNode = async (req, res) => {
   }
 };
 
+const editProjectNodeController = async (req, res) => {
+  try {
+    if (!requireAdmin(req, res)) return;
+    const order = await getOrderForAdmin(req, res);
+    if (!order) return;
+
+    const node = editProjectNode({
+      order,
+      nodeId: req.body?.nodeId,
+      title: req.body?.title,
+      cumulativeProgress: req.body?.cumulativeProgress,
+      actorId: req.userId,
+    });
+
+    const messageText = String(req.body?.message || "").trim();
+    if (messageText) {
+      order.messages.push({
+        sender: "admin",
+        senderId: req.userId,
+        message: messageText,
+        timestamp: new Date(),
+        checkpointName: node.title,
+        nodeId: node.nodeId,
+        runId: node.runId,
+      });
+      const savedMessage = order.messages[order.messages.length - 1];
+      node.messageIds.push(String(savedMessage._id));
+    }
+
+    return saveResponse(res, order, "Project node updated successfully");
+  } catch (error) {
+    console.error("Error editing project node:", error);
+    return res.status(400).json({ success: false, error: true, message: error.message });
+  }
+};
+
 const deleteProjectNodes = async (req, res) => {
   try {
     if (!requireAdmin(req, res)) return;
@@ -146,6 +183,7 @@ const resetProjectNodes = async (req, res) => {
 
 module.exports = {
   createProjectNode,
+  editProjectNode: editProjectNodeController,
   deleteProjectNodes,
   restoreProjectNodes: restoreProjectNodesController,
   setProjectNodeVisibility: setProjectNodeVisibilityController,

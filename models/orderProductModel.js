@@ -111,6 +111,11 @@ const projectNodeSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'user'
     },
+    editedAt: Date,
+    editedBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'user'
+    },
     messageIds: {
         type: [String],
         default: []
@@ -120,7 +125,7 @@ const projectNodeSchema = new mongoose.Schema({
 const projectNodeEventSchema = new mongoose.Schema({
     eventType: {
         type: String,
-        enum: ['node_created', 'node_deleted', 'node_restored', 'node_visibility_changed', 'project_reset'],
+        enum: ['node_created', 'node_edited', 'node_deleted', 'node_restored', 'node_visibility_changed', 'project_reset'],
         required: true
     },
     nodeId: String,

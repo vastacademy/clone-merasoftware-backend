@@ -89,6 +89,83 @@ const appendProjectNode = ({ order, title, cumulativeProgress, actorId, now = ne
   return node;
 };
 
+const editProjectNode = ({ order, nodeId, title, cumulativeProgress, actorId, now = new Date() }) => {
+  assertProjectOrder(order);
+  const run = getRequiredActiveRun(order);
+  const nodes = order.projectNodes || [];
+
+  const targetNode = nodes.find(
+    (node) => node.runId === run.runId && node.nodeId === String(nodeId)
+  );
+  if (!targetNode) throw new Error("Node to edit was not found in the active run");
+  if (targetNode.status !== PROJECT_NODE_STATUS.ACTIVE) {
+    throw new Error("Only active nodes can be edited; restore the node first");
+  }
+
+  const nextTitle = String(title || "").trim();
+  if (!nextTitle) throw new Error("Node title is required");
+
+  // The run's starting node is the first-created active node of the run; its
+  // 0% progress is a system invariant, so only its title may change.
+  const runActiveNodesInOrder = nodes.filter(
+    (node) => node.runId === run.runId && node.status === PROJECT_NODE_STATUS.ACTIVE
+  );
+  const startingNode = runActiveNodesInOrder[0] || null;
+  const isStartingNode = startingNode && startingNode.nodeId === targetNode.nodeId;
+
+  const previousProgress = getActiveProgress(order);
+  const previousNodeProgress = Number(targetNode.cumulativeProgress) || 0;
+  const nextProgress = Number(cumulativeProgress);
+
+  if (isStartingNode) {
+    if (Number.isFinite(nextProgress) && nextProgress !== 0) {
+      throw new Error("The starting node must stay at 0% progress; only its title can be edited");
+    }
+  } else {
+    if (!Number.isFinite(nextProgress) || nextProgress < 0 || nextProgress > 100) {
+      throw new Error("Node progress must be between 0 and 100");
+    }
+
+    const targetIndex = runActiveNodesInOrder.findIndex(
+      (node) => node.nodeId === targetNode.nodeId
+    );
+    const lowerNeighbor = runActiveNodesInOrder[targetIndex - 1] || null;
+    const upperNeighbor = runActiveNodesInOrder[targetIndex + 1] || null;
+    const lowerBound = lowerNeighbor ? Number(lowerNeighbor.cumulativeProgress) || 0 : 0;
+
+    if (nextProgress < lowerBound + 0.1 - Number.EPSILON) {
+      throw new Error(`Node progress must be at least 0.1% above the previous node (${lowerBound.toFixed(1)}%)`);
+    }
+    if (upperNeighbor) {
+      const upperBound = Number(upperNeighbor.cumulativeProgress) || 0;
+      if (nextProgress > upperBound - 0.1 + Number.EPSILON) {
+        throw new Error(`Node progress must be at least 0.1% below the next node (${upperBound.toFixed(1)}%)`);
+      }
+    }
+  }
+
+  targetNode.title = nextTitle;
+  if (!isStartingNode) {
+    targetNode.cumulativeProgress = nextProgress;
+  }
+  targetNode.editedAt = now;
+  targetNode.editedBy = actorId;
+
+  order.projectNodeEvents.push(createNodeEvent({
+    eventType: "node_edited",
+    runId: run.runId,
+    nodeId: targetNode.nodeId,
+    actorId,
+    previousProgress: previousNodeProgress,
+    nextProgress: isStartingNode ? 0 : nextProgress,
+    metadata: { previousActiveProgress: previousProgress },
+    now,
+  }));
+
+  syncActiveProjectProgress(order);
+  return targetNode;
+};
+
 const softDeleteProjectNodes = ({ order, nodeIds, actorId, now = new Date() }) => {
   assertProjectOrder(order);
   const run = getRequiredActiveRun(order);
@@ -302,6 +379,7 @@ module.exports = {
   syncActiveProjectProgress,
   assertProjectOrder,
   appendProjectNode,
+  editProjectNode,
   softDeleteProjectNodes,
   restoreProjectNodes,
   setProjectNodeVisibility,

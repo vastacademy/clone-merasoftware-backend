@@ -265,6 +265,7 @@ router.post("/admin/clients/:customerId/payment-records/:recordType/:recordId/re
 router.get("/get-order", authToken, getUserOrders)
 router.get("/order-details/:orderId", authToken, getOrderDetails)
 router.post("/admin/projects/:orderId/nodes", authToken, projectNodeController.createProjectNode)
+router.post("/admin/projects/:orderId/nodes/edit", authToken, projectNodeController.editProjectNode)
 router.post("/admin/projects/:orderId/nodes/delete", authToken, projectNodeController.deleteProjectNodes)
 router.post("/admin/projects/:orderId/nodes/restore", authToken, projectNodeController.restoreProjectNodes)
 router.post("/admin/projects/:orderId/nodes/visibility", authToken, projectNodeController.setProjectNodeVisibility)

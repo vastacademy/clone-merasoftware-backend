@@ -1,4 +1,5 @@
 const orderProductModel = require("../../models/orderProductModel")
+const invoiceModel = require("../../models/invoiceModel");
 const mongoose = require('mongoose');
 const { applyOrderSummary } = require("../../helpers/orderSummary");
 
@@ -19,6 +20,19 @@ const getUserOrders = async (req, res) => {
         const orders = await applyOrderSummary(
             orderProductModel.find({ userId: userObjectId }).sort({ createdAt: -1 })
         );
+
+        // Flag orders that still have an unpaid/overdue project invoice, so the list's
+        // status badge can show "Payment Pending" (admin-created projects left unpaid).
+        // Same source as getOrderDetails.js's single-order check, batched here into one
+        // query (build a Set of orderIds with an outstanding invoice) to avoid N+1.
+        const unpaidInvoices = await invoiceModel
+            .find({ userId: userObjectId, status: { $in: ['unpaid', 'overdue'] } })
+            .select('orderId')
+            .lean();
+        const unpaidOrderIds = new Set(unpaidInvoices.map((invoice) => String(invoice.orderId)));
+        orders.forEach((order) => {
+            order.hasUnpaidInvoice = unpaidOrderIds.has(String(order._id));
+        });
 
         console.log('Total projects found:', orders.length);
         console.log('Sample project:', orders[0]);
