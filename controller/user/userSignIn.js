@@ -13,7 +13,7 @@ async function userSignInController (req,res) {
             throw new Error("Please provide password")
         }
 
-        const user = await userModel.findOne({email}).select('email password name roles walletBalance userDetails bankAccounts');
+        const user = await userModel.findOne({email}).select('email password name roles walletBalance userDetails bankAccounts mustResetPassword');
 
         if(!user){
             throw new Error("User not found")
@@ -71,6 +71,7 @@ async function userSignInController (req,res) {
                     },
                     walletBalance: user.walletBalance,
                     isDetailsCompleted: user.userDetails?.isDetailsCompleted || false,
+                    mustResetPassword: user.mustResetPassword || false,
                 },
                 success: true,
                 error: false,

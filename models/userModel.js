@@ -39,6 +39,12 @@ const userSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
+    // Set true when a user is auto-created (e.g. lead convert) with a universal
+    // password. Frontend uses it to prompt a first-login password reset.
+    mustResetPassword: {
+        type: Boolean,
+        default: false
+    },
     walletBalance: {
         type: Number,
         default: 0    
