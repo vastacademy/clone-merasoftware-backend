@@ -1,47 +1,9 @@
 const mongoose = require("mongoose");
 
-// Attachment for a follow-up (optional). Reuses the same shape/Drive fields as
-// proposalSchema below so file handling stays a single pattern across the model.
-const followUpAttachmentSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    default: "",
-  },
-  driveFileId: {
-    type: String,
-    default: "",
-  },
-  downloadLink: {
-    type: String,
-    default: "",
-  },
-  type: {
-    type: String,
-    default: "",
-  },
-  size: {
-    type: Number,
-    default: 0,
-  },
-}, { _id: false });
-
 const followUpSchema = new mongoose.Schema({
   note: {
     type: String,
     required: true,
-  },
-  // Pipeline-stage badge captured on this follow-up (the stage the lead was moved
-  // to at this point in time). Same 6 stages as the lead's own status enum, so the
-  // follow-up timeline shows how the pipeline progressed over time.
-  badge: {
-    type: String,
-    enum: ["New", "Contacted", "Qualified", "Proposal Sent", "Won", "Lost"],
-    default: "New",
-  },
-  // Optional file attached to this follow-up (uploaded to Google Drive).
-  attachment: {
-    type: followUpAttachmentSchema,
-    default: null,
   },
   date: {
     type: Date,
