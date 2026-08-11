@@ -31,14 +31,13 @@ const globalSearchController = async (req, res) => {
 
     const [clients, leads] = await Promise.all([
       userModel
-        .find({ roles: "customer", deletedAt: null, $or: matchFields })
+        .find({ roles: "customer", $or: matchFields })
         .select("name email phone")
         .limit(RESULT_LIMIT)
         .lean(),
       // Hide converted leads: they already surface as a client result.
-      // Hide trashed leads (deletedAt set): they live only in the Trash page.
       leadModel
-        .find({ convertedToUserId: null, deletedAt: null, $or: matchFields })
+        .find({ convertedToUserId: null, $or: matchFields })
         .select("name email phone status")
         .limit(RESULT_LIMIT)
         .lean(),

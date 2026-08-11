@@ -83,10 +83,6 @@ const globalSearchController = require('../controller/lead/globalSearch');
 const convertLeadController = require('../controller/lead/convertLead');
 const setNewPasswordController = require('../controller/user/setNewPassword');
 const uploadProposalController = require('../controller/lead/uploadProposal');
-const trashClientController = require('../controller/trash/trashClient');
-const getTrashController = require('../controller/trash/getTrash');
-const restoreTrashController = require('../controller/trash/restoreTrash');
-const purgeTrashController = require('../controller/trash/purgeTrash');
 const getClientCredentialsController = require('../controller/admin/getClientCredentials');
 const resetClientPasswordController = require('../controller/admin/resetClientPassword');
 const updateClientAccountStatusController = require('../controller/admin/updateClientAccountStatus');
@@ -189,12 +185,6 @@ router.post("/admin/leads/:leadId", authToken, upload.any(), updateLeadControlle
 router.delete("/admin/leads/:leadId", authToken, deleteLeadController);
 router.post("/admin/leads/:leadId/convert", authToken, convertLeadController);
 router.post("/admin/leads/:leadId/proposal", authToken, upload.any(), uploadProposalController);
-// Trash (soft-delete) system — admin only. Lead trash reuses the DELETE /admin/leads/:leadId
-// route above (now soft-deletes). Distinct /admin/trash* paths, no shadowing.
-router.post("/admin/clients/:customerId/trash", authToken, trashClientController);
-router.get("/admin/trash", authToken, getTrashController);
-router.post("/admin/trash/:type/:id/restore", authToken, restoreTrashController);
-router.delete("/admin/trash/:type/:id", authToken, purgeTrashController);
 router.post("/set-new-password", authToken, setNewPasswordController);
 router.post('/verify-otp', verifyOtpController);
 router.post('/resend-otp', resendOtpController);

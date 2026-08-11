@@ -60,19 +60,6 @@ const userSchema = new mongoose.Schema({
         type: Boolean,
         default: true
     },
-    // Soft-delete (Trash system). deletedAt null = active/visible everywhere as
-    // before; a date = the record is in Trash (hidden from all admin lists/search)
-    // and is permanently purged 30 days later. Restoring clears it back to null.
-    // Additive + default null, so every pre-existing user stays active.
-    deletedAt: {
-        type: Date,
-        default: null
-    },
-    deletedBy: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'user',
-        default: null
-    },
     walletBalance: {
         type: Number,
         default: 0    

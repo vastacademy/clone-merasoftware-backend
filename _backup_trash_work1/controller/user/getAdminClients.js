@@ -117,7 +117,7 @@ async function getAdminClients(req, res) {
     }
 
     const clients = await userModel
-      .find({ roles: "customer", deletedAt: null })
+      .find({ roles: "customer" })
       .select("name email phone status createdAt")
       .lean();
 

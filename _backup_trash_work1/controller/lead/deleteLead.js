@@ -31,24 +31,10 @@ const deleteLeadController = async (req, res) => {
       });
     }
 
-    // Already trashed — nothing to do.
-    if (lead.deletedAt) {
-      return res.status(409).json({
-        message: "This lead is already in Trash",
-        error: true,
-        success: false,
-      });
-    }
-
-    // Soft-delete: move to Trash instead of hard-deleting. The record stays in the
-    // collection but is hidden from every lead list/search (all filter deletedAt:null)
-    // and is permanently purged 30 days later. Restore clears deletedAt back to null.
-    lead.deletedAt = new Date();
-    lead.deletedBy = req.userId;
-    await lead.save();
+    await leadModel.findByIdAndDelete(leadId);
 
     return res.json({
-      message: "Lead moved to Trash",
+      message: "Lead deleted",
       success: true,
       error: false,
     });

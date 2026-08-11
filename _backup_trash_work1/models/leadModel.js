@@ -140,18 +140,6 @@ const leadSchema = new mongoose.Schema({
     ref: "user",
     default: null,
   },
-  // Soft-delete (Trash system). null = active/visible as before; a date = in Trash
-  // (hidden from lead lists/search), permanently purged 30 days later. Restore
-  // clears it back to null. Additive + default null so existing leads are unaffected.
-  deletedAt: {
-    type: Date,
-    default: null,
-  },
-  deletedBy: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "user",
-    default: null,
-  },
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "user",
