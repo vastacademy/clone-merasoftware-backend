@@ -2,10 +2,20 @@ const bcrypt = require("bcryptjs");
 const userModel = require("../../models/userModel");
 const { STORE_PLAIN_PASSWORD } = require("../../config/accessControlConfig");
 
-// Lets a logged-in user set a new password (used for the first-login reset
-// after a lead is converted with the universal default password).
-const setNewPasswordController = async (req, res) => {
+// Admin-only: sets a new password for a client. Updates the bcrypt hash (the
+// real auth source) and, when the feature flag is on, the plaintext copy too.
+// Same hashing approach as userSignUp/setNewPassword — no separate auth system.
+const resetClientPasswordController = async (req, res) => {
   try {
+    if (req.userRole !== "admin") {
+      return res.status(403).json({
+        message: "Forbidden",
+        error: true,
+        success: false,
+      });
+    }
+
+    const { customerId } = req.params;
     const { newPassword } = req.body;
 
     if (!newPassword || newPassword.length < 4) {
@@ -16,7 +26,7 @@ const setNewPasswordController = async (req, res) => {
       });
     }
 
-    const user = await userModel.findById(req.userId);
+    const user = await userModel.findById(customerId);
     if (!user) {
       return res.status(404).json({
         message: "User not found",
@@ -27,6 +37,7 @@ const setNewPasswordController = async (req, res) => {
 
     const salt = bcrypt.genSaltSync(10);
     user.password = bcrypt.hashSync(newPassword, salt);
+    // Admin set this password deliberately, so no forced first-login reset.
     user.mustResetPassword = false;
     if (STORE_PLAIN_PASSWORD) {
       user.plainPassword = newPassword;
@@ -34,18 +45,19 @@ const setNewPasswordController = async (req, res) => {
     await user.save();
 
     return res.json({
-      message: "Password updated successfully",
+      message: "Password reset successfully",
       success: true,
       error: false,
+      data: { email: user.email, newPassword },
     });
   } catch (error) {
-    console.error("Error setting new password:", error);
-    return res.status(400).json({
-      message: error.message || "Failed to update password",
+    console.error("Error resetting client password:", error);
+    return res.status(500).json({
+      message: error.message || "Failed to reset password",
       error: true,
       success: false,
     });
   }
 };
 
-module.exports = setNewPasswordController;
+module.exports = resetClientPasswordController;

@@ -45,21 +45,6 @@ const userSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
-    // Plaintext copy of the password, stored only so an admin can view a user's
-    // password from the client workspace. Written alongside the bcrypt hash at
-    // signup / convert / reset, and backfilled on successful login for
-    // pre-existing users. Gated by config/accessControlConfig.STORE_PLAIN_PASSWORD;
-    // never used for authentication (login always compares the hash).
-    plainPassword: {
-        type: String,
-        default: undefined
-    },
-    // Login gate. When false, an admin has disabled this account and login is
-    // blocked in userSignIn. Default true so all existing users stay active.
-    isActive: {
-        type: Boolean,
-        default: true
-    },
     walletBalance: {
         type: Number,
         default: 0    

@@ -4,6 +4,9 @@ const categoryBasePriceModel = require("../../models/categoryBasePriceModel");
 const { sendPurchaseConfirmationEmail, sendMonthlyLimitedPlanActivationEmail, generateInvoicePdf, sendAdminPurchaseConfirmationEmail, sendAdminUPIPendingNotification } = require("../../helpers/emailService");
 const { createPurchaseNotification } = require("../../helpers/notificationService");
 const { initializeProjectTimeline } = require("../../helpers/projectNodeService");
+// SSOT: shared invoice builder — same helper used by the admin/customer custom-project
+// and approval flows, so every project order carries one unpaid invoice.
+const { createProjectInvoice } = require("../../helpers/paymentRecording");
 
 const DEFAULT_STARTING_NODE_TITLE = "Project Started";
 
@@ -326,6 +329,46 @@ console.log('Product category from DB:', product.category);
     }
 
     await order.save();
+
+    // SSOT invoice creation — only for website/software PROJECT orders (not plans/updates,
+    // which use the separate monthlyInvoiceModel/renewal system). Every project order gets
+    // an unpaid invoice so "invoice pending" and "project pending" always exist together;
+    // the customer pays via /invoice-detail/:invoiceId (canonical Pay Now) and admin approval
+    // marks it paid through the shared markProjectInvoicePaid() helper. Order stays
+    // pending-approval until then (Q2).
+    if (isWebsiteService) {
+      try {
+        const invoiceLineItems = (order.orderItems || []).map((item) => ({
+          name: item.name,
+          price: Number(item.finalPrice ?? item.originalPrice ?? 0),
+        }));
+        const projectInvoiceDate = new Date();
+        if (order.isPartialPayment && Array.isArray(order.installments) && order.installments.length > 0) {
+          for (const installment of order.installments) {
+            await createProjectInvoice({
+              customerId: userId,
+              orderId: order._id,
+              amount: installment.amount,
+              lineItems: invoiceLineItems,
+              installmentNumber: installment.installmentNumber,
+              invoiceDate: projectInvoiceDate,
+              dueDate: installment.dueDate || projectInvoiceDate,
+            });
+          }
+        } else {
+          await createProjectInvoice({
+            customerId: userId,
+            orderId: order._id,
+            amount: Number(order.totalAmount || order.price || 0),
+            lineItems: invoiceLineItems,
+            invoiceDate: projectInvoiceDate,
+          });
+        }
+      } catch (invoiceError) {
+        // Invoice creation must never hard-fail checkout — the order is already saved.
+        console.error("Project invoice creation failed (order still created):", invoiceError);
+      }
+    }
 
     // Fetch the saved order with populated fields
     const populatedOrder = await orderProductModel.findById(order._id)

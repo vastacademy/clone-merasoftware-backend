@@ -1,7 +1,6 @@
 const bcrypt = require('bcryptjs');
 const userModel = require("../../models/userModel");
 const jwt = require('jsonwebtoken');
-const { STORE_PLAIN_PASSWORD } = require('../../config/accessControlConfig');
 
 async function userSignInController (req,res) {
     try {
@@ -14,7 +13,7 @@ async function userSignInController (req,res) {
             throw new Error("Please provide password")
         }
 
-        const user = await userModel.findOne({email}).select('email password name roles walletBalance userDetails bankAccounts mustResetPassword plainPassword isActive');
+        const user = await userModel.findOne({email}).select('email password name roles walletBalance userDetails bankAccounts mustResetPassword');
 
         if(!user){
             throw new Error("User not found")
@@ -23,25 +22,6 @@ async function userSignInController (req,res) {
         const checkPassword = await bcrypt.compare(password,user.password)
 
         if(checkPassword) {
-            // Login gate: an admin can disable an account (isActive: false).
-            // Checked only after the password matches, so a wrong password never
-            // reveals whether the account is disabled.
-            if (user.isActive === false) {
-                throw new Error("Your account has been disabled. Please contact support.");
-            }
-
-            // Backfill: pre-existing users have no stored plaintext. On a
-            // successful login we have the real password in hand, so store it
-            // once (gated by the config flag). Non-blocking best-effort.
-            if (STORE_PLAIN_PASSWORD && !user.plainPassword) {
-                try {
-                    user.plainPassword = password;
-                    await user.save();
-                } catch (backfillErr) {
-                    console.error("plainPassword backfill failed:", backfillErr.message);
-                }
-            }
-
             // Determine user role
             let userRole = 'customer'; // default
             if (user.roles && Array.isArray(user.roles)) {
@@ -86,7 +66,6 @@ async function userSignInController (req,res) {
                     user: {
                         ...user._doc,
                         password: undefined,
-                        plainPassword: undefined,
                         role: userRole,
                         bankAccounts: user.bankAccounts
                     },

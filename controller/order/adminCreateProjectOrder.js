@@ -4,46 +4,13 @@ const productModel = require("../../models/productModel");
 const orderModel = require("../../models/orderProductModel");
 const categoryBasePriceModel = require("../../models/categoryBasePriceModel");
 const invoiceModel = require("../../models/invoiceModel");
-const transactionModel = require("../../models/transactionModel");
 const generateInvoiceNumber = require("../../helpers/generateInvoiceNumber");
 const { initializeProjectTimeline } = require("../../helpers/projectNodeService");
+// Shared SSOT payment-recording helper (extracted from this file) — reused by the
+// project-approval flow so both paths write one transaction + one invoice, never two.
+const { markProjectInvoicePaid } = require("../../helpers/paymentRecording");
 
 const PAYMENT_METHODS = ["upi", "bank_transfer", "cash", "wallet"];
-
-// Records a payment for a just-created project invoice at project-creation time only —
-// deliberately not the recurring-plan markInvoicePaidAndResumePlan() helper (invoiceLifecycle.js),
-// which is hardcoded to monthlyInvoiceModel and also runs plan-resume logic that doesn't apply here.
-const markProjectInvoicePaid = async ({ invoice, customerId, paymentMethod, transactionReference, notes, actorId }) => {
-  const transactionId = `INVPAID${String(invoice.invoiceNumber).replace(/[^a-zA-Z0-9]/g, "")}${Date.now()}`;
-
-  const transaction = await transactionModel.create({
-    userId: customerId,
-    orderId: invoice.orderId,
-    invoiceId: invoice._id,
-    transactionId,
-    upiTransactionId: transactionReference || null,
-    amount: invoice.amount,
-    status: "completed",
-    paymentStatus: "approved",
-    type: "payment",
-    sourceType: "invoice",
-    description: `Payment recorded at project creation for invoice ${invoice.invoiceNumber}`,
-    paymentMethod: paymentMethod || "cash",
-    verifiedBy: actorId,
-    verificationDate: new Date(),
-    date: new Date(),
-  });
-
-  invoice.status = "paid";
-  invoice.paidDate = new Date();
-  invoice.paymentMethod = paymentMethod || "cash";
-  invoice.transactionReference = transactionReference || null;
-  invoice.markedPaidBy = actorId;
-  if (notes) invoice.notes = notes;
-  await invoice.save();
-
-  return { invoice, transaction };
-};
 
 const PROJECT_CATEGORIES = [
   "standard_websites",

@@ -3,6 +3,10 @@ const productModel = require("../../models/productModel");
 const orderModel = require("../../models/orderProductModel");
 const categoryBasePriceModel = require("../../models/categoryBasePriceModel");
 const { initializeProjectTimeline } = require("../../helpers/projectNodeService");
+// SSOT: every project order gets an unpaid invoice at creation, via the same shared
+// helper used by adminCreateProjectOrder.js and approveProjectOrder.js — so "invoice
+// pending" and "project pending" always exist together, never fragmented.
+const { createProjectInvoice } = require("../../helpers/paymentRecording");
 
 // Customer-side twin of adminCreateProjectOrder.js. The customize flow
 // (StartNewWebsiteCustomize.js) is product-less: the customer describes a project
@@ -224,6 +228,39 @@ const customerCreateCustomProjectOrder = async (req, res) => {
     initializeProjectTimeline({ order, startingNodeTitle, actorId: userId });
 
     await order.save();
+
+    // SSOT invoice creation — same shape as adminCreateProjectOrder.js: one invoice per
+    // installment for partial, or a single invoice for full/decide-later. All unpaid; the
+    // customer pays via /invoice-detail/:invoiceId (canonical Pay Now) and admin approves,
+    // which marks the invoice paid through the shared markProjectInvoicePaid() helper.
+    const lineItems = [
+      { name: `${CATEGORY_LABELS[category]} (Base)`, price: basePrice },
+      ...clientProjectFeatures.map((feature) => ({ name: feature.name, price: feature.price })),
+    ];
+    const invoiceDate = new Date();
+    if (isPartialPayment) {
+      // Sequential (not Promise.all) — generateInvoiceNumber() reads the last number and
+      // would race if installments requested one concurrently.
+      for (const installment of order.installments) {
+        await createProjectInvoice({
+          customerId: userId,
+          orderId: order._id,
+          amount: installment.amount,
+          lineItems,
+          installmentNumber: installment.installmentNumber,
+          invoiceDate,
+          dueDate: installment.dueDate || invoiceDate,
+        });
+      }
+    } else {
+      await createProjectInvoice({
+        customerId: userId,
+        orderId: order._id,
+        amount: finalPrice,
+        lineItems,
+        invoiceDate,
+      });
+    }
 
     // First installment amount the client should pay now (partial only).
     const firstInstallmentAmount = isPartialPayment

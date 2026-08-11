@@ -1,6 +1,5 @@
 const userModel = require("../../models/userModel")
 const bcrypt = require('bcryptjs');
-const { STORE_PLAIN_PASSWORD } = require('../../config/accessControlConfig');
 
 
 async function userSignUpController (req,res) {
@@ -69,11 +68,6 @@ async function userSignUpController (req,res) {
             walletBalance: 0,
             referredBy: referredBy ? referredBy : null, // Store the referrer ID
             referrals: [] // Initialize an empty array for tracking referrals
-        }
-
-        // Store plaintext copy for admin viewing (gated by config flag).
-        if (STORE_PLAIN_PASSWORD) {
-            payload.plainPassword = password;
         }
 
         const userData = new userModel(payload)

@@ -1,7 +1,6 @@
 const bcrypt = require("bcryptjs");
 const leadModel = require("../../models/leadModel");
 const userModel = require("../../models/userModel");
-const { STORE_PLAIN_PASSWORD } = require("../../config/accessControlConfig");
 
 // Universal default password given to a converted lead. The customer is
 // prompted to set their own on first login (mustResetPassword flag).
@@ -79,7 +78,6 @@ const convertLeadController = async (req, res) => {
       referredBy: null,
       referrals: [],
       mustResetPassword: true,
-      ...(STORE_PLAIN_PASSWORD ? { plainPassword: UNIVERSAL_DEFAULT_PASSWORD } : {}),
     });
 
     const savedUser = await newUser.save();

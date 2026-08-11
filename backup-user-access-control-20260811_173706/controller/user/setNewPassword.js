@@ -1,6 +1,5 @@
 const bcrypt = require("bcryptjs");
 const userModel = require("../../models/userModel");
-const { STORE_PLAIN_PASSWORD } = require("../../config/accessControlConfig");
 
 // Lets a logged-in user set a new password (used for the first-login reset
 // after a lead is converted with the universal default password).
@@ -28,9 +27,6 @@ const setNewPasswordController = async (req, res) => {
     const salt = bcrypt.genSaltSync(10);
     user.password = bcrypt.hashSync(newPassword, salt);
     user.mustResetPassword = false;
-    if (STORE_PLAIN_PASSWORD) {
-      user.plainPassword = newPassword;
-    }
     await user.save();
 
     return res.json({
