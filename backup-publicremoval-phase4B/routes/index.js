@@ -18,7 +18,19 @@ const updateUser = require('../controller/user/updateUser')
 const UploadProductController = require('../controller/product/uploadPoduct')
 const getProductController = require('../controller/product/getProduct')
 const updateProductController = require('../controller/product/updateProduct')
+const getCategoryProduct = require('../controller/product/getCategoryProductOne')
+const getCategoryWiseProduct = require('../controller/product/getCategoryWiseProduct')
 const getProductDetails = require('../controller/product/getProductDetails')
+const addToCartController = require('../controller/user/addToCartController')
+const countAddToCartProduct = require('../controller/user/countAddToCartProduct')
+const addToCartViewProduct = require('../controller/user/addToCartViewProduct')
+const updateAddToCartProduct = require('../controller/user/updateAddToCartProduct')
+const deleteAddToCartProduct = require('../controller/user/deleteAddToCartProduct')
+const searchProduct = require('../controller/product/searchProduct')
+const filterProductController = require('../controller/product/filterProduct')
+const paymentController = require('../controller/order/paymentController')
+const orderController = require('../controller/order/order.controller')
+const allOrderController = require('../controller/order/allOrder.controller')
 const UploadCategoryController = require('../controller/product/uploadCategory')
 const getCategoryController = require('../controller/product/getCategories')
 const updateCategoryController = require('../controller/product/updateCategory')
@@ -60,6 +72,8 @@ const getUserNotifications = require('../controller/user/getUserNotificationsCon
 const verifyOtpController = require('../controller/user/verifyOtpController');
 const resendOtpController = require('../controller/user/resendOtpController');
 const downloadInvoice = require('../controller/user/downloadInvoice');
+const submitContact = require('../controller/user/contactController');
+const arrangeCallBack = require('../controller/user/arrangeCallBack');
 const createTicketController = require('../controller/user/createTicketController');
 const getUserTicketsController = require('../controller/user/getUserTicketsController');
 const getTicketDetailsController = require('../controller/user/getTicketDetailsController');
@@ -196,6 +210,8 @@ router.post("/validate-coupon", authToken, validateCoupon)
 router.post("/pay-installment", authToken, payInstallment)
 router.get("/user-notifications", authToken, getUserNotifications);
 router.get('/download-invoice/:orderId', authToken, downloadInvoice);
+router.post("/contact-us", submitContact);
+router.post("/arrange-callback", arrangeCallBack);
 router.post("/create-ticket", authToken, createTicketController);
 router.get("/get-user-tickets", authToken, getUserTicketsController);
 router.get("/get-ticket-details/:ticketId", authToken, getTicketDetailsController);
@@ -216,7 +232,11 @@ router.post("/upload-product", authToken, UploadProductController )
 router.get("/get-product",getProductController)
 router.post("/update-product", authToken, updateProductController)
 router.delete("/delete-product", authToken, deleteProductController)
+router.get("/get-categoryProduct",getCategoryProduct)
+router.post("/category-product",getCategoryWiseProduct)
 router.post("/product-details", getProductDetails)
+router.get("/search", searchProduct)
+router.post("/filter-product", filterProductController)
 router.post("/upload-category",authToken, UploadCategoryController)
 router.get("/get-categories", getCategoryController)
 router.post("/update-category/:id",authToken, updateCategoryController)
@@ -230,7 +250,18 @@ router.get("/perfect-for-suggestions", authToken, searchPerfectForSuggestions);
 router.post("/perfect-for-suggestions/save-or-increment", authToken, saveOrIncrementPerfectForSuggestion);
 router.delete("/perfect-for-suggestions/:id", authToken, deletePerfectForSuggestion);
 
+//user add to cart
+router.post("/addtocart", authToken, addToCartController)
+router.get("/countAddToCartProduct", authToken, countAddToCartProduct)
+router.get("/view-card-product", authToken, addToCartViewProduct)
+router.post("/update-cart-product", authToken, updateAddToCartProduct)
+router.post("/delete-cart-product", authToken, deleteAddToCartProduct)
+
 // payment and order
+router.post("/checkout",authToken,paymentController)
+router.get("/order-list", authToken, orderController)
+router.get("/all-order",authToken, allOrderController)
+
 router.post("/create-order", authToken, createOrder)
 router.post("/customer/custom-project-order", authToken, customerCreateCustomProjectOrder)
 router.post("/validate-update-plan", authToken, validateUpdatePlan)
