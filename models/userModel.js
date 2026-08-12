@@ -16,6 +16,61 @@ const referralSchema = new mongoose.Schema({
     }
 }, { _id: false })
 
+// Admin-sent document attached to a client (agreement, signed doc, etc.).
+// Reuses the exact same Google Drive shape as leadModel.proposals[] /
+// leadModel.followUpAttachment, so file handling stays a single pattern across
+// the codebase. Lives on the client (userModel), not on an order/node, so a
+// client with no running project (e.g. a demo client) still has one place an
+// agreement can be sent to. nodeId/orderId are optional back-links, set only
+// when the document was uploaded during a project node update, so the customer
+// Documents timeline can show which node update it arrived with.
+const clientDocumentSchema = new mongoose.Schema({
+    name: {
+        type: String,
+        default: ""
+    },
+    driveFileId: {
+        type: String,
+        default: ""
+    },
+    downloadLink: {
+        type: String,
+        default: ""
+    },
+    type: {
+        type: String,
+        default: ""
+    },
+    size: {
+        type: Number,
+        default: 0
+    },
+    // Classifies the document for the customer-facing label. Extendable later.
+    source: {
+        type: String,
+        enum: ['agreement', 'general'],
+        default: 'general'
+    },
+    // Optional project-node back-links (empty for client-level uploads).
+    orderId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'order',
+        default: null
+    },
+    nodeId: {
+        type: String,
+        default: null
+    },
+    uploadedAt: {
+        type: Date,
+        default: Date.now
+    },
+    uploadedBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'user'
+    }
+}, { _id: true });
+
 const userSchema = new mongoose.Schema({
     name: String,
     email: {
@@ -82,6 +137,12 @@ const userSchema = new mongoose.Schema({
         ref: 'user'
     },
     referrals: [referralSchema],
+    // Admin-sent documents (agreements etc.) for this client. Additive + default
+    // [], so every pre-existing user stays unaffected. See clientDocumentSchema.
+    documents: {
+        type: [clientDocumentSchema],
+        default: []
+    },
      bankAccounts: [
     {
       bankName: String,
