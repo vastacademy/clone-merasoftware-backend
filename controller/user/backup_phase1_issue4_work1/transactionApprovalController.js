@@ -3,9 +3,6 @@ const userModel = require("../../models/userModel");
 const orderProductModel = require("../../models/orderProductModel");
 const monthlyInvoiceModel = require("../../models/monthlyInvoiceModel");
 const { markInvoicePaidAndResumePlan } = require("../../helpers/invoiceLifecycle");
-// Refund helper — when a combined payment's UPI portion is rejected, its already-debited
-// wallet portion must be returned to the customer.
-const { refundWalletInstant } = require("../../helpers/transactionService");
 
 const requireAdmin = (req, res) => {
   if (req.userRole !== "admin") {
@@ -297,29 +294,6 @@ const rejectTransaction = async (req, res) => {
     await transaction.save();
 
     const order = await rejectLinkedOrderPayment(transaction, rejectionReason);
-
-    // Combined payment: if this rejected UPI transaction had a paired wallet portion (same
-    // parentTransactionId, already debited), refund that wallet amount to the customer.
-    // refundWalletInstant is idempotent on its transactionId, so a retried rejection never
-    // double-refunds.
-    if (transaction.parentTransactionId) {
-      const walletPortion = await transactionModel.findOne({
-        parentTransactionId: transaction.parentTransactionId,
-        paymentMethod: "wallet",
-        type: "payment",
-        status: "completed",
-      });
-      if (walletPortion) {
-        await refundWalletInstant({
-          userId: walletPortion.userId,
-          transactionId: `${walletPortion.transactionId}-REFUND`,
-          amount: walletPortion.amount,
-          description: `Refund for rejected payment ${transaction.transactionId}`,
-          parentTransactionId: transaction.parentTransactionId,
-          orderId: walletPortion.orderId || null,
-        });
-      }
-    }
 
     const updatedTransaction = await transactionModel
       .findById(transaction._id)

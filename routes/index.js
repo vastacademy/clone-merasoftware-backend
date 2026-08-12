@@ -32,6 +32,7 @@ const DeleteCategoryController = require('../controller/product/deleteCategory')
 const updateUserProfileController = require('../controller/user/updateUserProfileController')
 const createOrder = require('../controller/order/createOrder')
 const customerCreateCustomProjectOrder = require('../controller/order/customerCreateCustomProjectOrder')
+const getCustomerCategoryBasePrice = require('../controller/order/getCustomerCategoryBasePrice')
 const getUserOrders = require('../controller/order/getUserOrder')
 const getOrderDetails = require('../controller/order/getOrderDetails')
 const projectNodeController = require('../controller/order/projectNodeController')
@@ -257,6 +258,7 @@ router.delete("/perfect-for-suggestions/:id", authToken, deletePerfectForSuggest
 // payment and order
 router.post("/create-order", authToken, createOrder)
 router.post("/customer/custom-project-order", authToken, customerCreateCustomProjectOrder)
+router.get("/customer/category-base-price", authToken, getCustomerCategoryBasePrice)
 router.post("/validate-update-plan", authToken, validateUpdatePlan)
 router.post("/toggle-update-plan", authToken, toggleUpdatePlan)
 

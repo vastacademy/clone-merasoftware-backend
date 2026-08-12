@@ -7,14 +7,6 @@ const { initializeProjectTimeline } = require("../../helpers/projectNodeService"
 // helper used by adminCreateProjectOrder.js and approveProjectOrder.js — so "invoice
 // pending" and "project pending" always exist together, never fragmented.
 const { createProjectInvoice } = require("../../helpers/paymentRecording");
-// Shared transaction-creation SSOT — the order and its payment are created together in one
-// request (never a payment-less order). Wallet is the customer's own money so it is debited
-// instantly (deductWalletInstant); any UPI remainder is a pending transaction the admin approves.
-const {
-  createPaymentTransaction,
-  deductWalletInstant,
-} = require("../../helpers/transactionService");
-const userModel = require("../../models/userModel");
 
 // Customer-side twin of adminCreateProjectOrder.js. The customize flow
 // (StartNewWebsiteCustomize.js) is product-less: the customer describes a project
@@ -84,9 +76,6 @@ const customerCreateCustomProjectOrder = async (req, res) => {
       paymentType = "full",
       installmentCount,
       couponCode,
-      // Payment details for full/partial: the customer pays first (wallet/UPI), then this
-      // one request creates the order + invoice + the pending payment transaction together.
-      paymentDetails,
     } = req.body;
 
     if (!category || !PROJECT_CATEGORIES.includes(category)) {
@@ -100,18 +89,6 @@ const customerCreateCustomProjectOrder = async (req, res) => {
     if (!PAYMENT_TYPES.includes(paymentType)) {
       return res.status(400).json({
         message: "Invalid payment type",
-        error: true,
-        success: false,
-      });
-    }
-
-    // A full/partial order must never be created without an accompanying payment — that was
-    // the old bug where an unpaid order reached the admin. decide_later is the only path
-    // that intentionally creates an order with no payment (admin handles payment later).
-    const requiresPayment = paymentType !== "decide_later";
-    if (requiresPayment && !paymentDetails?.transactionId) {
-      return res.status(400).json({
-        message: "Payment details are required to create this project order",
         error: true,
         success: false,
       });
@@ -290,92 +267,6 @@ const customerCreateCustomProjectOrder = async (req, res) => {
       ? order.installments[0].amount
       : finalPrice;
 
-    // ----- Payment (full/partial only) — the wallet/UPI split is decided HERE, server-side,
-    // from the customer's real balance. The client never tells us how much came from wallet;
-    // trusting a client-sent split was the old loophole. Wallet is instant (own money); any
-    // UPI remainder is a pending transaction the admin approves. -----
-    let walletPaid = 0;
-    let upiPending = 0;
-    let upiTransaction = null;
-    const linkedTransactionIds = [];
-
-    if (requiresPayment) {
-      const amountDueNow = firstInstallmentAmount;
-      const parentTxnId = paymentDetails.transactionId;
-
-      const customer = await userModel.findById(userId).select("walletBalance");
-      const walletBalance = Number(customer?.walletBalance || 0);
-      const walletPart = Math.min(walletBalance, amountDueNow);
-      const upiPart = amountDueNow - walletPart;
-
-      // A UPI remainder requires a UPI reference from the client.
-      if (upiPart > 0 && !paymentDetails.upiTransactionId) {
-        return res.status(400).json({
-          message: "UPI transaction ID is required for the amount not covered by wallet",
-          error: true,
-          success: false,
-        });
-      }
-
-      const paymentLabel = isPartialPayment ? "First installment" : "Payment";
-
-      // Wallet portion — instant, no approval. Debited atomically by the server.
-      if (walletPart > 0) {
-        const walletTxn = await deductWalletInstant({
-          userId,
-          transactionId: `${parentTxnId}-W`,
-          amount: walletPart,
-          orderId: order._id,
-          installmentNumber: isPartialPayment ? 1 : null,
-          isInstallmentPayment: isPartialPayment,
-          description: `${paymentLabel} (wallet) for custom project order ${order._id}`,
-          // A combined payment links both parts; a wallet-only payment has no parent.
-          parentTransactionId: upiPart > 0 ? parentTxnId : null,
-        });
-        walletPaid = walletPart;
-        linkedTransactionIds.push(walletTxn.transactionId);
-      }
-
-      // UPI portion — pending admin approval.
-      if (upiPart > 0) {
-        upiTransaction = await createPaymentTransaction({
-          userId,
-          transactionId: parentTxnId,
-          amount: upiPart,
-          upiTransactionId: paymentDetails.upiTransactionId,
-          paymentMethod: "upi",
-          orderId: order._id,
-          installmentNumber: isPartialPayment ? 1 : null,
-          isInstallmentPayment: isPartialPayment,
-          description: `${paymentLabel} (UPI) for custom project order ${order._id}`,
-        });
-        upiPending = upiPart;
-        linkedTransactionIds.push(upiTransaction.transactionId);
-      }
-
-      // Order money + approval state:
-      //  - fully covered by wallet (no UPI): auto-approve now, first installment is paid.
-      //  - any UPI remainder: stays 'pending-approval'; approving the UPI transaction later
-      //    (transactionApprovalController) records the rest and flips the order to 'approved'.
-      order.paidAmount = walletPaid;
-      order.remainingAmount = Math.max(0, finalPrice - walletPaid);
-
-      if (upiPart === 0) {
-        if (isPartialPayment) {
-          order.installments[0].paid = true;
-          order.installments[0].paymentStatus = "none";
-          order.installments[0].paidDate = new Date();
-          order.currentInstallment = order.installments[1]?.installmentNumber || 1;
-        } else {
-          order.paymentComplete = true;
-        }
-        order.orderVisibility = "approved";
-        if (order.status === "pending") order.status = "in_progress";
-      }
-
-      await order.save();
-    }
-
     return res.status(201).json({
       message: "Project request created successfully",
       success: true,
@@ -386,10 +277,6 @@ const customerCreateCustomProjectOrder = async (req, res) => {
         paymentType,
         installments: isPartialPayment ? order.installments : [],
         firstInstallmentAmount,
-        walletPaid,
-        upiPending,
-        approved: requiresPayment ? upiPending === 0 : false,
-        transactionIds: linkedTransactionIds,
       },
     });
   } catch (error) {
