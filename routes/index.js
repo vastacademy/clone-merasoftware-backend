@@ -33,6 +33,8 @@ const updateUserProfileController = require('../controller/user/updateUserProfil
 const createOrder = require('../controller/order/createOrder')
 const customerCreateCustomProjectOrder = require('../controller/order/customerCreateCustomProjectOrder')
 const getCustomerCategoryBasePrice = require('../controller/order/getCustomerCategoryBasePrice')
+const adminRechargeWallet = require('../controller/user/adminRechargeWallet')
+const walletPayInstant = require('../controller/user/walletPayInstant')
 const getUserOrders = require('../controller/order/getUserOrder')
 const getOrderDetails = require('../controller/order/getOrderDetails')
 const projectNodeController = require('../controller/order/projectNodeController')
@@ -185,6 +187,7 @@ router.get("/admin/clients/:customerId/credentials", authToken, getClientCredent
 router.post("/admin/clients/:customerId/reset-password", authToken, resetClientPasswordController);
 router.post("/admin/clients/:customerId/account-status", authToken, updateClientAccountStatusController);
 router.post("/admin/projects/:orderId/approval", authToken, approveProjectOrderController);
+router.post("/admin/clients/:customerId/recharge-wallet", authToken, adminRechargeWallet);
 router.get("/admin/category-base-prices", authToken, getCategoryBasePricesController);
 router.post("/admin/category-base-prices", authToken, updateCategoryBasePriceController);
 router.get("/admin/leads", authToken, getLeadsController);
@@ -233,6 +236,7 @@ router.get("/user-kyc-status", authToken, getUserKycStatusController);
 
 router.get("/wallet/history", authToken, getWalletHistory)
 router.post("/wallet/verify-payment", authToken, verifyPaymentController)
+router.post("/wallet/pay-instant", authToken, walletPayInstant)
 router.post("/wallet/approve-transaction", authToken, approveTransaction)
 router.post("/wallet/reject-transaction", authToken, rejectTransaction)
 
