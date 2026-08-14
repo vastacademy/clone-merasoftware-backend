@@ -1,6 +1,8 @@
 const mongoose = require("mongoose");
 const orderModel = require("../../models/orderProductModel");
+const monthlyInvoiceModel = require("../../models/monthlyInvoiceModel");
 const { deductWalletInstant } = require("../../helpers/transactionService");
+const { markInvoicePaidAndResumePlan } = require("../../helpers/invoiceLifecycle");
 
 // Instant wallet payment for an EXISTING order/installment — no admin approval.
 //
@@ -37,7 +39,7 @@ const walletPayInstant = async (req, res) => {
       });
     }
 
-    const { orderId, amount, installmentNumber, parentTransactionId } = req.body;
+    const { orderId, amount, installmentNumber, parentTransactionId, invoiceId } = req.body;
 
     if (!orderId || !mongoose.Types.ObjectId.isValid(orderId)) {
       return res.status(400).json({
@@ -67,13 +69,93 @@ const walletPayInstant = async (req, res) => {
       });
     }
 
+    // ---- Invoice mode ----
+    // When paying a specific plan invoice (InvoiceDetailPage), settling the order alone is not
+    // enough — the invoice document carries its own status and must be marked paid too. This mirrors
+    // transactionApprovalController's invoice branch exactly: debit the wallet, then hand off to the
+    // shared markInvoicePaidAndResumePlan helper (which marks the invoice paid, ensures a completed
+    // transaction, and resumes the order/plan). Order-payment math below is skipped for this mode.
+    // (Only monthlyInvoiceModel invoices are supported here — same as the admin-approval path.)
+    if (invoiceId) {
+      if (!mongoose.Types.ObjectId.isValid(invoiceId)) {
+        return res.status(400).json({
+          message: "Valid invoiceId is required",
+          error: true,
+          success: false,
+        });
+      }
+
+      const invoice = await monthlyInvoiceModel.findOne({ _id: invoiceId, userId });
+      if (!invoice) {
+        return res.status(404).json({
+          message: "Invoice not found",
+          error: true,
+          success: false,
+        });
+      }
+
+      const invoiceTxnId = `WPAY${Date.now()}${Math.floor(Math.random() * 10000)}`;
+      const { transaction, newBalance } = await deductWalletInstant({
+        userId,
+        transactionId: invoiceTxnId,
+        amount: numericAmount,
+        orderId: order._id,
+        sourceType: "invoice",
+        description: `Payment (wallet) for invoice ${invoice.invoiceNumber || invoice._id}`,
+      });
+
+      const paidResult = await markInvoicePaidAndResumePlan({
+        invoiceId: invoice._id,
+        paymentMethod: "wallet",
+        transactionReference: transaction.transactionId,
+        markedPaidBy: userId,
+        transaction,
+      });
+
+      return res.status(200).json({
+        message: "Wallet payment successful",
+        success: true,
+        error: false,
+        data: {
+          transactionId: transaction.transactionId,
+          amount: numericAmount,
+          walletBalance: newBalance,
+          invoiceStatus: paidResult.invoice?.status || "paid",
+          approved: true,
+        },
+      });
+    }
+
     const isInstallment =
       installmentNumber != null &&
       Array.isArray(order.installments) &&
       order.installments.length > 0;
 
+    const targetInstallment = isInstallment
+      ? order.installments.find(
+          (item) => Number(item.installmentNumber) === Number(installmentNumber)
+        )
+      : null;
+
+    // A partial wallet payment (only part of a combined wallet+UPI payment) settles nothing on its
+    // own: the wallet part is debited and `paidAmount` advances, but the installment stays unpaid
+    // and the order stays pending until the UPI remainder is approved. We recognise it two ways:
+    // the caller sent a parentTransactionId (the UPI remainder's id), OR — for an installment — the
+    // wallet amount doesn't cover the whole installment.
+    const isCombinedPayment = Boolean(parentTransactionId);
+    const coversInstallment =
+      !isInstallment ||
+      !targetInstallment ||
+      numericAmount >= Number(targetInstallment.amount || 0);
+    const isFullSettlement = !isCombinedPayment && coversInstallment;
+
     // Debit the wallet atomically (throws if it can't cover the amount) + record a completed txn.
-    const transactionId = `WPAY${Date.now()}${Math.floor(Math.random() * 10000)}`;
+    // For a combined payment the wallet part uses the `${parent}-W` id + links the parent, so a
+    // later rejection of the UPI part can find and auto-refund this wallet part
+    // (transactionApprovalController's reject path matches parentTransactionId + type 'payment').
+    const transactionId = isCombinedPayment
+      ? `${parentTransactionId}-W`
+      : `WPAY${Date.now()}${Math.floor(Math.random() * 10000)}`;
     const { transaction, newBalance } = await deductWalletInstant({
       userId,
       transactionId,
@@ -84,20 +166,20 @@ const walletPayInstant = async (req, res) => {
       description: `${
         isInstallment ? `Installment ${installmentNumber}` : "Payment"
       } (wallet) for order ${order._id}`,
+      parentTransactionId: isCombinedPayment ? parentTransactionId : null,
     });
 
     // Apply the payment to the order — same math as transactionApprovalController's approval.
-    if (isInstallment) {
-      const installment = order.installments.find(
-        (item) => Number(item.installmentNumber) === Number(installmentNumber)
-      );
-      if (installment && !installment.paid) {
-        installment.paid = true;
-        installment.paidDate = new Date();
-        installment.paymentStatus = "none";
-        installment.transactionId = transaction.transactionId;
-        order.paidAmount = Number(order.paidAmount || 0) + numericAmount;
+    // Only a FULL settlement marks the installment paid; a partial wallet part just advances the
+    // paid amount and leaves the installment/order for the UPI approval to finish.
+    if (isInstallment && targetInstallment && !targetInstallment.paid) {
+      if (isFullSettlement) {
+        targetInstallment.paid = true;
+        targetInstallment.paidDate = new Date();
+        targetInstallment.paymentStatus = "none";
+        targetInstallment.transactionId = transaction.transactionId;
       }
+      order.paidAmount = Number(order.paidAmount || 0) + numericAmount;
     } else {
       order.paidAmount = Number(order.paidAmount || 0) + numericAmount;
     }
@@ -125,9 +207,13 @@ const walletPayInstant = async (req, res) => {
       order.currentInstallment = nextInstallment.installmentNumber;
     }
 
-    order.orderVisibility = "approved";
-    if (order.status === "pending") order.status = "in_progress";
-    order.rejectionReason = null;
+    // Approve the order only when this wallet payment fully settles the amount due. For a combined
+    // payment the order stays as-is (pending-approval) until the admin approves the UPI remainder.
+    if (isFullSettlement) {
+      order.orderVisibility = "approved";
+      if (order.status === "pending") order.status = "in_progress";
+      order.rejectionReason = null;
+    }
 
     await order.save();
 
@@ -141,6 +227,9 @@ const walletPayInstant = async (req, res) => {
         walletBalance: newBalance,
         remainingAmount: order.remainingAmount,
         paymentComplete: order.paymentComplete,
+        // true => the wallet fully settled this payment and the order is approved now; false =>
+        // this was the wallet part of a combined payment and a UPI remainder still needs approval.
+        approved: isFullSettlement,
       },
     });
   } catch (error) {
