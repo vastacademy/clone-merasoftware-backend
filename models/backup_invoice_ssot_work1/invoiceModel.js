@@ -32,15 +32,8 @@ const invoiceSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ["unpaid", "partially_paid", "paid", "overdue", "cancelled"],
+    enum: ["unpaid", "paid", "overdue", "cancelled"],
     default: "unpaid",
-  },
-  // Running total of money actually applied to this invoice (wallet-instant + approved UPI parts).
-  // status is derived from this (see markProjectInvoicePaid in helpers/paymentRecording.js) —
-  // never hardcoded elsewhere, so an invoice's paid-state always matches money received (SSOT).
-  amountPaid: {
-    type: Number,
-    default: 0,
   },
   invoiceDate: {
     type: Date,

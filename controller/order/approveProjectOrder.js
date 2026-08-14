@@ -6,6 +6,7 @@ const transactionModel = require("../../models/transactionModel");
 const {
   markProjectInvoicePaid,
   createProjectInvoice,
+  buildLineItemsFromOrder,
 } = require("../../helpers/paymentRecording");
 
 // Admin approval for a customer-initiated project order that is waiting on approval.
@@ -35,18 +36,6 @@ const requireAdmin = async (req, res) => {
 
 const getOrderTotal = (order) =>
   Number(order?.totalAmount || order?.totalPrice || order?.price || 0);
-
-// Invoice line items derived from the order's own orderItems snapshot, so the invoice
-// mirrors exactly what the customer ordered (base + each feature).
-const buildLineItemsFromOrder = (order) => {
-  if (Array.isArray(order?.orderItems) && order.orderItems.length > 0) {
-    return order.orderItems.map((item) => ({
-      name: item.name,
-      price: Number(item.finalPrice ?? item.originalPrice ?? 0),
-    }));
-  }
-  return [{ name: order?.productId?.serviceName || "Project", price: getOrderTotal(order) }];
-};
 
 const approveProjectOrder = async (req, res) => {
   try {

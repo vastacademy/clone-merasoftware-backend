@@ -1,14 +1,8 @@
 const mongoose = require("mongoose");
 const orderModel = require("../../models/orderProductModel");
-const invoiceModel = require("../../models/invoiceModel"); // project invoices (invoiceType:'project')
-const monthlyInvoiceModel = require("../../models/monthlyInvoiceModel"); // recurring-plan invoices
+const monthlyInvoiceModel = require("../../models/monthlyInvoiceModel");
 const { deductWalletInstant } = require("../../helpers/transactionService");
 const { markInvoicePaidAndResumePlan } = require("../../helpers/invoiceLifecycle");
-const {
-  markProjectInvoicePaid,
-  createProjectInvoice,
-  buildLineItemsFromOrder,
-} = require("../../helpers/paymentRecording");
 
 // Instant wallet payment for an EXISTING order/installment — no admin approval.
 //
@@ -81,11 +75,7 @@ const walletPayInstant = async (req, res) => {
     // transactionApprovalController's invoice branch exactly: debit the wallet, then hand off to the
     // shared markInvoicePaidAndResumePlan helper (which marks the invoice paid, ensures a completed
     // transaction, and resumes the order/plan). Order-payment math below is skipped for this mode.
-    // Two invoice models exist (doc 52 §2a): the NEW generic invoiceModel (invoiceType:'project',
-    // used by every project order) and the legacy monthlyInvoiceModel (recurring plans only). We
-    // look up the project invoice first — that is what every InvoiceDetailPage/project payment is
-    // — and fall back to the legacy model only if not found there, so recurring-plan invoice
-    // payment (if ever routed through this endpoint) keeps working unchanged.
+    // (Only monthlyInvoiceModel invoices are supported here — same as the admin-approval path.)
     if (invoiceId) {
       if (!mongoose.Types.ObjectId.isValid(invoiceId)) {
         return res.status(400).json({
@@ -95,45 +85,8 @@ const walletPayInstant = async (req, res) => {
         });
       }
 
-      const projectInvoice = await invoiceModel.findOne({ _id: invoiceId, userId });
-
-      if (projectInvoice) {
-        const invoiceTxnId = `WPAY${Date.now()}${Math.floor(Math.random() * 10000)}`;
-        const { transaction, newBalance } = await deductWalletInstant({
-          userId,
-          transactionId: invoiceTxnId,
-          amount: numericAmount,
-          orderId: order._id,
-          sourceType: "invoice",
-          description: `Payment (wallet) for invoice ${projectInvoice.invoiceNumber || projectInvoice._id}`,
-        });
-
-        // Settle by exactly the amount paid now, reusing the SAME wallet transaction (no second
-        // transaction — doc 52 Q1). Fully covers it -> 'paid'; a smaller amount -> 'partially_paid'.
-        const { invoice: settledInvoice } = await markProjectInvoicePaid({
-          invoice: projectInvoice,
-          customerId: userId,
-          paymentMethod: "wallet",
-          amount: numericAmount,
-          existingTransaction: transaction,
-        });
-
-        return res.status(200).json({
-          message: "Wallet payment successful",
-          success: true,
-          error: false,
-          data: {
-            transactionId: transaction.transactionId,
-            amount: numericAmount,
-            walletBalance: newBalance,
-            invoiceStatus: settledInvoice.status,
-            approved: settledInvoice.status === "paid",
-          },
-        });
-      }
-
-      const monthlyInvoice = await monthlyInvoiceModel.findOne({ _id: invoiceId, userId });
-      if (!monthlyInvoice) {
+      const invoice = await monthlyInvoiceModel.findOne({ _id: invoiceId, userId });
+      if (!invoice) {
         return res.status(404).json({
           message: "Invoice not found",
           error: true,
@@ -148,11 +101,11 @@ const walletPayInstant = async (req, res) => {
         amount: numericAmount,
         orderId: order._id,
         sourceType: "invoice",
-        description: `Payment (wallet) for invoice ${monthlyInvoice.invoiceNumber || monthlyInvoice._id}`,
+        description: `Payment (wallet) for invoice ${invoice.invoiceNumber || invoice._id}`,
       });
 
       const paidResult = await markInvoicePaidAndResumePlan({
-        invoiceId: monthlyInvoice._id,
+        invoiceId: invoice._id,
         paymentMethod: "wallet",
         transactionReference: transaction.transactionId,
         markedPaidBy: userId,
@@ -264,37 +217,6 @@ const walletPayInstant = async (req, res) => {
 
     await order.save();
 
-    // Due-based installment invoicing (doc 52 Phase 3): installment #1's invoice already exists
-    // from order creation, but #2/#3 only get theirs when they actually become due — i.e. right
-    // now, when this installment is being paid. Find-or-create (never a duplicate for the same
-    // installment), then settle it by exactly the wallet amount using the SAME transaction (no
-    // second transaction — doc 52 Q1), same as the invoice-mode branch above.
-    let invoiceStatus = null;
-    if (isInstallment) {
-      let installmentInvoice = await invoiceModel.findOne({
-        orderId: order._id,
-        installmentNumber,
-      });
-      if (!installmentInvoice) {
-        installmentInvoice = await createProjectInvoice({
-          customerId: userId,
-          orderId: order._id,
-          amount: Number(targetInstallment?.amount || numericAmount),
-          lineItems: buildLineItemsFromOrder(order),
-          installmentNumber,
-          dueDate: new Date(),
-        });
-      }
-      const { invoice: settledInvoice } = await markProjectInvoicePaid({
-        invoice: installmentInvoice,
-        customerId: userId,
-        paymentMethod: "wallet",
-        amount: numericAmount,
-        existingTransaction: transaction,
-      });
-      invoiceStatus = settledInvoice.status;
-    }
-
     return res.status(200).json({
       message: "Wallet payment successful",
       success: true,
@@ -305,7 +227,6 @@ const walletPayInstant = async (req, res) => {
         walletBalance: newBalance,
         remainingAmount: order.remainingAmount,
         paymentComplete: order.paymentComplete,
-        invoiceStatus,
         // true => the wallet fully settled this payment and the order is approved now; false =>
         // this was the wallet part of a combined payment and a UPI remainder still needs approval.
         approved: isFullSettlement,

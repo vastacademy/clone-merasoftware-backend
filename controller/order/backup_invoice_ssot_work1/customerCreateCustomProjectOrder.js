@@ -6,7 +6,7 @@ const { initializeProjectTimeline } = require("../../helpers/projectNodeService"
 // SSOT: every project order gets an unpaid invoice at creation, via the same shared
 // helper used by adminCreateProjectOrder.js and approveProjectOrder.js — so "invoice
 // pending" and "project pending" always exist together, never fragmented.
-const { createProjectInvoice, markProjectInvoicePaid } = require("../../helpers/paymentRecording");
+const { createProjectInvoice } = require("../../helpers/paymentRecording");
 // Shared transaction-creation SSOT — the order and its payment are created together in one
 // request (never a payment-less order). Wallet is the customer's own money so it is debited
 // instantly (deductWalletInstant); any UPI remainder is a pending transaction the admin approves.
@@ -252,37 +252,38 @@ const customerCreateCustomProjectOrder = async (req, res) => {
 
     await order.save();
 
-    // SSOT invoice creation — an invoice is only created for money that is DUE NOW (doc 52 §3
-    // rule 1): a single invoice for full/decide-later, or ONLY installment #1's invoice for
-    // partial. Installments #2, #3, ... get their own invoice later, when they actually become
-    // due (doc 52 Phase 3 — created at pay-time by whichever surface collects that installment's
-    // payment, e.g. InstallmentPayment.js's backend). All unpaid at creation; whichever part of
-    // the payment settles instantly (wallet) marks it paid/partially_paid right below, and any UPI
-    // remainder settles it further when admin approves (transactionApprovalController).
+    // SSOT invoice creation — same shape as adminCreateProjectOrder.js: one invoice per
+    // installment for partial, or a single invoice for full/decide-later. All unpaid; the
+    // customer pays via /invoice-detail/:invoiceId (canonical Pay Now) and admin approves,
+    // which marks the invoice paid through the shared markProjectInvoicePaid() helper.
     const lineItems = [
       { name: `${CATEGORY_LABELS[category]} (Base)`, price: basePrice },
       ...clientProjectFeatures.map((feature) => ({ name: feature.name, price: feature.price })),
     ];
     const invoiceDate = new Date();
-    // The invoice covering the amount due NOW (installment #1 for partial, the only invoice for
-    // full) — this is the one instant wallet money settles below.
-    const dueInvoice = isPartialPayment
-      ? await createProjectInvoice({
+    if (isPartialPayment) {
+      // Sequential (not Promise.all) — generateInvoiceNumber() reads the last number and
+      // would race if installments requested one concurrently.
+      for (const installment of order.installments) {
+        await createProjectInvoice({
           customerId: userId,
           orderId: order._id,
-          amount: order.installments[0].amount,
+          amount: installment.amount,
           lineItems,
-          installmentNumber: order.installments[0].installmentNumber,
+          installmentNumber: installment.installmentNumber,
           invoiceDate,
-          dueDate: order.installments[0].dueDate || invoiceDate,
-        })
-      : await createProjectInvoice({
-          customerId: userId,
-          orderId: order._id,
-          amount: finalPrice,
-          lineItems,
-          invoiceDate,
+          dueDate: installment.dueDate || invoiceDate,
         });
+      }
+    } else {
+      await createProjectInvoice({
+        customerId: userId,
+        orderId: order._id,
+        amount: finalPrice,
+        lineItems,
+        invoiceDate,
+      });
+    }
 
     // First installment amount the client should pay now (partial only).
     const firstInstallmentAmount = isPartialPayment
@@ -333,24 +334,9 @@ const customerCreateCustomProjectOrder = async (req, res) => {
         });
         walletPaid = walletPart;
         linkedTransactionIds.push(walletTxn.transactionId);
-
-        // Settle the due invoice by exactly the wallet amount, reusing the SAME wallet
-        // transaction (no second transaction — doc 52 Q1). Fully covers it -> 'paid' instantly;
-        // a combined payment's wallet part -> 'partially_paid' until the UPI part is approved.
-        if (dueInvoice) {
-          await markProjectInvoicePaid({
-            invoice: dueInvoice,
-            customerId: userId,
-            paymentMethod: "wallet",
-            amount: walletPart,
-            existingTransaction: walletTxn.transaction,
-          });
-        }
       }
 
-      // UPI portion — pending admin approval. Linked to the due invoice (invoiceId) so approving
-      // it later settles that SAME invoice for the remaining amount (transactionApprovalController,
-      // doc 52 Phase 5) instead of leaving it stuck at 'partially_paid' forever.
+      // UPI portion — pending admin approval.
       if (upiPart > 0) {
         upiTransaction = await createPaymentTransaction({
           userId,
@@ -359,7 +345,6 @@ const customerCreateCustomProjectOrder = async (req, res) => {
           upiTransactionId: paymentDetails.upiTransactionId,
           paymentMethod: "upi",
           orderId: order._id,
-          invoiceId: dueInvoice?._id || null,
           installmentNumber: isPartialPayment ? 1 : null,
           isInstallmentPayment: isPartialPayment,
           description: `${paymentLabel} (UPI) for custom project order ${order._id}`,
