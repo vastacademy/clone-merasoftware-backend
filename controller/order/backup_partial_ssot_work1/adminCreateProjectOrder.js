@@ -28,18 +28,9 @@ const CATEGORY_LABELS = {
   app_development: "App Development",
 };
 
-// Default progress-gate thresholds (node-system %, admin-editable per project — Layer B):
-// installment #1 (advance) has no threshold (always due at creation, gates nothing);
-// 2-installment split: #2 due at 90% progress; 3-installment split: #2 at 50%, #3 at 90%.
-const DEFAULT_PROGRESS_THRESHOLDS = {
-  2: [null, 90],
-  3: [null, 50, 90],
-};
-
 const buildInstallments = (totalAmount, installmentCount) => {
   const count = Number(installmentCount) === 3 ? 3 : 2;
   const splits = count === 3 ? [30, 30, 40] : [50, 50];
-  const thresholds = DEFAULT_PROGRESS_THRESHOLDS[count];
 
   return splits.map((percentage, index) => ({
     installmentNumber: index + 1,
@@ -47,7 +38,6 @@ const buildInstallments = (totalAmount, installmentCount) => {
     amount: Math.round((totalAmount * percentage) / 100),
     paid: false,
     paymentStatus: "none",
-    progressThreshold: thresholds[index],
   }));
 };
 

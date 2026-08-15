@@ -4,7 +4,6 @@ const orderProductModel = require("../../models/orderProductModel");
 const invoiceModel = require("../../models/invoiceModel"); // project invoices (invoiceType:'project')
 const { markInvoicePaidAndResumePlan } = require("../../helpers/invoiceLifecycle"); // monthlyInvoiceModel only
 const { markProjectInvoicePaid } = require("../../helpers/paymentRecording");
-const { settleInstallmentInvoice } = require("../../helpers/installmentSettlement");
 // Refund helper — when a combined payment's UPI portion is rejected, its already-debited
 // wallet portion must be returned to the customer.
 const { refundWalletInstant } = require("../../helpers/transactionService");
@@ -39,19 +38,7 @@ const isOrderPaymentTransaction = (transaction) =>
 // paidAmount for a non-installment order), advances paidAmount/remainingAmount, and approves the
 // order. Shared by the plain order-payment path AND the project-invoice path below (doc 52 Phase 5)
 // so both settle an order's money through the exact same logic — no duplicated math.
-//
-// Partial-payment SSOT correction: a plain UPI installment transaction (sourceType:'installment',
-// no invoiceId) used to settle the order's own fields here but never touched invoiceModel — only
-// the wallet-instant route (walletPayInstant.js) settled the invoice. That left a UPI-paid
-// installment's invoice `unpaid` forever, the same class of bug doc 52 fixed for the full-wallet
-// case. This now calls the SAME settleInstallmentInvoice helper walletPayInstant.js uses, so every
-// route settles an installment's invoice through identical logic — one settle path, not three.
-//
-// settleInvoice=false is passed by the invoice-mode caller (applyApprovedOrderPayment's
-// isInvoiceTransaction branch), which already settled this exact invoice via markProjectInvoicePaid
-// BEFORE calling this function (transaction.invoiceId case) — settling again here would be a
-// second, redundant write against the same invoice for the same transaction.
-const applyOrderMoneyForTransaction = async (order, transaction, { settleInvoice = true } = {}) => {
+const applyOrderMoneyForTransaction = async (order, transaction) => {
   const amount = Number(transaction.amount || 0);
 
   if (transaction.type === "renewal") {
@@ -60,8 +47,6 @@ const applyOrderMoneyForTransaction = async (order, transaction, { settleInvoice
     await order.save();
     return order;
   }
-
-  let settledInstallmentNumber = null;
 
   if (transaction.installmentNumber && Array.isArray(order.installments) && order.installments.length > 0) {
     const installment = order.installments.find(
@@ -74,7 +59,6 @@ const applyOrderMoneyForTransaction = async (order, transaction, { settleInvoice
       installment.paymentStatus = "none";
       installment.transactionId = transaction.transactionId;
       order.paidAmount = Number(order.paidAmount || 0) + amount;
-      settledInstallmentNumber = installment.installmentNumber;
     }
   } else {
     order.paidAmount = Number(order.paidAmount || 0) + amount;
@@ -107,24 +91,6 @@ const applyOrderMoneyForTransaction = async (order, transaction, { settleInvoice
   order.rejectionReason = null;
 
   await order.save();
-
-  // Settle the installment's own invoice — only for a fresh settlement (settledInstallmentNumber
-  // is only set above when the installment was actually flipped from unpaid to paid just now, so
-  // a duplicate/retried approval never re-settles an already-paid invoice), and only when the
-  // caller hasn't already settled this transaction's invoice itself (settleInvoice=false).
-  if (settleInvoice && settledInstallmentNumber != null) {
-    await settleInstallmentInvoice({
-      order,
-      installmentNumber: settledInstallmentNumber,
-      amount,
-      paymentMethod: transaction.paymentMethod,
-      transaction,
-      customerId: transaction.userId,
-      transactionReference: transaction.upiTransactionId || transaction.transactionId,
-      actorId: transaction.verifiedBy,
-    });
-  }
-
   return order;
 };
 
@@ -155,10 +121,7 @@ const applyApprovedOrderPayment = async (transaction) => {
       if (transaction.orderId) {
         order = await orderProductModel.findById(transaction.orderId).populate("productId");
         if (order) {
-          // This transaction's invoice (settledInvoice, above) is already settled — don't let
-          // applyOrderMoneyForTransaction settle it again just because the transaction also
-          // carries an installmentNumber.
-          order = await applyOrderMoneyForTransaction(order, transaction, { settleInvoice: false });
+          order = await applyOrderMoneyForTransaction(order, transaction);
         }
       }
 

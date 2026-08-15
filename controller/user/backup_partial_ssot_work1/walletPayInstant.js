@@ -6,8 +6,9 @@ const { deductWalletInstant } = require("../../helpers/transactionService");
 const { markInvoicePaidAndResumePlan } = require("../../helpers/invoiceLifecycle");
 const {
   markProjectInvoicePaid,
+  createProjectInvoice,
+  buildLineItemsFromOrder,
 } = require("../../helpers/paymentRecording");
-const { settleInstallmentInvoice } = require("../../helpers/installmentSettlement");
 
 // Instant wallet payment for an EXISTING order/installment — no admin approval.
 //
@@ -265,20 +266,33 @@ const walletPayInstant = async (req, res) => {
 
     // Due-based installment invoicing (doc 52 Phase 3): installment #1's invoice already exists
     // from order creation, but #2/#3 only get theirs when they actually become due — i.e. right
-    // now, when this installment is being paid. Shared with the UPI-approval route
-    // (transactionApprovalController.js) via settleInstallmentInvoice — same find-or-create +
-    // markProjectInvoicePaid logic, one settle path regardless of payment method.
+    // now, when this installment is being paid. Find-or-create (never a duplicate for the same
+    // installment), then settle it by exactly the wallet amount using the SAME transaction (no
+    // second transaction — doc 52 Q1), same as the invoice-mode branch above.
     let invoiceStatus = null;
     if (isInstallment) {
-      const settledInvoice = await settleInstallmentInvoice({
-        order,
+      let installmentInvoice = await invoiceModel.findOne({
+        orderId: order._id,
         installmentNumber,
-        amount: numericAmount,
-        paymentMethod: "wallet",
-        transaction,
-        customerId: userId,
       });
-      invoiceStatus = settledInvoice?.status || null;
+      if (!installmentInvoice) {
+        installmentInvoice = await createProjectInvoice({
+          customerId: userId,
+          orderId: order._id,
+          amount: Number(targetInstallment?.amount || numericAmount),
+          lineItems: buildLineItemsFromOrder(order),
+          installmentNumber,
+          dueDate: new Date(),
+        });
+      }
+      const { invoice: settledInvoice } = await markProjectInvoicePaid({
+        invoice: installmentInvoice,
+        customerId: userId,
+        paymentMethod: "wallet",
+        amount: numericAmount,
+        existingTransaction: transaction,
+      });
+      invoiceStatus = settledInvoice.status;
     }
 
     return res.status(200).json({

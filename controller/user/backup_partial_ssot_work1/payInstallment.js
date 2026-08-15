@@ -126,18 +126,44 @@ const payInstallment = async (req, res) => {
         });
       }
       
-      // REMOVED (partial-payment SSOT correction): this branch used to mark an installment
-      // `paid` directly from a client-trusted `paymentStatus:'paid'` flag (or a bare `isAdmin`
-      // check) — no transaction was created and no invoice was ever touched, so an installment
-      // could be "paid" with zero payment evidence behind it (doc 52 Phase 7's audit found real
-      // DB proof of exactly this: invoices marked paid with zero completed transactions).
-      // Verified before removing: the only live caller, InstallmentPayment.js, never sends
-      // paymentStatus:'paid' (it only reaches this endpoint via the pending-approval branch
-      // above); no admin UI calls this route either. The SSOT-safe replacements for settling an
-      // installment are POST /api/wallet/pay-instant (walletPayInstant.js) for instant wallet
-      // payment, and admin transaction approval (transactionApprovalController.js) for UPI —
-      // both settle the order AND its invoice through the shared settleInstallmentInvoice()
-      // helper (helpers/installmentSettlement.js). This endpoint no longer marks anything paid.
+      // If admin is approving a transaction or it's a direct wallet payment
+      if (paymentStatus === 'paid' || isAdmin) {
+        // Mark installment as paid
+        installment.paid = true;
+        installment.paidDate = new Date();
+        installment.paymentStatus = 'none'; // Remove pending status if it existed
+        order.installments[installmentIndex] = installment;
+     
+        // Update payment tracking
+        order.paidAmount = (order.paidAmount || 0) + amount;
+        order.remainingAmount = order.totalAmount - order.paidAmount;
+     
+        // Check if all installments are paid
+        const allPaid = order.installments.every(inst => inst.paid);
+        if (allPaid) {
+          order.paymentComplete = true;
+        } else {
+          // Find next unpaid installment and set as current
+          const nextInstallment = order.installments.find(inst => !inst.paid);
+          if (nextInstallment) {
+            order.currentInstallment = nextInstallment.installmentNumber;
+          }
+        }
+        
+        await order.save();
+     
+        return res.status(200).json({
+          success: true,
+          message: `Installment ${installmentNumber} paid successfully`,
+          data: {
+            orderId: order._id,
+            installmentNumber: installmentNumber,
+            paid: true,
+            paidDate: installment.paidDate
+          }
+        });
+      }
+      
       return res.status(400).json({
         success: false,
         message: 'Invalid payment status'

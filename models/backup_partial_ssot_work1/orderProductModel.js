@@ -188,16 +188,6 @@ const installmentSchema = new mongoose.Schema({
     },
     transactionId: {
         type: String
-    },
-    // Progress-gate threshold (node-system % at which THIS installment becomes due). Additive,
-    // optional — null means "no progress gate" so every pre-existing order (all created before
-    // this field existed) keeps behaving exactly as before. Installment #1 (advance) is due at
-    // creation regardless of this field. Admin-editable per project at creation time.
-    progressThreshold: {
-        type: Number,
-        default: null,
-        min: 0,
-        max: 100
     }
 });
 
@@ -401,30 +391,6 @@ const orderSchema = new mongoose.Schema({
     paymentComplete: {
         type: Boolean,
         default: false
-    },
-    // Admin-controlled demo mode (schema only — design-ahead, no UI/behavior built yet). Additive,
-    // independent of payment type/status: admin can enable it on ANY project (full or partial,
-    // customer-started or admin-created) so the customer gets a limited number of single-use
-    // "upload data" turns, unrelated to invoice/installment payment state.
-    demoMode: {
-        active: {
-            type: Boolean,
-            default: false
-        },
-        uploadsRemaining: {
-            type: Number,
-            default: 0,
-            min: 0
-        },
-        enabledBy: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'user',
-            default: null
-        },
-        enabledAt: {
-            type: Date,
-            default: null
-        }
     },
     orderVisibility: {
         type: String,

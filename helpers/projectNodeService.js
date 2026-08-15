@@ -52,6 +52,24 @@ const getRequiredActiveRun = (order) => {
   return run;
 };
 
+// Progress-gate check (Layer B, partial-payment installments only). The next unpaid installment
+// with a configured progressThreshold caps how far the project timeline can advance until that
+// installment is paid — e.g. a 90% threshold means no node above 90% cumulativeProgress can be
+// created while installment #2 is still unpaid.
+//
+// Guarded so it is a strict no-op for anything outside this new scope:
+//   - full-payment orders (isPartialPayment !== true) never have installments to check — no-op.
+//   - pre-existing partial orders created before this field existed have progressThreshold: null
+//     on every installment (schema default) — no-op, same as before this change.
+//   - demoMode is intentionally NOT checked here; it is a separate, orthogonal gate (Layer B demo
+//     system) that does not touch this payment-progress logic.
+const getBlockingInstallmentThreshold = (order) => {
+  if (!order?.isPartialPayment || !Array.isArray(order.installments)) return null;
+  const nextUnpaid = order.installments.find((installment) => !installment.paid);
+  if (!nextUnpaid || nextUnpaid.progressThreshold == null) return null;
+  return { installment: nextUnpaid, threshold: Number(nextUnpaid.progressThreshold) };
+};
+
 const appendProjectNode = ({ order, title, cumulativeProgress, actorId, now = new Date() }) => {
   assertProjectOrder(order);
   const run = getRequiredActiveRun(order);
@@ -65,6 +83,13 @@ const appendProjectNode = ({ order, title, cumulativeProgress, actorId, now = ne
   if (currentProgress >= 100) throw new Error("Project is already at 100% progress");
   if (nextProgress < currentProgress + 0.1 - Number.EPSILON) {
     throw new Error("Node progress must be at least 0.1% above current progress");
+  }
+
+  const blocking = getBlockingInstallmentThreshold(order);
+  if (blocking && nextProgress > blocking.threshold + Number.EPSILON) {
+    throw new Error(
+      `Progress cannot pass ${blocking.threshold}% until installment #${blocking.installment.installmentNumber} is paid`
+    );
   }
 
   const node = createProjectNode({
@@ -378,6 +403,7 @@ module.exports = {
   getActiveProgress,
   syncActiveProjectProgress,
   assertProjectOrder,
+  getBlockingInstallmentThreshold,
   appendProjectNode,
   editProjectNode,
   softDeleteProjectNodes,
