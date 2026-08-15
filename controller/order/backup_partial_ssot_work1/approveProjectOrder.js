@@ -21,13 +21,9 @@ const {
 //
 // SSOT: this controller writes to the same orderProductModel / invoiceModel / transactionModel
 // as every other path. It never invents a parallel record.
-//
-// A project order must NEVER become `orderVisibility: 'approved'` without a real payment
-// recorded (transaction + invoice settlement) — there is no "approve without payment" mode. The
-// only outcomes here are: record a payment and approve, or reject.
 
 const PAYMENT_METHODS = ["upi", "bank_transfer", "cash", "wallet"];
-const APPROVAL_MODES = ["approve_with_payment", "reject"];
+const APPROVAL_MODES = ["approve_no_payment", "approve_with_payment", "reject"];
 
 const requireAdmin = async (req, res) => {
   const adminUser = await userModel.findById(req.userId).select("roles");
@@ -103,9 +99,19 @@ const approveProjectOrder = async (req, res) => {
       });
     }
 
-    // "approve_no_payment" was REMOVED — a project order must never be flipped to `approved`
-    // without a real payment recorded (transaction + invoice settlement). Every approval now
-    // goes through APPROVE WITH PAYMENT RECORD below, which requires a paymentMethod.
+    // ---------- APPROVE WITHOUT PAYMENT ----------
+    if (mode === "approve_no_payment") {
+      order.orderVisibility = "approved";
+      if (order.status === "pending") order.status = "in_progress";
+      order.rejectionReason = null;
+      await order.save();
+      return res.status(200).json({
+        message: "Project approved (payment pending)",
+        success: true,
+        error: false,
+        data: order,
+      });
+    }
 
     // ---------- APPROVE WITH PAYMENT RECORD ----------
     // No-duplicate guard: if the order already has ANY completed transaction, do not

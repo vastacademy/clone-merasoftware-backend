@@ -163,19 +163,13 @@ const adminCreateProjectOrderController = async (req, res) => {
     await project.save();
 
     const isPartialPayment = paymentType === "partial";
-    // A project order must never be born `approved` without a real payment recorded. When admin
-    // defers payment ("Just Add Project, Let Client Pay the Bill"), the order stays
-    // `pending-approval` — same state customerCreateCustomProjectOrder.js's decide_later path
-    // uses, and the same approveProjectOrder.js "record payment to approve" flow closes it out
-    // later. Only when a payment IS recorded at creation time (shouldRecordPayment) is the order
-    // born approved, right below where that payment actually gets settled.
     const orderData = {
       userId: customerId,
       productId: project._id,
       price: finalPrice,
       totalAmount: finalPrice,
-      orderVisibility: shouldRecordPayment ? "approved" : "pending-approval",
-      status: shouldRecordPayment ? "in_progress" : "pending",
+      orderVisibility: "approved",
+      status: "in_progress",
       isWebsiteProject: true,
       isPartialPayment,
       paidAmount: 0,
