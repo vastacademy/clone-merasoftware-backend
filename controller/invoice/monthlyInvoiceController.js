@@ -101,6 +101,11 @@ const findPaymentRecord = async ({ customerId, recordType, recordId }) => {
       .populate("verifiedBy", "name email")
       .populate("rejectedBy", "name email")
       .populate({
+        path: "orderId",
+        select: "productId totalPrice price status projectProgress",
+        populate: { path: "productId", select: "serviceName category" },
+      })
+      .populate({
         path: "invoiceId",
         populate: [
           { path: "userId", select: "name email walletBalance" },
@@ -138,6 +143,11 @@ const findPaymentRecord = async ({ customerId, recordType, recordId }) => {
           .populate("productId", "serviceName category")
           .populate("verifiedBy", "name email")
           .populate("rejectedBy", "name email")
+          .populate({
+            path: "orderId",
+            select: "productId totalPrice price status projectProgress",
+            populate: { path: "productId", select: "serviceName category" },
+          })
       : null;
 
     return {

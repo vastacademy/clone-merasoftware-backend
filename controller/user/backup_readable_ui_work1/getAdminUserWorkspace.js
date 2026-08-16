@@ -40,22 +40,8 @@ const getAdminUserWorkspace = async (req, res) => {
       });
     }
 
-    const [orders, rawOrderRefs, transactions, monthlyInvoices, projectInvoices, updateRequestCounts] = await Promise.all([
+    const [orders, transactions, monthlyInvoices, projectInvoices, updateRequestCounts] = await Promise.all([
       applyOrderSummary(orderModel.find({ userId: customerObjectId }).sort({ createdAt: -1 })),
-      // Raw (unpopulated) orderId snapshot — used below to tell "no project linked" (e.g. wallet
-      // deposit) apart from "project was deleted" (orderId was set but populate resolves to
-      // null because the referenced order document no longer exists).
-      Promise.all([
-        transactionModel.find({ userId: customerObjectId }).select("orderId").lean(),
-        monthlyInvoiceModel.find({ userId: customerObjectId }).select("orderId").lean(),
-        invoiceModel.find({ userId: customerObjectId }).select("orderId").lean(),
-      ]).then(([txnRefs, monthlyRefs, projectRefs]) => {
-        const map = new Map();
-        [...txnRefs, ...monthlyRefs, ...projectRefs].forEach((doc) => {
-          if (doc.orderId) map.set(String(doc._id), String(doc.orderId));
-        });
-        return map;
-      }),
       transactionModel
         .find({ userId: customerObjectId })
         .select("transactionId upiTransactionId amount status type sourceType paymentMethod invoiceId orderId installmentNumber date createdAt rejectionReason")
@@ -79,21 +65,7 @@ const getAdminUserWorkspace = async (req, res) => {
       ]),
     ]);
 
-    const markOrderDeleted = (doc) => {
-      const plain = doc.toObject();
-      const rawOrderId = rawOrderRefs.get(String(doc._id)) || null;
-      plain.orderDeleted = Boolean(rawOrderId) && !plain.orderId;
-      // Deleted orders resolve to null via populate, so the frontend needs the raw id back
-      // (as a plain string, not a live reference) to group same-deleted-project records together.
-      if (plain.orderDeleted) plain.orderId = rawOrderId;
-      return plain;
-    };
-
-    const transactionsWithDeletedFlag = transactions.map(markOrderDeleted);
-    const monthlyInvoicesWithDeletedFlag = monthlyInvoices.map(markOrderDeleted);
-    const projectInvoicesWithDeletedFlag = projectInvoices.map(markOrderDeleted);
-
-    const invoices = [...monthlyInvoicesWithDeletedFlag, ...projectInvoicesWithDeletedFlag].sort(
+    const invoices = [...monthlyInvoices, ...projectInvoices].sort(
       (a, b) => new Date(b.invoiceDate) - new Date(a.invoiceDate)
     );
 
@@ -130,7 +102,7 @@ const getAdminUserWorkspace = async (req, res) => {
         customer,
         orders,
         renewals: [],
-        transactions: transactionsWithDeletedFlag,
+        transactions,
         invoices,
         updates: [],
         plans: [],
