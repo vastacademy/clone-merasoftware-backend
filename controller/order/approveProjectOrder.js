@@ -8,6 +8,7 @@ const {
   createProjectInvoice,
   buildLineItemsFromOrder,
 } = require("../../helpers/paymentRecording");
+const { syncProjectFinalInvoice } = require("../../helpers/projectFinalInvoice");
 
 // Admin approval for a customer-initiated project order that is waiting on approval.
 //
@@ -185,6 +186,7 @@ const approveProjectOrder = async (req, res) => {
     if (order.status === "pending") order.status = "in_progress";
     order.rejectionReason = null;
     await order.save();
+    await syncProjectFinalInvoice(order);
 
     return res.status(200).json({
       message: "Payment recorded and project approved",

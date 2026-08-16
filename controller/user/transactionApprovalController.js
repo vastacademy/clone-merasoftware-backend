@@ -5,6 +5,7 @@ const invoiceModel = require("../../models/invoiceModel"); // project invoices (
 const { markInvoicePaidAndResumePlan } = require("../../helpers/invoiceLifecycle"); // monthlyInvoiceModel only
 const { markProjectInvoicePaid } = require("../../helpers/paymentRecording");
 const { settleInstallmentInvoice } = require("../../helpers/installmentSettlement");
+const { syncProjectFinalInvoice } = require("../../helpers/projectFinalInvoice");
 // Refund helper — when a combined payment's UPI portion is rejected, its already-debited
 // wallet portion must be returned to the customer.
 const { refundWalletInstant } = require("../../helpers/transactionService");
@@ -124,6 +125,8 @@ const applyOrderMoneyForTransaction = async (order, transaction, { settleInvoice
       actorId: transaction.verifiedBy,
     });
   }
+
+  await syncProjectFinalInvoice(order);
 
   return order;
 };

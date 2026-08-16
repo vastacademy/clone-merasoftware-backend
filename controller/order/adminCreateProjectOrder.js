@@ -9,6 +9,7 @@ const { initializeProjectTimeline } = require("../../helpers/projectNodeService"
 // Shared SSOT payment-recording helper (extracted from this file) — reused by the
 // project-approval flow so both paths write one transaction + one invoice, never two.
 const { markProjectInvoicePaid } = require("../../helpers/paymentRecording");
+const { syncProjectFinalInvoice } = require("../../helpers/projectFinalInvoice");
 
 const PAYMENT_METHODS = ["upi", "bank_transfer", "cash", "wallet"];
 
@@ -267,6 +268,7 @@ const adminCreateProjectOrderController = async (req, res) => {
         order.currentInstallment = 2;
         await order.save();
       }
+      await syncProjectFinalInvoice(order);
     }
 
     return res.status(201).json({

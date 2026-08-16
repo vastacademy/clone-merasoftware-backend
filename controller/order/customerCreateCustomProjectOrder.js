@@ -15,6 +15,7 @@ const {
   deductWalletInstant,
 } = require("../../helpers/transactionService");
 const userModel = require("../../models/userModel");
+const { syncProjectFinalInvoice } = require("../../helpers/projectFinalInvoice");
 
 // Customer-side twin of adminCreateProjectOrder.js. The customize flow
 // (StartNewWebsiteCustomize.js) is product-less: the customer describes a project
@@ -399,6 +400,7 @@ const customerCreateCustomProjectOrder = async (req, res) => {
       }
 
       await order.save();
+      if (walletPaid > 0) await syncProjectFinalInvoice(order);
     }
 
     return res.status(201).json({

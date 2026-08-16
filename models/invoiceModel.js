@@ -23,7 +23,10 @@ const invoiceSchema = new mongoose.Schema({
   },
   invoiceType: {
     type: String,
-    enum: ["project", "plan_renewal"],
+    // `project_final` is the one cumulative statement for a project. It is not a
+    // new payment request; the normal `project` records remain the individual
+    // installment/payment invoices.
+    enum: ["project", "project_final", "plan_renewal"],
     required: true,
   },
   amount: {
@@ -91,6 +94,12 @@ const invoiceSchema = new mongoose.Schema({
 
 invoiceSchema.index({ userId: 1, status: 1 });
 invoiceSchema.index({ orderId: 1 });
+// One live cumulative invoice per project. The partial filter keeps legacy and
+// installment project invoices unrestricted.
+invoiceSchema.index(
+  { orderId: 1, invoiceType: 1 },
+  { unique: true, partialFilterExpression: { invoiceType: "project_final" } }
+);
 
 const invoiceModel = mongoose.model("invoice", invoiceSchema);
 module.exports = invoiceModel;

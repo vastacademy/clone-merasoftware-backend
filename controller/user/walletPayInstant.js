@@ -8,6 +8,7 @@ const {
   markProjectInvoicePaid,
 } = require("../../helpers/paymentRecording");
 const { settleInstallmentInvoice } = require("../../helpers/installmentSettlement");
+const { syncProjectFinalInvoice } = require("../../helpers/projectFinalInvoice");
 
 // Instant wallet payment for an EXISTING order/installment — no admin approval.
 //
@@ -116,6 +117,35 @@ const walletPayInstant = async (req, res) => {
           amount: numericAmount,
           existingTransaction: transaction,
         });
+
+        // A project invoice is only a payment record; its matching order is the
+        // financial aggregate. Keep both sources in lockstep for direct invoice
+        // payments as well as the normal installment route below.
+        const amountDue = getOrderTotal(order);
+        order.paidAmount = Math.min(amountDue, Number(order.paidAmount || 0) + numericAmount);
+        order.remainingAmount = Math.max(0, amountDue - Number(order.paidAmount || 0));
+        if (projectInvoice.installmentNumber && Array.isArray(order.installments)) {
+          const installment = order.installments.find(
+            (item) => Number(item.installmentNumber) === Number(projectInvoice.installmentNumber)
+          );
+          if (installment && settledInvoice.status === "paid") {
+            installment.paid = true;
+            installment.paidDate = new Date();
+            installment.paymentStatus = "none";
+            installment.transactionId = transaction.transactionId;
+          }
+        }
+        if (settledInvoice.status === "paid") {
+          const nextInstallment = Array.isArray(order.installments)
+            ? order.installments.find((item) => !item.paid)
+            : null;
+          if (nextInstallment) order.currentInstallment = nextInstallment.installmentNumber;
+          order.orderVisibility = "approved";
+          if (order.status === "pending") order.status = "in_progress";
+        }
+        if (order.remainingAmount <= 0) order.paymentComplete = true;
+        await order.save();
+        await syncProjectFinalInvoice(order);
 
         return res.status(200).json({
           message: "Wallet payment successful",
@@ -280,6 +310,7 @@ const walletPayInstant = async (req, res) => {
       });
       invoiceStatus = settledInvoice?.status || null;
     }
+    await syncProjectFinalInvoice(order);
 
     return res.status(200).json({
       message: "Wallet payment successful",
