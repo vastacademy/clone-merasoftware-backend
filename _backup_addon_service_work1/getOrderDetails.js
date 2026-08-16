@@ -57,7 +57,7 @@ const getOrderDetails = async (req, res) => {
         // Find the specific order for this user or admin
         const order = await orderProductModel.findOne(query)
             .populate('userId', 'name email address')
-            .populate('productId', 'serviceName category totalPages validityPeriod updateCount isWebsiteUpdate price sellingPrice isMonthlyLimitedPlan isMonthlyRenewablePlan monthlyUpdateLimit yearlyPlanDuration monthlyRenewalPrice monthlyRenewalCost isServicePlan servicePlan')
+            .populate('productId', 'serviceName category totalPages validityPeriod updateCount isWebsiteUpdate price sellingPrice isMonthlyLimitedPlan isMonthlyRenewablePlan monthlyUpdateLimit yearlyPlanDuration monthlyRenewalPrice monthlyRenewalCost')
             .populate('assignedDeveloper', 'name designation avatar status');
             
         if (!order) {

@@ -1,21 +1,14 @@
 const productModel = require("../../models/productModel");
 
 const VALIDITY_UNIT_DAYS = { day: 1, week: 7, month: 30, year: 365 };
-const BILLING_CYCLE_MONTHS = {
-  weekly: null, monthly: 1, quarterly: 3, half_yearly: 6, yearly: 12,
-  every_2_years: 24, every_3_years: 36, every_4_years: 48, every_5_years: 60
-};
+const BILLING_CYCLE_MONTHS = { weekly: null, monthly: 1, quarterly: 3, half_yearly: 6, yearly: 12 };
 
 const PLAN_TYPES = ['website_updates', 'digital_marketing', 'google_business_setup', 'social_media_marketing', 'other'];
 const LIMIT_SCOPES = ['per_day', 'per_week', 'per_month', 'per_quarter', 'per_6_month', 'per_year', 'per_plan', 'unlimited', 'manual'];
 const MANUAL_UNITS = ['day', 'week', 'month'];
 const MANUAL_COUNT_MAX = { day: 31, week: 8, month: 12 };
 const VALIDITY_UNITS = ['day', 'week', 'month', 'year'];
-const BILLING_CYCLES = [
-  'weekly', 'monthly', 'quarterly', 'half_yearly', 'yearly',
-  'every_2_years', 'every_3_years', 'every_4_years', 'every_5_years'
-];
-const SERVICE_BEHAVIORS = ['portal_access_control', 'reminder_only'];
+const BILLING_CYCLES = ['weekly', 'monthly', 'quarterly', 'half_yearly', 'yearly'];
 const MAX_FILES_LIMIT = 100;
 
 const createServicePlanController = async (req, res) => {
@@ -34,7 +27,6 @@ const createServicePlanController = async (req, res) => {
     // the legacy plan-type booleans/fields to be set through this endpoint.
     const serviceName = body.serviceName;
     const planType = body.planType;
-    const serviceBehavior = body.serviceBehavior;
     const limitScope = body.limitScope;
     const manualUnit = body.manualUnit;
     const manualCount = body.manualCount;
@@ -54,47 +46,32 @@ const createServicePlanController = async (req, res) => {
     if (!PLAN_TYPES.includes(planType)) {
       throw new Error("A valid plan type is required");
     }
-    if (!SERVICE_BEHAVIORS.includes(serviceBehavior)) {
-      throw new Error("A valid service behavior is required");
+    if (!LIMIT_SCOPES.includes(limitScope)) {
+      throw new Error("A valid limit scope is required");
     }
 
-    // A reminder_only service grants no portal allowance at all — it only runs
-    // on a schedule and notifies. Portal access / limit scope / files limit are
-    // therefore rejected rather than silently stored as dead config.
-    const isReminderOnly = serviceBehavior === 'reminder_only';
+    if (limitScope === 'manual') {
+      if (!MANUAL_UNITS.includes(manualUnit)) {
+        throw new Error("A valid manual unit is required for manual scope");
+      }
+      const maxForUnit = MANUAL_COUNT_MAX[manualUnit];
+      if (!(Number(manualCount) >= 1) || Number(manualCount) > maxForUnit) {
+        throw new Error(`Manual count must be between 1 and ${maxForUnit} for the selected unit`);
+      }
+    } else if (manualUnit || manualCount) {
+      throw new Error("Manual unit/count must be empty unless limit scope is manual");
+    }
 
-    if (isReminderOnly) {
-      if (limitScope || manualUnit || manualCount || portalAccessCount || filesLimit) {
-        throw new Error("A reminder-only service cannot define portal access, limit scope, or files limit");
+    if (limitScope === 'unlimited') {
+      if (portalAccessCount) {
+        throw new Error("Portal access count must be empty when limit scope is unlimited");
       }
-    } else {
-      if (!LIMIT_SCOPES.includes(limitScope)) {
-        throw new Error("A valid limit scope is required");
-      }
+    } else if (!(Number(portalAccessCount) >= 1)) {
+      throw new Error("Portal access count must be at least 1");
+    }
 
-      if (limitScope === 'manual') {
-        if (!MANUAL_UNITS.includes(manualUnit)) {
-          throw new Error("A valid manual unit is required for manual scope");
-        }
-        const maxForUnit = MANUAL_COUNT_MAX[manualUnit];
-        if (!(Number(manualCount) >= 1) || Number(manualCount) > maxForUnit) {
-          throw new Error(`Manual count must be between 1 and ${maxForUnit} for the selected unit`);
-        }
-      } else if (manualUnit || manualCount) {
-        throw new Error("Manual unit/count must be empty unless limit scope is manual");
-      }
-
-      if (limitScope === 'unlimited') {
-        if (portalAccessCount) {
-          throw new Error("Portal access count must be empty when limit scope is unlimited");
-        }
-      } else if (!(Number(portalAccessCount) >= 1)) {
-        throw new Error("Portal access count must be at least 1");
-      }
-
-      if (!(Number(filesLimit) >= 1) || Number(filesLimit) > MAX_FILES_LIMIT) {
-        throw new Error(`Files limit must be between 1 and ${MAX_FILES_LIMIT}`);
-      }
+    if (!(Number(filesLimit) >= 1) || Number(filesLimit) > MAX_FILES_LIMIT) {
+      throw new Error(`Files limit must be between 1 and ${MAX_FILES_LIMIT}`);
     }
 
     if (!VALIDITY_UNITS.includes(validityUnit)) {
@@ -138,12 +115,11 @@ const createServicePlanController = async (req, res) => {
       isServicePlan: true,
       servicePlan: {
         planType,
-        serviceBehavior,
-        limitScope: isReminderOnly ? undefined : limitScope,
-        manualUnit: !isReminderOnly && limitScope === 'manual' ? manualUnit : undefined,
-        manualCount: !isReminderOnly && limitScope === 'manual' ? Number(manualCount) : undefined,
-        portalAccessCount: isReminderOnly || limitScope === 'unlimited' ? undefined : Number(portalAccessCount),
-        filesLimit: isReminderOnly ? undefined : Number(filesLimit),
+        limitScope,
+        manualUnit: limitScope === 'manual' ? manualUnit : undefined,
+        manualCount: limitScope === 'manual' ? Number(manualCount) : undefined,
+        portalAccessCount: limitScope === 'unlimited' ? undefined : Number(portalAccessCount),
+        filesLimit: Number(filesLimit),
         validityUnit,
         validityValue: Number(validityValue),
         validityInDays,

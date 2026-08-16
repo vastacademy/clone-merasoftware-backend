@@ -197,21 +197,7 @@ const productSchema = new mongoose.Schema({
     },
     billingCycle: {
       type: String,
-      enum: [
-        'weekly', 'monthly', 'quarterly', 'half_yearly', 'yearly',
-        // Multi-year cadences: a service may be charged once every N years
-        // (e.g. a 5-year hosting/domain renewal billed once every 2 years).
-        'every_2_years', 'every_3_years', 'every_4_years', 'every_5_years'
-      ]
-    },
-    // What this service actually does at runtime. Set explicitly instead of
-    // being inferred from whether portalAccessCount is present, so the future
-    // enforcement engine never has to guess:
-    //   portal_access_control -> consumes portal access/file-upload allowance
-    //   reminder_only         -> no allowance; only tracks duration + reminders
-    serviceBehavior: {
-      type: String,
-      enum: ['portal_access_control', 'reminder_only']
+      enum: ['weekly', 'monthly', 'quarterly', 'half_yearly', 'yearly']
     }
   }
 }, {

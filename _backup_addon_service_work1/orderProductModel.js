@@ -498,28 +498,7 @@ const orderSchema = new mongoose.Schema({
         validityUnit: String,
         validityValue: Number,
         validityInDays: Number,
-        billingCycle: String,
-        serviceBehavior: String
-    },
-    // Add-on service linkage. A service order can be bought two ways:
-    //   linkedProjectOrderId === null -> standalone plan (existing behaviour)
-    //   linkedProjectOrderId set       -> this service is an add-on attached to
-    //                                     that specific project order.
-    // Backend/engine logic stays identical for both; this is a reference +
-    // reporting field, not a behaviour branch.
-    linkedProjectOrderId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'order',
-        default: null
-    },
-    // Which moment of the project's life this add-on was bought in. Kept
-    // separate from linkedProjectOrderId because the business intent differs:
-    // an in-progress add-on extends the running project, an after-completion
-    // one is ongoing servicing of a finished project.
-    addedDuringProjectPhase: {
-        type: String,
-        enum: ['in_progress', 'after_completion'],
-        default: null
+        billingCycle: String
     },
     servicePlanStartDate: {
         type: Date,

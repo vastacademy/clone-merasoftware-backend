@@ -32,8 +32,6 @@ const DeleteCategoryController = require('../controller/product/deleteCategory')
 const updateUserProfileController = require('../controller/user/updateUserProfileController')
 const createOrder = require('../controller/order/createOrder')
 const customerCreateCustomProjectOrder = require('../controller/order/customerCreateCustomProjectOrder')
-const customerCreateServicePlanOrder = require('../controller/order/customerCreateServicePlanOrder')
-const customerCreateServicePlanOrdersBulk = require('../controller/order/customerCreateServicePlanOrdersBulk')
 const getCustomerCategoryBasePrice = require('../controller/order/getCustomerCategoryBasePrice')
 const adminRechargeWallet = require('../controller/user/adminRechargeWallet')
 const walletPayInstant = require('../controller/user/walletPayInstant')
@@ -265,10 +263,6 @@ router.delete("/perfect-for-suggestions/:id", authToken, deletePerfectForSuggest
 // payment and order
 router.post("/create-order", authToken, createOrder)
 router.post("/customer/custom-project-order", authToken, customerCreateCustomProjectOrder)
-// Service Plan purchase — standalone, or as an add-on attached to a project.
-// Single service: wallet, UPI or combined. Bulk: wallet only (doc 55 §10).
-router.post("/customer/service-plan-order", authToken, customerCreateServicePlanOrder)
-router.post("/customer/service-plan-orders-bulk", authToken, customerCreateServicePlanOrdersBulk)
 router.get("/customer/category-base-price", authToken, getCustomerCategoryBasePrice)
 router.post("/validate-update-plan", authToken, validateUpdatePlan)
 router.post("/toggle-update-plan", authToken, toggleUpdatePlan)
