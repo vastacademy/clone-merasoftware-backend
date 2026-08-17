@@ -1,6 +1,5 @@
 const orderProductModel = require("../../models/orderProductModel");
 const invoiceModel = require("../../models/invoiceModel");
-const transactionModel = require("../../models/transactionModel");
 
 const toPlainObject = (doc) => {
     if (!doc) return null;
@@ -99,35 +98,12 @@ const getOrderDetails = async (req, res) => {
             ? await invoiceModel.find({ orderId: order._id }).sort({ invoiceDate: -1 }).select('invoiceNumber amount status invoiceDate dueDate').lean()
             : [];
 
-        // A payment the customer has already SUBMITTED but the admin has not yet verified.
-        // Without this, a submitted-but-unapproved payment is invisible to the customer: the
-        // invoice legitimately stays 'unpaid' until approval (only markProjectInvoicePaid settles
-        // it), so hasUnpaidInvoice alone kept showing "Payment Pending" — telling the customer to
-        // pay again for money they had just sent. The pending transaction is the only record that
-        // the money was submitted, so it is derived here alongside hasUnpaidInvoice (same request,
-        // same pattern) instead of through a separate endpoint.
-        //
-        // This replaces the never-implemented `checkPendingOrderTransactions` route ProjectDetails.js
-        // used to call — it was never registered in routes/index.js, so that fetch always 404'd and
-        // its result was silently discarded (see DOCS/53, which confirmed it dead).
-        const pendingPaymentTransaction = await transactionModel
-            .findOne({
-                orderId: order._id,
-                status: 'pending',
-                type: 'payment',
-            })
-            .sort({ createdAt: -1 })
-            .select('amount installmentNumber paymentMethod upiTransactionId createdAt')
-            .lean();
-
         const responseData = {
             ...orderData,
             status: status,
             orderNumber: `ORD-${order._id.toString().substr(-4)}`,
             hasUnpaidInvoice: Boolean(earliestUnpaidInvoice),
             unpaidInvoice: earliestUnpaidInvoice || null,
-            hasPendingPayment: Boolean(pendingPaymentTransaction),
-            pendingPayment: pendingPaymentTransaction || null,
             serviceInvoices,
         };
 
