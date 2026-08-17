@@ -204,6 +204,11 @@ const productSchema = new mongoose.Schema({
         'every_2_years', 'every_3_years', 'every_4_years', 'every_5_years'
       ]
     },
+    // Empty billingCycle + totalBillingCycles means no automatic expiry.
+    totalBillingCycles: {
+      type: Number,
+      min: 1
+    },
     // What this service actually does at runtime. Set explicitly instead of
     // being inferred from whether portalAccessCount is present, so the future
     // enforcement engine never has to guess:
@@ -212,7 +217,45 @@ const productSchema = new mongoose.Schema({
     serviceBehavior: {
       type: String,
       enum: ['portal_access_control', 'reminder_only']
-    }
+    },
+    // Catalogue contract for the add-on service lifecycle. These fields are
+    // additive: serviceBehavior and the legacy billing fields above remain so
+    // existing catalogue records/orders retain their original meaning.
+    timing: {
+      type: String,
+      enum: ['during', 'during_and_after', 'after']
+    },
+    dependency: {
+      type: String,
+      enum: ['project_required', 'standalone_or_project', 'standalone_only']
+    },
+    capability: {
+      type: String,
+      enum: ['upload_data', 'send_reminders']
+    },
+    monthlyReferencePrice: {
+      type: Number,
+      min: 0
+    },
+    billingOptions: [{
+      billingCycle: {
+        type: String,
+        enum: [
+          'monthly', 'quarterly', 'half_yearly', 'yearly',
+          'every_2_years', 'every_3_years', 'every_4_years', 'every_5_years'
+        ]
+      },
+      discountPercent: {
+        type: Number,
+        min: 0,
+        max: 100,
+        default: 0
+      },
+      pricePerCycle: {
+        type: Number,
+        min: 0
+      }
+    }]
   }
 }, {
     timestamps: true

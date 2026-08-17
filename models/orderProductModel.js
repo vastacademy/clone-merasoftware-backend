@@ -499,7 +499,22 @@ const orderSchema = new mongoose.Schema({
         validityValue: Number,
         validityInDays: Number,
         billingCycle: String,
-        serviceBehavior: String
+        totalBillingCycles: Number,
+        runsIndefinitely: Boolean,
+        serviceBehavior: String,
+        timing: String,
+        dependency: String,
+        capability: String,
+        monthlyReferencePrice: Number,
+        billingOptions: [{
+            billingCycle: String,
+            discountPercent: Number,
+            pricePerCycle: Number
+        }],
+        selectedBillingCycle: String,
+        selectedBillingCycleMonths: Number,
+        tenureMonths: Number,
+        autoRenew: Boolean
     },
     // Add-on service linkage. A service order can be bought two ways:
     //   linkedProjectOrderId === null -> standalone plan (existing behaviour)
@@ -541,6 +556,32 @@ const orderSchema = new mongoose.Schema({
         type: Date,
         default: null
     },
+    // Customer-selected commercial terms. These are order-level values, never
+    // re-read from the catalogue after purchase.
+    serviceSelectedBillingCycle: {
+        type: String,
+        default: null
+    },
+    serviceBillingCycleMonths: {
+        type: Number,
+        default: null
+    },
+    serviceTenureMonths: {
+        type: Number,
+        default: null
+    },
+    serviceAutoRenew: {
+        type: Boolean,
+        default: false
+    },
+    serviceNextBillingDate: {
+        type: Date,
+        default: null
+    },
+    serviceAutoRenewalStoppedAt: {
+        type: Date,
+        default: null
+    },
     serviceAccessUsedInCycle: {
         type: Number,
         default: 0
@@ -560,7 +601,7 @@ const orderSchema = new mongoose.Schema({
     },
     servicePlanStatus: {
         type: String,
-        enum: ['active', 'paused', 'expired', 'cancelled'],
+        enum: ['pending_activation', 'active', 'paused', 'expired', 'inactive', 'cancelled'],
         default: 'active'
     }
 }, {

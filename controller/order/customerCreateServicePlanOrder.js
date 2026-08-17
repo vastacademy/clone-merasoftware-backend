@@ -18,6 +18,8 @@ const {
   buildServicePlanOrderData,
   resolveServicePlanPrice,
   resolveValidityInDays,
+  runsIndefinitely,
+  resolveCustomerBillingSelection,
 } = require("../../helpers/servicePlanPurchase");
 
 // Customer-side purchase path for Service Plan products (category "service_plan").
@@ -53,6 +55,8 @@ const customerCreateServicePlanOrder = async (req, res) => {
       linkedProjectOrderId,
       addedDuringProjectPhase,
       paymentDetails,
+      selectedBillingCycle,
+      tenureMonths,
     } = req.body;
 
     if (!planId) {
@@ -85,7 +89,10 @@ const customerCreateServicePlanOrder = async (req, res) => {
 
     const servicePlan = plan.servicePlan || {};
 
-    const finalPrice = resolveServicePlanPrice(plan);
+    const billingSelection = Array.isArray(servicePlan.billingOptions) && servicePlan.billingOptions.length
+      ? resolveCustomerBillingSelection({ servicePlan, billingCycle: selectedBillingCycle, tenureMonths })
+      : null;
+    const finalPrice = billingSelection ? billingSelection.firstPayment : resolveServicePlanPrice(plan);
 
     if (!Number.isFinite(finalPrice) || finalPrice <= 0) {
       return res.status(400).json({
@@ -128,7 +135,7 @@ const customerCreateServicePlanOrder = async (req, res) => {
     // ----- Validity + first cycle window -----
     const validityInDays = resolveValidityInDays(servicePlan);
 
-    if (!Number.isFinite(validityInDays) || validityInDays <= 0) {
+    if (!billingSelection && !runsIndefinitely(servicePlan) && (!Number.isFinite(validityInDays) || validityInDays <= 0)) {
       return res.status(400).json({
         message: "This plan has no valid duration configured. Please contact support.",
         error: true,
@@ -149,6 +156,7 @@ const customerCreateServicePlanOrder = async (req, res) => {
       linkedProjectOrderId: linkedOrder ? linkedOrder._id : null,
       addedDuringProjectPhase: resolvedPhase,
       startDate,
+      billingSelection,
     });
 
     const endDate = orderData.servicePlanEndDate;

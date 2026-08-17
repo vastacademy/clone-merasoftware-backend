@@ -7,6 +7,7 @@ const connnectDB = require("./config/db")
 const router = require("./routes")
 const fileCleanupScheduler = require('./helpers/fileCleanupScheduler');
 const { scheduleAutoRenewal } = require('./cron/autoRenewalCron');
+const { scheduleServicePlanRenewals } = require('./cron/servicePlanRenewalCron');
 const cron = require("node-cron");
 const axios = require("axios");
 const { initChessSocket } = require('./chess/chessSocket');
@@ -17,6 +18,7 @@ const app = express()
 const server = http.createServer(app)
 fileCleanupScheduler.scheduleCleanup();
 scheduleAutoRenewal();
+scheduleServicePlanRenewals();
 scheduleChessCleanup();
 
 console.log('File cleanup scheduler initialized');

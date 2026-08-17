@@ -8,6 +8,7 @@ const {
   setProjectNodeVisibility,
   softDeleteProjectNodes,
 } = require("../../helpers/projectNodeService");
+const { activateAfterProjectServices } = require('../../helpers/serviceLifecycle');
 
 const requireAdmin = (req, res) => {
   if (req.userRole !== "admin") {
@@ -44,8 +45,11 @@ const getOrderForAdmin = async (req, res) => {
   return order;
 };
 
-const saveResponse = async (res, order, message) => {
+const saveResponse = async (res, order, message, actorId) => {
   await order.save();
+  if (order.projectProgress >= 100) {
+    await activateAfterProjectServices({ projectOrderId: order._id, actorId });
+  }
   return res.status(200).json({ success: true, error: false, message, data: order });
 };
 
@@ -77,7 +81,7 @@ const createProjectNode = async (req, res) => {
       node.messageIds.push(String(savedMessage._id));
     }
 
-    return saveResponse(res, order, "Project node created successfully");
+    return saveResponse(res, order, "Project node created successfully", req.userId);
   } catch (error) {
     console.error("Error creating project node:", error);
     return res.status(400).json({ success: false, error: true, message: error.message });
@@ -113,7 +117,7 @@ const editProjectNodeController = async (req, res) => {
       node.messageIds.push(String(savedMessage._id));
     }
 
-    return saveResponse(res, order, "Project node updated successfully");
+    return saveResponse(res, order, "Project node updated successfully", req.userId);
   } catch (error) {
     console.error("Error editing project node:", error);
     return res.status(400).json({ success: false, error: true, message: error.message });

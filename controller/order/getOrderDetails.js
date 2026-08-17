@@ -57,7 +57,7 @@ const getOrderDetails = async (req, res) => {
         // Find the specific order for this user or admin
         const order = await orderProductModel.findOne(query)
             .populate('userId', 'name email address')
-            .populate('productId', 'serviceName category totalPages validityPeriod updateCount isWebsiteUpdate price sellingPrice isMonthlyLimitedPlan isMonthlyRenewablePlan monthlyUpdateLimit yearlyPlanDuration monthlyRenewalPrice monthlyRenewalCost isServicePlan servicePlan')
+            .populate('productId', 'serviceName category totalPages validityPeriod updateCount isWebsiteUpdate price sellingPrice isMonthlyLimitedPlan isMonthlyRenewablePlan monthlyUpdateLimit yearlyPlanDuration monthlyRenewalPrice monthlyRenewalCost isServicePlan servicePlan formattedDescriptions')
             .populate('assignedDeveloper', 'name designation avatar status');
             
         if (!order) {
@@ -94,12 +94,17 @@ const getOrderDetails = async (req, res) => {
             .select('amount status invoiceNumber installmentNumber')
             .lean();
 
+        const serviceInvoices = order.isServicePlan
+            ? await invoiceModel.find({ orderId: order._id }).sort({ invoiceDate: -1 }).select('invoiceNumber amount status invoiceDate dueDate').lean()
+            : [];
+
         const responseData = {
             ...orderData,
             status: status,
             orderNumber: `ORD-${order._id.toString().substr(-4)}`,
             hasUnpaidInvoice: Boolean(earliestUnpaidInvoice),
             unpaidInvoice: earliestUnpaidInvoice || null,
+            serviceInvoices,
         };
 
         if (!isAdmin) {

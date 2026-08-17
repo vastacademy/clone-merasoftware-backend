@@ -6,6 +6,7 @@ const { markInvoicePaidAndResumePlan } = require("../../helpers/invoiceLifecycle
 const { markProjectInvoicePaid } = require("../../helpers/paymentRecording");
 const { settleInstallmentInvoice } = require("../../helpers/installmentSettlement");
 const { syncProjectFinalInvoice } = require("../../helpers/projectFinalInvoice");
+const { settleServiceRenewal } = require('../../helpers/serviceRenewalSettlement');
 // Refund helper — when a combined payment's UPI portion is rejected, its already-debited
 // wallet portion must be returned to the customer.
 const { refundWalletInstant } = require("../../helpers/transactionService");
@@ -141,7 +142,7 @@ const applyApprovedOrderPayment = async (transaction) => {
     // order's invoice lives here); fall back to the legacy monthlyInvoiceModel (recurring plans).
     const projectInvoice = await invoiceModel.findById(transaction.invoiceId);
 
-    if (projectInvoice) {
+      if (projectInvoice) {
       const { invoice: settledInvoice } = await markProjectInvoicePaid({
         invoice: projectInvoice,
         customerId: transaction.userId,
@@ -151,6 +152,13 @@ const applyApprovedOrderPayment = async (transaction) => {
         amount: Number(transaction.amount || 0),
         existingTransaction: transaction,
       });
+
+      // A Service Plan renewal must advance only its service cycle. It must never
+      // add the renewal amount to the original order total/paidAmount.
+      if (projectInvoice.invoiceType === 'plan_renewal') {
+        const order = await settleServiceRenewal({ orderId: transaction.orderId || projectInvoice.orderId, invoice: settledInvoice });
+        return { order, invoice: settledInvoice, transaction };
+      }
 
       // A project invoice also has an order behind it — settle the order's money too (installment
       // paid / paidAmount / approval), through the SAME logic the plain order-payment path uses.

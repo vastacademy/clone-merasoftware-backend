@@ -8,6 +8,8 @@ const {
   buildServicePlanOrderData,
   resolveServicePlanPrice,
   resolveValidityInDays,
+  runsIndefinitely,
+  resolveCustomerBillingSelection,
 } = require("../../helpers/servicePlanPurchase");
 
 // Bulk Service Plan purchase — buy several services in one go, WALLET ONLY.
@@ -47,6 +49,7 @@ const customerCreateServicePlanOrdersBulk = async (req, res) => {
       linkedProjectOrderId,
       addedDuringProjectPhase,
       transactionId,
+      selections,
     } = req.body;
 
     if (!Array.isArray(planIds) || planIds.length === 0) {
@@ -68,6 +71,7 @@ const customerCreateServicePlanOrdersBulk = async (req, res) => {
     // De-duplicate: buying the same service twice in one batch is always a UI
     // slip, never an intent.
     const uniquePlanIds = [...new Set(planIds.map(String))];
+    const selectionByPlanId = new Map(Array.isArray(selections) ? selections.map((selection) => [String(selection.planId), selection]) : []);
 
     // ----- Load and validate every plan BEFORE taking any money -----
     const plans = await productModel.find({
@@ -89,7 +93,11 @@ const customerCreateServicePlanOrdersBulk = async (req, res) => {
     // never tells us what anything costs.
     const priced = [];
     for (const plan of plans) {
-      const price = resolveServicePlanPrice(plan);
+      const selection = selectionByPlanId.get(String(plan._id));
+      const billingSelection = Array.isArray(plan.servicePlan?.billingOptions) && plan.servicePlan.billingOptions.length
+        ? resolveCustomerBillingSelection({ servicePlan: plan.servicePlan, billingCycle: selection?.selectedBillingCycle, tenureMonths: selection?.tenureMonths })
+        : null;
+      const price = billingSelection ? billingSelection.firstPayment : resolveServicePlanPrice(plan);
       const validityInDays = resolveValidityInDays(plan.servicePlan || {});
 
       if (!Number.isFinite(price) || price <= 0) {
@@ -99,14 +107,14 @@ const customerCreateServicePlanOrdersBulk = async (req, res) => {
           success: false,
         });
       }
-      if (!Number.isFinite(validityInDays) || validityInDays <= 0) {
+      if (!billingSelection && !runsIndefinitely(plan.servicePlan || {}) && (!Number.isFinite(validityInDays) || validityInDays <= 0)) {
         return res.status(400).json({
           message: `"${plan.serviceName}" has no valid duration. Please contact support.`,
           error: true,
           success: false,
         });
       }
-      priced.push({ plan, price, validityInDays });
+      priced.push({ plan, price, validityInDays, billingSelection });
     }
 
     const totalAmount = priced.reduce((sum, item) => sum + item.price, 0);
@@ -159,7 +167,7 @@ const customerCreateServicePlanOrdersBulk = async (req, res) => {
     // ----- Create each service: order -> invoice -> instant wallet debit ->
     // settle invoice. Identical to the single-service path, once per service. -----
     for (let index = 0; index < priced.length; index += 1) {
-      const { plan, price, validityInDays } = priced[index];
+      const { plan, price, validityInDays, billingSelection } = priced[index];
 
       const order = new orderModel(
         buildServicePlanOrderData({
@@ -169,6 +177,7 @@ const customerCreateServicePlanOrdersBulk = async (req, res) => {
           validityInDays,
           linkedProjectOrderId: linkedOrder ? linkedOrder._id : null,
           addedDuringProjectPhase: resolvedPhase,
+          billingSelection,
         })
       );
       await order.save();

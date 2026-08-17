@@ -86,6 +86,15 @@ const submitUpdateRequest = asyncHandler(async (req, res) => {
       success: false
     });
   }
+  const isServiceUpload = updatePlan.isServicePlan === true;
+  if (isServiceUpload) {
+    const snapshot = updatePlan.servicePlanSnapshot || {};
+    if (String(req.body.serviceOrderId || '') !== String(updatePlan._id)) throw new Error('Selected service is required');
+    if (snapshot.capability !== 'upload_data' && snapshot.serviceBehavior !== 'portal_access_control') throw new Error('This service does not allow data upload');
+    if (updatePlan.servicePlanStatus !== 'active') throw new Error('This service is not active');
+    if (snapshot.limitScope !== 'unlimited' && Number(updatePlan.serviceAccessUsedInCycle || 0) >= Number(snapshot.portalAccessCount || 0)) throw new Error('Selected service upload limit is used');
+    if ((req.files || []).length > Number(snapshot.filesLimit || 0)) throw new Error(`This service allows up to ${snapshot.filesLimit} files per upload`);
+  }
 
   // Check if plan is closed
   if (updatePlan.planStatus === 'closed') {
@@ -113,7 +122,7 @@ const submitUpdateRequest = asyncHandler(async (req, res) => {
   }
   
   // Check if the user has updates remaining
-  if (updatePlan.updatesUsed >= updatePlan.productId.updateCount) {
+  if (!isServiceUpload && updatePlan.updatesUsed >= updatePlan.productId.updateCount) {
     return res.status(400).json({
       message: 'No updates remaining in this plan',
       error: true,
@@ -159,7 +168,7 @@ const submitUpdateRequest = asyncHandler(async (req, res) => {
   }
 
   // Check if the plan is still valid (for regular plans)
-  if (!updatePlan.productId.isMonthlyRenewablePlan && !updatePlan.productId.isMonthlyLimitedPlan) {
+  if (!isServiceUpload && !updatePlan.productId.isMonthlyRenewablePlan && !updatePlan.productId.isMonthlyLimitedPlan) {
     const validityInDays = updatePlan.productId.validityPeriod;
     const startDate = new Date(updatePlan.createdAt);
     const endDate = new Date(startDate);
@@ -278,7 +287,7 @@ const submitUpdateRequest = asyncHandler(async (req, res) => {
     
     // Update the plan's usedUpdates count
     // For yearly renewable plans and monthly limited plans, also increment currentMonthUpdatesUsed
-    const updateFields = { updatesUsed: 1 };
+    const updateFields = isServiceUpload ? { serviceAccessUsedInCycle: 1, serviceAccessUsedTotal: 1 } : { updatesUsed: 1 };
     if (updatePlan.productId?.isMonthlyRenewablePlan || updatePlan.productId?.isMonthlyLimitedPlan) {
       updateFields.currentMonthUpdatesUsed = 1;
     }
@@ -337,7 +346,7 @@ const submitUpdateRequest = asyncHandler(async (req, res) => {
       success: true,
       data: {
         requestId: updateRequest._id,
-        updatesRemaining: updatePlan.productId.updateCount - (updatePlan.updatesUsed + 1)
+        updatesRemaining: isServiceUpload ? null : updatePlan.productId.updateCount - (updatePlan.updatesUsed + 1)
       }
     });
   } catch (error) {

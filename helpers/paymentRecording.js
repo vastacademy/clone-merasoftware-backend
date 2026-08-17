@@ -112,13 +112,14 @@ const createProjectInvoice = async ({
   installmentNumber,
   invoiceDate = new Date(),
   dueDate,
+  invoiceType = "project",
 }) => {
   const invoiceNumber = await generateInvoiceNumber();
   return invoiceModel.create({
     userId: customerId,
     orderId,
     invoiceNumber,
-    invoiceType: "project",
+    invoiceType,
     amount,
     status: "unpaid",
     invoiceDate,
