@@ -208,82 +208,6 @@ const applyApprovedOrderPayment = async (transaction) => {
   return { order: updatedOrder, invoice: null };
 };
 
-// ---------------------------------------------------------------------------
-// Parent-child payments (one payment covering several orders)
-//
-// Several service plans can be bought in one go against a single UPI payment
-// (customerCreateServicePlanOrdersBulk.js). Because transactionModel.orderId and
-// .invoiceId are single refs, that payment is recorded as:
-//
-//   PARENT  — the money the admin approves/rejects. No orderId of its own to settle.
-//   CHILDREN — one per service, each with its own orderId/invoiceId and carrying
-//              parentTransactionId = the parent's transactionId.
-//
-// So the parent is resolved by settling each child through EXACTLY the same
-// single-order code path (applyApprovedOrderPayment / rejectLinkedOrderPayment)
-// that has always handled one payment for one order. Nothing about that logic
-// changes — it is simply called once per child.
-//
-// A transaction with no children is not a parent, and every pre-existing
-// transaction falls through these helpers untouched.
-// ---------------------------------------------------------------------------
-
-const findChildTransactions = async (transaction) => {
-  if (!transaction?.transactionId) return [];
-  return transactionModel.find({
-    parentTransactionId: transaction.transactionId,
-    // The paired wallet debit of a combined payment is already completed and settled
-    // at purchase time — only the pending UPI children are settled on approval.
-    status: "pending",
-    paymentMethod: { $ne: "wallet" },
-  });
-};
-
-const settleChildTransactions = async (parentTransaction, adminId) => {
-  const children = await findChildTransactions(parentTransaction);
-  if (!children.length) return null;
-
-  const settledOrders = [];
-  for (const child of children) {
-    child.status = "completed";
-    child.paymentStatus = "approved";
-    child.verifiedBy = adminId;
-    child.verificationDate = new Date();
-    child.rejectionReason = null;
-    child.rejectedAt = null;
-    child.rejectedBy = null;
-    await child.save();
-
-    // Same single-order settlement used by every other approved payment.
-    const result = await applyApprovedOrderPayment(child);
-    if (result?.order) settledOrders.push(result.order);
-  }
-
-  return { childCount: children.length, orders: settledOrders };
-};
-
-const rejectChildTransactions = async (parentTransaction, rejectionReason, adminId) => {
-  const children = await findChildTransactions(parentTransaction);
-  if (!children.length) return null;
-
-  const rejectedOrders = [];
-  for (const child of children) {
-    child.status = "rejected";
-    child.paymentStatus = "rejected";
-    child.rejectionReason = rejectionReason;
-    child.rejectedAt = new Date();
-    child.rejectedBy = adminId;
-    child.verifiedBy = adminId;
-    child.verificationDate = new Date();
-    await child.save();
-
-    const order = await rejectLinkedOrderPayment(child, rejectionReason);
-    if (order) rejectedOrders.push(order);
-  }
-
-  return { childCount: children.length, orders: rejectedOrders };
-};
-
 const rejectLinkedOrderPayment = async (transaction, rejectionReason) => {
   // A plain order-payment transaction rejects its order/installment directly below. A project
   // invoice transaction (invoiceId points at invoiceModel) also has an order behind it and needs
@@ -391,14 +315,7 @@ const approveTransaction = async (req, res) => {
     transaction.rejectedBy = null;
     await transaction.save();
 
-    // A parent payment (one UPI payment covering several orders) is resolved by
-    // settling its children, each through the normal single-order path. A plain
-    // transaction has no children and falls through to the logic below unchanged.
-    const childResult = await settleChildTransactions(transaction, req.userId);
-
-    const linkedResult = childResult
-      ? { order: childResult.orders[0] || null, invoice: null }
-      : await applyApprovedOrderPayment(transaction);
+    const linkedResult = await applyApprovedOrderPayment(transaction);
 
     const updatedTransaction = await transactionModel
       .findById(transaction._id)
@@ -407,18 +324,13 @@ const approveTransaction = async (req, res) => {
       .populate("verifiedBy", "name email");
 
     return res.status(200).json({
-      message: childResult
-        ? `Payment approved — ${childResult.childCount} service${
-            childResult.childCount === 1 ? "" : "s"
-          } activated`
-        : "Transaction approved successfully",
+      message: "Transaction approved successfully",
       success: true,
       error: false,
       data: {
         transaction: updatedTransaction,
         order: linkedResult.order,
         invoice: linkedResult.invoice,
-        childOrders: childResult ? childResult.orders : null,
         walletBalance: user.walletBalance,
       },
     });
@@ -481,40 +393,26 @@ const rejectTransaction = async (req, res) => {
     transaction.verificationDate = new Date();
     await transaction.save();
 
-    // Parent payment: reject every child (and its order) together — a batch is
-    // all-or-nothing, so a rejected payment must never leave part of it standing.
-    const childResult = await rejectChildTransactions(transaction, rejectionReason, req.userId);
-
-    const order = childResult
-      ? childResult.orders[0] || null
-      : await rejectLinkedOrderPayment(transaction, rejectionReason);
+    const order = await rejectLinkedOrderPayment(transaction, rejectionReason);
 
     // Combined payment: if this rejected UPI transaction had a paired wallet portion (same
     // parentTransactionId, already debited), refund that wallet amount to the customer.
     // refundWalletInstant is idempotent on its transactionId, so a retried rejection never
     // double-refunds.
-    // Two shapes reach here:
-    //   - a CHILD/plain combined payment: its paired wallet debit shares the same
-    //     parentTransactionId as this transaction.
-    //   - a PARENT batch payment: the wallet debits hang off THIS transaction's own id.
-    // Both are found by the same query, keyed on the right id. findMany (not findOne)
-    // because a batch has one wallet debit per service, not just one.
-    const walletParentId = childResult ? transaction.transactionId : transaction.parentTransactionId;
-
-    if (walletParentId) {
-      const walletPortions = await transactionModel.find({
-        parentTransactionId: walletParentId,
+    if (transaction.parentTransactionId) {
+      const walletPortion = await transactionModel.findOne({
+        parentTransactionId: transaction.parentTransactionId,
         paymentMethod: "wallet",
         type: "payment",
         status: "completed",
       });
-      for (const walletPortion of walletPortions) {
+      if (walletPortion) {
         await refundWalletInstant({
           userId: walletPortion.userId,
           transactionId: `${walletPortion.transactionId}-REFUND`,
           amount: walletPortion.amount,
           description: `Refund for rejected payment ${transaction.transactionId}`,
-          parentTransactionId: walletParentId,
+          parentTransactionId: transaction.parentTransactionId,
           orderId: walletPortion.orderId || null,
         });
       }

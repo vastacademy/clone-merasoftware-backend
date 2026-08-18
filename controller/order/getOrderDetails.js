@@ -99,6 +99,29 @@ const getOrderDetails = async (req, res) => {
             ? await invoiceModel.find({ orderId: order._id }).sort({ invoiceDate: -1 }).select('invoiceNumber amount status invoiceDate dueDate').lean()
             : [];
 
+        // A project is the owner of its add-on service relationship. Return its
+        // linked service orders with the project detail payload so the customer
+        // has one authoritative workspace instead of reconstructing the link
+        // from the global Plans list on the client.
+        const linkedServices = !order.isServicePlan
+            ? await orderProductModel
+                .find({
+                    linkedProjectOrderId: order._id,
+                    isServicePlan: true,
+                    ...(isAdmin ? {} : { userId }),
+                })
+                .sort({ createdAt: -1 })
+                .select([
+                    'productId orderItems orderVisibility createdAt',
+                    'servicePlanSnapshot servicePlanStartDate servicePlanEndDate',
+                    'serviceCurrentCycleStart serviceCurrentCycleEnd',
+                    'serviceAccessUsedInCycle serviceAccessUsedTotal servicePlanStatus',
+                    'linkedProjectOrderId addedDuringProjectPhase',
+                ].join(' '))
+                .populate('productId', 'serviceName category servicePlan formattedDescriptions')
+                .lean()
+            : [];
+
         // A payment the customer has already SUBMITTED but the admin has not yet verified.
         // Without this, a submitted-but-unapproved payment is invisible to the customer: the
         // invoice legitimately stays 'unpaid' until approval (only markProjectInvoicePaid settles
@@ -129,6 +152,7 @@ const getOrderDetails = async (req, res) => {
             hasPendingPayment: Boolean(pendingPaymentTransaction),
             pendingPayment: pendingPaymentTransaction || null,
             serviceInvoices,
+            linkedServices,
         };
 
         if (!isAdmin) {

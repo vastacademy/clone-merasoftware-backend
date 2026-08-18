@@ -144,13 +144,11 @@ const buildServicePlanOrderData = ({
     // Service Plan tracking
     isServicePlan: true,
     servicePlanSnapshot: {
-      serviceName: plan.serviceName,
       planType: servicePlan.planType,
       serviceBehavior: servicePlan.serviceBehavior,
       timing: servicePlan.timing,
       dependency: servicePlan.dependency,
       capability: servicePlan.capability,
-      purchaseType: servicePlan.purchaseType,
       monthlyReferencePrice: servicePlan.monthlyReferencePrice,
       billingOptions: servicePlan.billingOptions || [],
       limitScope: servicePlan.limitScope,

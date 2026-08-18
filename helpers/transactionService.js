@@ -29,6 +29,11 @@ const createPaymentTransaction = async ({
   isInstallmentPayment = false,
   isPartialInstallmentPayment = false,
   description,
+  // Set when this pending transaction is the PARENT of several child transactions
+  // (one UPI payment covering N service-plan orders). Children carry the same value
+  // and are settled together when this parent is approved. Default null keeps every
+  // pre-existing caller byte-for-byte unchanged.
+  parentTransactionId = null,
   // Overridable, but sensible defaults are derived below to match verifyPaymentController.
   type,
   sourceType,
@@ -81,6 +86,7 @@ const createPaymentTransaction = async ({
     invoiceId,
     installmentNumber: installmentNumber ? Number(installmentNumber) : null,
     isPartialInstallmentPayment,
+    parentTransactionId,
     referredBy,
   });
 

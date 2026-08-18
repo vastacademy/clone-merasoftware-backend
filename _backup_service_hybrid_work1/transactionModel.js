@@ -138,9 +138,6 @@ transactionSchema.index({ invoiceId: 1 });
 transactionSchema.index({ orderId: 1 });
 transactionSchema.index({ userId: 1, status: 1 });
 transactionSchema.index({ sourceType: 1, status: 1 });
-// Parent-child payments: one UPI payment can cover several service-plan orders. Approving
-// or rejecting the parent resolves its children, so the children must be findable by parent.
-transactionSchema.index({ parentTransactionId: 1 });
 
 const transactionModel = mongoose.model('transaction', transactionSchema);
 module.exports = transactionModel;

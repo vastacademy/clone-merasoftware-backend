@@ -154,6 +154,13 @@ const productSchema = new mongoose.Schema({
     ref: 'user',
     default: null
   },
+  // What isHidden was BEFORE retiring. Retiring forces isHidden = true so every
+  // pre-existing catalogue filter excludes the plan; without remembering the old
+  // value, restoring would silently bring a previously-live plan back hidden.
+  hiddenBeforeRetire: {
+    type: Boolean,
+    default: null
+  },
   // "Delete Forever" from the Retired tab. The row is kept (orders, invoices and
   // transactions still reference it) but disappears from every list, including the
   // Retired tab — so it reads as a permanent delete while remaining recoverable in

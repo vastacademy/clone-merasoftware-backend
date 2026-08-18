@@ -26,7 +26,6 @@ const updateCategoryController = require('../controller/product/updateCategory')
 const deleteProductController = require('../controller/product/deleteProduct')
 const retireOrDeletePlan = require('../controller/product/retireOrDeletePlan')
 const reactivatePlan = require('../controller/product/reactivatePlan')
-const purgePlan = require('../controller/product/purgePlan')
 const UploadAdController = require('../controller/ads/uploadAd')
 const UploadBannerController = require('../controller/ads/uploadBanner')
 const getBannersController = require('../controller/ads/getBanner')
@@ -258,9 +257,6 @@ router.delete("/delete-product", authToken, deleteProductController)
 // Smart removal: deletes an unpurchased plan, retires one customers already bought.
 router.delete("/admin/plans/:planId", authToken, retireOrDeletePlan)
 router.post("/admin/plans/:planId/reactivate", authToken, reactivatePlan)
-// "Delete Forever" from the Retired tab. Archives by default; hard-deletes only
-// with mode:"hard" plus a typed confirmation of the plan name.
-router.post("/admin/plans/:planId/purge", authToken, purgePlan)
 router.post("/product-details", getProductDetails)
 router.post("/upload-category",authToken, UploadCategoryController)
 router.get("/get-categories", getCategoryController)

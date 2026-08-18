@@ -8,6 +8,7 @@ const userModel = require('../../models/userModel');
 const mongoose = require('mongoose');
 const path = require('path');
 const { ObjectId } = mongoose.Types;
+const { MAX_LEGACY_UPDATE_FILES_PER_UPLOAD } = require('../../config/uploadLimits');
 
 // Path to the Google Drive credentials file
 let KEY_FILE_PATH;
@@ -94,6 +95,8 @@ const submitUpdateRequest = asyncHandler(async (req, res) => {
     if (updatePlan.servicePlanStatus !== 'active') throw new Error('This service is not active');
     if (snapshot.limitScope !== 'unlimited' && Number(updatePlan.serviceAccessUsedInCycle || 0) >= Number(snapshot.portalAccessCount || 0)) throw new Error('Selected service upload limit is used');
     if ((req.files || []).length > Number(snapshot.filesLimit || 0)) throw new Error(`This service allows up to ${snapshot.filesLimit} files per upload`);
+  } else if ((req.files || []).length > MAX_LEGACY_UPDATE_FILES_PER_UPLOAD) {
+    throw new Error(`This plan allows up to ${MAX_LEGACY_UPDATE_FILES_PER_UPLOAD} files per upload`);
   }
 
   // Check if plan is closed

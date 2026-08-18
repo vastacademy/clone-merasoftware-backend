@@ -6,7 +6,7 @@ const getAllProductsController = async (req, res) => {
     // reappear in pickers that use this endpoint.
     const includeRetired = String(req.query?.includeRetired) === "true";
     const allProducts = await productModel
-      .find(includeRetired ? { archivedAt: null } : { retiredAt: null, archivedAt: null })
+      .find(includeRetired ? {} : { retiredAt: null })
       .sort({ createdAt: -1 });
 
     res.json({

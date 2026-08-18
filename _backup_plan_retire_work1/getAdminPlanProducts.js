@@ -10,19 +10,9 @@ const getAdminPlanProductsController = async (req, res) => {
       });
     }
 
-    // Retired plans are kept forever but stay out of the working list unless the
-    // admin explicitly asks for them (?includeRetired=true powers the Retired tab).
-    const includeRetired = String(req.query?.includeRetired) === "true";
-
     const plans = await productModel
-      .find({
-        $or: [{ category: "website_updates" }, { isServicePlan: true }],
-        // archivedAt: a "deleted forever" plan is gone from every list, including
-        // the Retired tab — the row survives only so its orders stay whole.
-        archivedAt: null,
-        ...(includeRetired ? {} : { retiredAt: null }),
-      })
-      .select("_id serviceName category isMonthlyRenewablePlan isMonthlyLimitedPlan validityPeriod updateCount isHidden isServicePlan servicePlan retiredAt archivedAt createdAt updatedAt")
+      .find({ $or: [{ category: "website_updates" }, { isServicePlan: true }] })
+      .select("_id serviceName category isMonthlyRenewablePlan isMonthlyLimitedPlan validityPeriod updateCount isHidden isServicePlan servicePlan createdAt updatedAt")
       .sort({ createdAt: -1 })
       .lean();
 

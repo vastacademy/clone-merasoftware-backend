@@ -489,12 +489,6 @@ const orderSchema = new mongoose.Schema({
         default: false
     },
     servicePlanSnapshot: {
-        // The plan's display name, frozen at purchase like every other snapshot
-        // field. Without this the order would depend on the catalog product row
-        // still existing just to render its own name — the one thing the rest of
-        // the snapshot was designed to avoid. A retired or deleted plan must never
-        // blank out a customer's purchase history.
-        serviceName: String,
         planType: String,
         limitScope: String,
         manualUnit: String,
@@ -511,7 +505,6 @@ const orderSchema = new mongoose.Schema({
         timing: String,
         dependency: String,
         capability: String,
-        purchaseType: String,
         monthlyReferencePrice: Number,
         billingOptions: [{
             billingCycle: String,

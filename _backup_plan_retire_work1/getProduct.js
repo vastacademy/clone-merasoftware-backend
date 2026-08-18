@@ -5,7 +5,7 @@ const getProductController = async (req,res)=>{
         
         // retiredAt: a retired plan is withdrawn for good and must never be sellable
         // again, even if something later flips isHidden back.
-        const allProduct = await productModel.find({ isHidden: false, retiredAt: null, archivedAt: null }).sort({ createdAt : -1 })
+        const allProduct = await productModel.find({ isHidden: false, retiredAt: null }).sort({ createdAt : -1 })
 
         res.json({
             message : "All Product",
