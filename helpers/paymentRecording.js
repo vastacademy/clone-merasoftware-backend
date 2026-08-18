@@ -1,6 +1,7 @@
 const invoiceModel = require("../models/invoiceModel");
 const transactionModel = require("../models/transactionModel");
 const generateInvoiceNumber = require("./generateInvoiceNumber");
+const { getOrderDisplayName } = require("./orderPresentation");
 
 const getOrderTotal = (order) =>
   Number(order?.totalAmount || order?.totalPrice || order?.price || 0);
@@ -16,7 +17,7 @@ const buildLineItemsFromOrder = (order) => {
       price: Number(item.finalPrice ?? item.originalPrice ?? 0),
     }));
   }
-  return [{ name: order?.productId?.serviceName || "Project", price: getOrderTotal(order) }];
+  return [{ name: getOrderDisplayName(order, "Project"), price: getOrderTotal(order) }];
 };
 
 // Shared payment-recording SSOT for admin-created / admin-approved custom projects.

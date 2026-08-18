@@ -141,8 +141,8 @@ const approveProjectOrder = async (req, res) => {
 
     const lineItems = buildLineItemsFromOrder(order);
 
-    // Every project order now gets an unpaid invoice at creation time (SSOT — see
-    // createOrder.js / customerCreateCustomProjectOrder.js), so this findOne normally
+    // Every new admin-created project order gets an unpaid invoice at creation time,
+    // so this findOne normally
     // succeeds. The create-if-missing branch below is a legacy safety net for orders
     // made before that change (until the Phase 3 backfill migration runs).
     let invoice = await invoiceModel

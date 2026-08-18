@@ -1,4 +1,5 @@
 const PDFDocument = require("pdfkit");
+const { getOrderDisplayName } = require("./orderPresentation");
 
 const money = (value) => `Rs ${Number(value || 0).toLocaleString("en-IN")}`;
 const date = (value) => (value ? new Date(value).toLocaleDateString("en-IN") : "—");
@@ -24,7 +25,7 @@ const generateProjectFinalInvoicePdf = ({ invoice, order, customer, transactions
     doc.fontSize(10).fillColor("#475569").text(`Invoice: ${invoice.invoiceNumber}`, 48, y);
     doc.text(`Updated: ${date(invoice.updatedAt || invoice.invoiceDate)}`, 360, y, { align: "right" });
     y += 28;
-    doc.fillColor("#0f172a").fontSize(11).text(`Project: ${order.productId?.serviceName || "Project"}`, 48, y);
+    doc.fillColor("#0f172a").fontSize(11).text(`Project: ${getOrderDisplayName(order, "Project")}`, 48, y);
     y += 17;
     doc.fontSize(10).fillColor("#475569").text(`Customer: ${customer.name || "Customer"} · ${customer.email || ""}`, 48, y);
     y += 34;

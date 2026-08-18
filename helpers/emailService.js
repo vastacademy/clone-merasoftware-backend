@@ -1,4 +1,5 @@
 const { Resend } = require('resend');
+const { getOrderDisplayName, getOrderCategory } = require('./orderPresentation');
 
 // Initialize Resend with API key
 const resend = new Resend(process.env.RESEND_API_KEY);
@@ -112,7 +113,7 @@ const sendDeveloperAssignedNotification = async (entity, type = 'update') => {
         <h2>Developer Has Been Assigned</h2>
         <p>Hello ${entity.userId.name},</p>
         <p>We're pleased to inform you that a developer has been assigned to your website project.</p>
-        <p><strong>Project:</strong> ${entity.productId.serviceName}</p>
+        <p><strong>Project:</strong> ${getOrderDisplayName(entity, 'Project')}</p>
         <p><strong>Developer:</strong> ${entity.assignedDeveloper.name}</p>
         <p>Your project is now in progress, and you'll receive further updates as work proceeds.</p>
         <p>Thank you for your patience!</p>
@@ -209,7 +210,7 @@ const sendDeveloperAssignmentEmail = async (entity, type = 'update') => {
         <p>Hello ${entity.assignedDeveloper.name},</p>
         <p>You have been assigned to work on a new website project.</p>
         <p><strong>Client:</strong> ${entity.userId.name} (${entity.userId.email})</p>
-        <p><strong>Service:</strong> ${entity.productId.serviceName}</p>
+        <p><strong>Service:</strong> ${getOrderDisplayName(entity, 'Project')}</p>
         
         <p>Please log into your developer dashboard to view the complete details and start working on this project.</p>
       `;
@@ -317,8 +318,8 @@ const sendPurchaseConfirmationEmail = async (order, paymentDetails) => {
             <p>Thank you for your purchase! We're excited to confirm your order details:</p>
             
             <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
-              <h2 style="margin-top: 0; color: #333;">${order.productId.serviceName}</h2>
-              <p><strong>Category:</strong> ${order.productId.category?.split('_').join(' ') || 'Service'}</p>
+              <h2 style="margin-top: 0; color: #333;">${getOrderDisplayName(order)}</h2>
+              <p><strong>Category:</strong> ${getOrderCategory(order, 'Service').split('_').join(' ')}</p>
               <p><strong>Quantity:</strong> ${order.quantity}</p>
               <p><strong>Original Price:</strong> ₹${originalPrice.toLocaleString()}</p>
               <p><strong>Coupon Applied:</strong> ${couponApplied}</p>
@@ -597,10 +598,10 @@ const generateInvoicePdf = async (order, paymentDetails) => {
       .lineTo(550, tableTop + 15)
       .stroke();
     
-    const productName = order.productId.serviceName;
+    const productName = getOrderDisplayName(order);
     const itemY = tableTop + 25;
     
-    doc.text(order.productId._id.toString().substring(0, 8), itemCodeX, itemY)
+    doc.text(String(order.productId?._id || order._id).substring(0, 8), itemCodeX, itemY)
       .text(productName, descriptionX, itemY)
       .text(order.quantity.toString(), quantityX, itemY)
       .text(`₹${order.price.toLocaleString()}`, priceX, itemY)
@@ -785,7 +786,7 @@ const sendPaymentRejectionEmail = async (user, transaction, order, rejectionReas
         <p>We regret to inform you that your payment for the following order has been rejected:</p>
         <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
           <h2 style="margin-top: 0; color: #333;">Order Details</h2>
-          <p><strong>Product:</strong> ${order.productId.serviceName}</p>
+          <p><strong>Product:</strong> ${getOrderDisplayName(order)}</p>
           <p><strong>Transaction ID:</strong> ${transaction.transactionId}</p>
           <p><strong>Amount:</strong> ₹${transaction.amount.toLocaleString()}</p>
           <p><strong>Date:</strong> ${new Date(transaction.date).toLocaleString()}</p>
@@ -1636,7 +1637,7 @@ const sendAdminPurchaseConfirmationEmail = async (order, paymentDetails) => {
     const emailData = {
       from: `${process.env.FROM_NAME || 'Mera Software'} <${process.env.FROM_EMAIL}>`,
       to: adminEmails,
-      subject: `🛒 New Purchase Confirmed - ${order.userId.name} - ${order.productId.serviceName}`,
+      subject: `🛒 New Purchase Confirmed - ${order.userId.name} - ${getOrderDisplayName(order)}`,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
           <div style="background-color: #4CAF50; color: white; padding: 20px; text-align: center;">
@@ -1654,8 +1655,8 @@ const sendAdminPurchaseConfirmationEmail = async (order, paymentDetails) => {
 
             <div style="background-color: #e8f5e9; padding: 15px; border-radius: 5px; margin: 20px 0;">
               <h2 style="margin-top: 0; color: #2e7d32;">Order Details</h2>
-              <p><strong>Product:</strong> ${order.productId.serviceName}</p>
-              <p><strong>Category:</strong> ${order.productId.category?.split('_').join(' ') || 'Service'}</p>
+              <p><strong>Product:</strong> ${getOrderDisplayName(order)}</p>
+              <p><strong>Category:</strong> ${getOrderCategory(order, 'Service').split('_').join(' ')}</p>
               <p><strong>Quantity:</strong> ${order.quantity}</p>
               <p><strong>Total Amount:</strong> ₹${order.price.toLocaleString()}</p>
               ${order.couponApplied ? `<p><strong>Coupon:</strong> ${order.couponApplied}</p>` : ''}
@@ -1754,8 +1755,8 @@ const sendAdminUPIPendingNotification = async (order) => {
 
             <div style="background-color: #e8f5e9; padding: 15px; border-radius: 5px; margin: 20px 0;">
               <h2 style="margin-top: 0; color: #2e7d32;">Order Details</h2>
-              <p><strong>Product:</strong> ${order.productId.serviceName}</p>
-              <p><strong>Category:</strong> ${order.productId.category?.split('_').join(' ') || 'Service'}</p>
+              <p><strong>Product:</strong> ${getOrderDisplayName(order)}</p>
+              <p><strong>Category:</strong> ${getOrderCategory(order, 'Service').split('_').join(' ')}</p>
               <p><strong>Quantity:</strong> ${order.quantity}</p>
               <p><strong>Order Amount:</strong> ₹${order.price.toLocaleString()}</p>
               ${order.couponApplied ? `<p><strong>Coupon:</strong> ${order.couponApplied}</p>` : ''}

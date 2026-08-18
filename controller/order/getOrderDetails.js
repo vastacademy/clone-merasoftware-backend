@@ -112,7 +112,7 @@ const getOrderDetails = async (req, res) => {
                 })
                 .sort({ createdAt: -1 })
                 .select([
-                    'productId orderItems orderVisibility createdAt',
+                    'productId projectSnapshot orderItems orderVisibility createdAt',
                     'servicePlanSnapshot servicePlanStartDate servicePlanEndDate',
                     'serviceCurrentCycleStart serviceCurrentCycleEnd',
                     'serviceAccessUsedInCycle serviceAccessUsedTotal servicePlanStatus',

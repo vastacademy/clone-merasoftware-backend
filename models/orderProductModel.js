@@ -201,6 +201,24 @@ const installmentSchema = new mongoose.Schema({
     }
 });
 
+// Frozen client-project contract. Unlike a catalogue product, a client project
+// belongs to exactly one order and must keep its agreed scope even if templates
+// or feature prices change later.
+const projectSnapshotSchema = new mongoose.Schema({
+    displayName: { type: String, trim: true },
+    category: { type: String, trim: true },
+    startingNodeTitle: { type: String, trim: true },
+    totalPages: Number,
+    basePrice: Number,
+    referenceTotal: Number,
+    finalPrice: Number,
+    features: [{
+        featureId: { type: mongoose.Schema.Types.ObjectId, ref: 'product' },
+        name: String,
+        price: Number
+    }]
+}, { _id: false });
+
 const orderSchema = new mongoose.Schema({
     userId: {
         type: mongoose.Schema.Types.ObjectId,
@@ -210,7 +228,11 @@ const orderSchema = new mongoose.Schema({
     productId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'product',
-        required: true
+        default: null
+    },
+    projectSnapshot: {
+        type: projectSnapshotSchema,
+        default: null
     },
     quantity: {
         type: Number,

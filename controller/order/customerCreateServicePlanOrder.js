@@ -23,8 +23,7 @@ const {
 } = require("../../helpers/servicePlanPurchase");
 
 // Customer-side purchase path for Service Plan products (category "service_plan").
-// Modelled directly on customerCreateCustomProjectOrder.js — same payment/approval
-// chain, same invoice SSOT — but a service plan has no project timeline, no
+// It follows the shared payment/approval chain and invoice SSOT, but a service plan has no project timeline, no
 // installments and no features. Instead it starts a validity window and its first
 // service cycle at purchase time.
 //

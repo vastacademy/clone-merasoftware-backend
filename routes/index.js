@@ -35,10 +35,8 @@ const DeleteBannerController = require('../controller/ads/deleteBanner')
 const DeleteCategoryController = require('../controller/product/deleteCategory')
 const updateUserProfileController = require('../controller/user/updateUserProfileController')
 const createOrder = require('../controller/order/createOrder')
-const customerCreateCustomProjectOrder = require('../controller/order/customerCreateCustomProjectOrder')
 const customerCreateServicePlanOrder = require('../controller/order/customerCreateServicePlanOrder')
 const customerCreateServicePlanOrdersBulk = require('../controller/order/customerCreateServicePlanOrdersBulk')
-const getCustomerCategoryBasePrice = require('../controller/order/getCustomerCategoryBasePrice')
 const adminRechargeWallet = require('../controller/user/adminRechargeWallet')
 const walletPayInstant = require('../controller/user/walletPayInstant')
 const getUserOrders = require('../controller/order/getUserOrder')
@@ -108,7 +106,6 @@ const hideProductController = require('../controller/product/hideProduct');
 const unhideProductController = require('../controller/product/unhideProduct');
 const getHiddenProductsController = require('../controller/product/getHiddenProducts');
 const getAllProductsController = require('../controller/product/getAllProducts');
-const getAdminProjectProductsController = require('../controller/product/getAdminProjectProducts');
 const getAdminPlanProductsController = require('../controller/product/getAdminPlanProducts');
 const getAdminFeatureProductsController = require('../controller/product/getAdminFeatureProducts');
 const createServicePlanController = require('../controller/product/createServicePlan');
@@ -116,11 +113,6 @@ const completeUserDetailsController = require('../controller/user/completeUserDe
 const updatePartnerCustomer = require('../controller/user/updatePartnerCustomer');
 const { addBankAccount, updateBankAccount, deleteBankAccount, getBankAccounts } = require('../controller/user/bankAccountController');
 const getUserKycStatusController = require('../controller/user/getUserKycStatusController');
-const {
-  searchPerfectForSuggestions,
-  saveOrIncrementPerfectForSuggestion,
-  deletePerfectForSuggestion
-} = require('../controller/product/perfectForSuggestionController');
 
 // New renewal system controllers
 const createRenewalOrder = require('../controller/order/createRenewalOrder');
@@ -182,7 +174,6 @@ router.get("/partner-customers", authToken, getPartnerCustomers);
 router.post("/signin", userSignInController);
 router.get("/general-users", getGeneralUsers);
 router.get("/admin/clients", authToken, getAdminClients);
-router.get("/admin/project-products", authToken, getAdminProjectProductsController);
 router.get("/admin/plan-products", authToken, getAdminPlanProductsController);
 router.get("/admin/feature-products", authToken, getAdminFeatureProductsController);
 router.post("/admin/services/create", authToken, createServicePlanController);
@@ -271,19 +262,14 @@ router.post("/hide-product", authToken, hideProductController);
 router.post("/unhide-product", authToken, unhideProductController);
 router.get("/get-hidden-products", authToken, getHiddenProductsController);
 router.get("/all-products", authToken, getAllProductsController);
-router.get("/perfect-for-suggestions", authToken, searchPerfectForSuggestions);
-router.post("/perfect-for-suggestions/save-or-increment", authToken, saveOrIncrementPerfectForSuggestion);
-router.delete("/perfect-for-suggestions/:id", authToken, deletePerfectForSuggestion);
 
 // payment and order
 router.post("/create-order", authToken, createOrder)
-router.post("/customer/custom-project-order", authToken, customerCreateCustomProjectOrder)
 // Service Plan purchase — standalone, or as an add-on attached to a project.
 // Single service: wallet, UPI or combined. Bulk: wallet only (doc 55 §10).
 router.post("/customer/service-plan-order", authToken, customerCreateServicePlanOrder)
 router.post("/customer/service-plan-orders-bulk", authToken, customerCreateServicePlanOrdersBulk)
 router.post("/customer/service-plan/stop-renewal", authToken, stopServiceRenewal)
-router.get("/customer/category-base-price", authToken, getCustomerCategoryBasePrice)
 router.post("/validate-update-plan", authToken, validateUpdatePlan)
 router.post("/toggle-update-plan", authToken, toggleUpdatePlan)
 

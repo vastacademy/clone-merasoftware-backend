@@ -1,6 +1,7 @@
 const notificationModel = require('../models/notificationModel');
 const userModel = require('../models/userModel');
 const mongoose = require('mongoose');
+const { getOrderDisplayName } = require('./orderPresentation');
 
 /**
  * Create a new notification
@@ -147,9 +148,9 @@ const createPurchaseNotification = async (order) => {
     let notificationMessage = '';
     
     if (order.isPartialPayment) {
-      notificationMessage = `Your first installment for ${order.productId.serviceName} has been processed successfully.`;
+      notificationMessage = `Your first installment for ${getOrderDisplayName(order)} has been processed successfully.`;
     } else {
-      notificationMessage = `Your purchase of ${order.productId.serviceName} has been completed successfully.`;
+      notificationMessage = `Your purchase of ${getOrderDisplayName(order)} has been completed successfully.`;
     }
     
     const notification = await createNotification({
@@ -215,7 +216,7 @@ const createPaymentRejectionNotification = async (user, transaction, order, reje
     
     if (order) {
       title = 'Order Payment Rejected';
-      message = `Your payment for ${order.productId.serviceName} has been rejected: ${rejectionReason}`;
+      message = `Your payment for ${getOrderDisplayName(order)} has been rejected: ${rejectionReason}`;
     } else {
       title = 'Wallet Recharge Rejected';
       message = `Your wallet recharge transaction of ₹${transaction.amount.toLocaleString()} has been rejected: ${rejectionReason}`;
@@ -264,7 +265,7 @@ const createProjectDeveloperAssignedNotification = async (project) => {
       userId: project.userId._id,
       type: 'project_developer_assigned',
       title: 'Developer Assigned',
-      message: `A developer (${project.assignedDeveloper.name}) has been assigned to your website project: ${project.productId.serviceName}.`,
+      message: `A developer (${project.assignedDeveloper.name}) has been assigned to your website project: ${getOrderDisplayName(project, 'Project')}.`,
       relatedId: project._id,
       onModel: 'OrderProduct',
       isAdmin: false
@@ -291,7 +292,7 @@ const createProjectDeveloperNotification = async (project) => {
       userId: project.assignedDeveloper._id,
       type: 'project_assigned',
       title: 'New Project Assignment',
-      message: `You have been assigned to a new website project: ${project.productId.serviceName} for client ${project.userId.name}.`,
+      message: `You have been assigned to a new website project: ${getOrderDisplayName(project, 'Project')} for client ${project.userId.name}.`,
       relatedId: project._id,
       onModel: 'OrderProduct',
       isAdmin: false
@@ -347,7 +348,7 @@ const createProjectMessageNotification = async (project, message) => {
       userId: project.userId._id,
       type: 'project_message',
       title: 'New Project Message',
-      message: `New message about ${project.productId.serviceName}: ${message.substring(0, 50)}${message.length > 50 ? '...' : ''}`,
+      message: `New message about ${getOrderDisplayName(project, 'Project')}: ${message.substring(0, 50)}${message.length > 50 ? '...' : ''}`,
       relatedId: project._id,
       onModel: 'OrderProduct',
       isAdmin: false

@@ -1,5 +1,5 @@
 const ORDER_SUMMARY_FIELDS = [
-  "userId productId price totalAmount status projectProgress currentPhase isActive updatesUsed",
+  "userId productId projectSnapshot orderItems isWebsiteProject price totalAmount status projectProgress currentPhase isActive updatesUsed",
   "totalYearlyDaysRemaining currentMonthExpiryDate autoRenewalStatus currentMonthUpdatesUsed",
   "currentMonthUpdatesLimit currentMonthUpdatesRemaining orderVisibility planStatus createdAt updatedAt",
 ].join(" ");

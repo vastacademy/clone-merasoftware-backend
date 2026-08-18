@@ -149,30 +149,14 @@ const adminCreateProjectOrderController = async (req, res) => {
     const featuresTotal = clientProjectFeatures.reduce((sum, feature) => sum + (feature.price || 0), 0);
     const referenceTotal = basePrice + featuresTotal;
 
-    const project = new productModel({
-      serviceName: CATEGORY_LABELS[category],
-      category,
-      startingNodeTitle: startingNodeTitle.trim(),
-      totalPages: totalPages || undefined,
-      price: referenceTotal,
-      sellingPrice: finalPrice,
-      clientProjectFeatures,
-      isHidden: true,
-      isCustomClientProject: true,
-    });
-
-    await project.save();
-
     const isPartialPayment = paymentType === "partial";
     // A project order must never be born `approved` without a real payment recorded. When admin
     // defers payment ("Just Add Project, Let Client Pay the Bill"), the order stays
-    // `pending-approval` — same state customerCreateCustomProjectOrder.js's decide_later path
-    // uses, and the same approveProjectOrder.js "record payment to approve" flow closes it out
+    // `pending-approval`; the same approveProjectOrder.js "record payment to approve" flow closes it out
     // later. Only when a payment IS recorded at creation time (shouldRecordPayment) is the order
     // born approved, right below where that payment actually gets settled.
     const orderData = {
       userId: customerId,
-      productId: project._id,
       price: finalPrice,
       totalAmount: finalPrice,
       orderVisibility: shouldRecordPayment ? "approved" : "pending-approval",
@@ -182,6 +166,20 @@ const adminCreateProjectOrderController = async (req, res) => {
       paidAmount: 0,
       remainingAmount: finalPrice,
       paymentComplete: false,
+      projectSnapshot: {
+        displayName: CATEGORY_LABELS[category],
+        category,
+        startingNodeTitle: startingNodeTitle.trim(),
+        totalPages: totalPages || undefined,
+        basePrice,
+        referenceTotal,
+        finalPrice,
+        features: clientProjectFeatures,
+      },
+      orderItems: [
+        { id: `project:${category}`, name: `${CATEGORY_LABELS[category]} (Base)`, type: "main", quantity: 1, originalPrice: basePrice, finalPrice: basePrice },
+        ...clientProjectFeatures.map((feature) => ({ id: String(feature.featureId), name: feature.name, type: "feature", quantity: 1, originalPrice: feature.price, finalPrice: feature.price })),
+      ],
     };
 
     if (isPartialPayment) {

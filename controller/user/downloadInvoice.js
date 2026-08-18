@@ -1,6 +1,7 @@
 const orderModel = require("../../models/orderProductModel");
 const PDFDocument = require('pdfkit');
 const mongoose = require('mongoose');
+const { getOrderDisplayName } = require('../../helpers/orderPresentation');
 
 const downloadInvoice = async (req, res) => {
   try {
@@ -80,7 +81,7 @@ const downloadInvoice = async (req, res) => {
       });
     } else {
       // Fallback if no order items
-      doc.text(order.productId?.serviceName || 'Service', 50, tableRow);
+      doc.text(getOrderDisplayName(order), 50, tableRow);
       doc.text('1', 250, tableRow);
       doc.text(`₹${order.price.toLocaleString()}`, 350, tableRow);
       doc.text(`₹${order.price.toLocaleString()}`, 450, tableRow);

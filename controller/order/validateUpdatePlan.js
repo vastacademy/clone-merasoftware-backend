@@ -1,6 +1,7 @@
 const Order = require('../../models/orderProductModel');
 const Product = require('../../models/productModel');
 const Category = require('../../models/categoryModel');
+const { getOrderCategory } = require('../../helpers/orderPresentation');
 
 const validateUpdatePlan = async (req, res) => {
   try {
@@ -31,7 +32,7 @@ const validateUpdatePlan = async (req, res) => {
 
     // Check for ongoing projects
     const ongoingProject = orders.find(order => {
-      const category = order.productId?.category;
+      const category = getOrderCategory(order);
       return (
         category &&
         ['standard_websites', 'dynamic_websites', 'cloud_software_development', 'app_development'].includes(category) &&
@@ -49,13 +50,13 @@ const validateUpdatePlan = async (req, res) => {
     // Get completed website projects - Now checking both progress and phase
     const completedProjects = orders.filter(order => {
       console.log('Checking order:', {
-        category: order.productId?.category,
+        category: getOrderCategory(order),
         progress: order.projectProgress,
         phase: order.currentPhase
       });
       
       return (
-        order.productId?.category === 'standard_websites' &&
+        getOrderCategory(order) === 'standard_websites' &&
         order.projectProgress === 100 &&
         order.currentPhase === 'completed'
       );
@@ -76,7 +77,7 @@ const validateUpdatePlan = async (req, res) => {
     )[0];
 
     // Verify if recent project was a standard website
-    const isStandardWebsite = recentProject.productId?.category === 'standard_websites';
+    const isStandardWebsite = getOrderCategory(recentProject) === 'standard_websites';
     
     if (!isStandardWebsite) {
       return res.status(400).json({

@@ -1,7 +1,7 @@
 // Migration: backfill an invoiceModel document for every PROJECT order that has none.
 //
 // Context (frontend/src/DOCS/47_...md, Phase 3): as of Phase 1, all three order-creation
-// paths (createOrder.js, customerCreateCustomProjectOrder.js, adminCreateProjectOrder.js)
+// paths (legacy createOrder.js and adminCreateProjectOrder.js)
 // create a project invoice at order time. Orders created BEFORE that change have no invoice,
 // so "invoice pending" state is missing for them. This script gives each such order the
 // invoice(s) it should have had, with status derived from the order's REAL paid state so
@@ -30,6 +30,7 @@ const mongoose = require("mongoose");
 const orderProductModel = require("../models/orderProductModel");
 const invoiceModel = require("../models/invoiceModel");
 const generateInvoiceNumber = require("../helpers/generateInvoiceNumber");
+const { getOrderDisplayName } = require("../helpers/orderPresentation");
 require("../models/userModel");
 require("../models/productModel");
 
@@ -45,7 +46,7 @@ const buildLineItems = (order) => {
       price: Number(item.finalPrice ?? item.originalPrice ?? 0),
     }));
   }
-  return [{ name: order?.productId?.serviceName || "Project", price: getOrderTotal(order) }];
+  return [{ name: getOrderDisplayName(order, "Project"), price: getOrderTotal(order) }];
 };
 
 // Returns the list of invoice specs (not yet persisted) this order should have.
@@ -126,7 +127,7 @@ const run = async () => {
   const plan = needBackfill.map((order) => ({
     orderId: order._id.toString(),
     customerEmail: order.userId?.email,
-    service: order.productId?.serviceName,
+    service: getOrderDisplayName(order, "Project"),
     total: getOrderTotal(order),
     isPartial: Boolean(order.isPartialPayment) && (order.installments || []).length > 0,
     invoices: planInvoicesForOrder(order).map((inv) => ({
