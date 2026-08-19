@@ -1,0 +1,581 @@
+[
+  {
+    "_id": "679a08519174d888c5ec6252",
+    "serviceName": "Food Menu Ordering App",
+    "category": "app_development",
+    "price": 180000,
+    "totalPages": 4
+  },
+  {
+    "_id": "67ab52027bc4940983e09b05",
+    "serviceName": "Portfolio Website",
+    "category": "standard_websites",
+    "price": 25500,
+    "totalPages": 7
+  },
+  {
+    "_id": "67ac6b2d68fca4c7241a3516",
+    "serviceName": "Restaurant Website",
+    "category": "standard_websites",
+    "price": 23000,
+    "totalPages": 5
+  },
+  {
+    "_id": "67ac6e2768fca4c7241a3539",
+    "serviceName": "Local Service Webiste",
+    "category": "standard_websites",
+    "price": 23000,
+    "totalPages": 5
+  },
+  {
+    "_id": "67ac74ff68fca4c7241a356a",
+    "serviceName": "Educational Website",
+    "category": "standard_websites",
+    "price": 70000,
+    "totalPages": 12
+  },
+  {
+    "_id": "67ac793d68fca4c7241a3585",
+    "serviceName": "Blogging Website",
+    "category": "dynamic_websites",
+    "price": 80000,
+    "totalPages": 4
+  },
+  {
+    "_id": "67ac7a8468fca4c7241a3594",
+    "serviceName": "Ecommerce Website",
+    "category": "dynamic_websites",
+    "price": 250000,
+    "totalPages": 4
+  },
+  {
+    "_id": "67ac7b9c68fca4c7241a35c8",
+    "serviceName": "Appointment Booking Website",
+    "category": "dynamic_websites",
+    "price": 210000,
+    "totalPages": 4
+  },
+  {
+    "_id": "67ac7c8768fca4c7241a35d9",
+    "serviceName": "Food Ordering Website",
+    "category": "dynamic_websites",
+    "price": 190000,
+    "totalPages": 4
+  },
+  {
+    "_id": "67ac812268fca4c7241a365e",
+    "serviceName": "Learning Management System",
+    "category": "cloud_software_development",
+    "price": 340000,
+    "totalPages": 4
+  },
+  {
+    "_id": "67ac823268fca4c7241a3685",
+    "serviceName": "Inventory Management System",
+    "category": "cloud_software_development",
+    "price": 420000,
+    "totalPages": 4
+  },
+  {
+    "_id": "67c878cea50cbea802709710",
+    "serviceName": "Ecommerce App",
+    "category": "app_development",
+    "price": 200000,
+    "totalPages": 4
+  },
+  {
+    "_id": "67c87aa6a50cbea802709935",
+    "serviceName": "Booking App",
+    "category": "app_development",
+    "price": 150000,
+    "totalPages": 4
+  },
+  {
+    "_id": "67c87bb7a50cbea80270998a",
+    "serviceName": "Local Delivery App",
+    "category": "app_development",
+    "price": 200000,
+    "totalPages": 4
+  },
+  {
+    "_id": "67c8832da50cbea802709ba2",
+    "serviceName": "Membership & Subscription App",
+    "category": "app_development",
+    "price": 200000,
+    "totalPages": 4
+  },
+  {
+    "_id": "67c8874aa50cbea802709edc",
+    "serviceName": "CMS",
+    "category": "cloud_software_development",
+    "price": 240000,
+    "totalPages": 4
+  },
+  {
+    "_id": "67ca8f78b74653ac7d14d6de",
+    "serviceName": "College Website ",
+    "category": "standard_websites",
+    "price": 70000,
+    "totalPages": 21
+  },
+  {
+    "_id": "67d2a1abbdaae3123b9e9428",
+    "serviceName": "CRM",
+    "category": "cloud_software_development",
+    "price": 240000,
+    "totalPages": 4
+  },
+  {
+    "_id": "67e3be7f2f1de688ecac56e5",
+    "serviceName": "CRM Based CMS",
+    "category": "cloud_software_development",
+    "price": 280000,
+    "totalPages": 4
+  },
+  {
+    "_id": "6a625e49a0928df0c6172fe9",
+    "serviceName": "test website ",
+    "category": "dynamic_websites",
+    "startingNodeTitle": "starting ",
+    "price": 5000,
+    "totalPages": 4
+  },
+  {
+    "_id": "6a6308fca249f9b86e9ef189",
+    "serviceName": "test software",
+    "category": "cloud_software_development",
+    "startingNodeTitle": "starting test ",
+    "price": 10000
+  },
+  {
+    "_id": "6a743ef62f88080ced6b8ad0",
+    "serviceName": "Standard Website",
+    "category": "standard_websites",
+    "startingNodeTitle": "Collectin Documentation",
+    "price": 19497,
+    "totalPages": 5,
+    "clientProjectFeatures": [
+      {
+        "featureId": "67a8a783c46161fd031d6ec4",
+        "name": "Live Chat",
+        "price": 4999,
+        "_id": "6a743ef62f88080ced6b8ad1"
+      },
+      {
+        "featureId": "67a8a84cc46161fd031d6fc6",
+        "name": "Dynamic Page with Panel  ",
+        "price": 3999,
+        "_id": "6a743ef62f88080ced6b8ad2"
+      },
+      {
+        "featureId": "67a8ab65c46161fd031d714e",
+        "name": "Dynamic Gallery",
+        "price": 7999,
+        "_id": "6a743ef62f88080ced6b8ad3"
+      }
+    ]
+  },
+  {
+    "_id": "6a782282bea4ca73203061b9",
+    "serviceName": "Standard Website",
+    "category": "standard_websites",
+    "startingNodeTitle": "Laddu da project",
+    "price": 35497,
+    "totalPages": 6,
+    "clientProjectFeatures": [
+      {
+        "featureId": "67a8a67fc46161fd031d6dc2",
+        "name": "User Management",
+        "price": 25999,
+        "_id": "6a782282bea4ca73203061ba"
+      },
+      {
+        "featureId": "67a8a783c46161fd031d6ec4",
+        "name": "Live Chat",
+        "price": 4999,
+        "_id": "6a782282bea4ca73203061bb"
+      },
+      {
+        "featureId": "67ab511c7bc4940983e09ac9",
+        "name": "Add New Page",
+        "price": 1999,
+        "_id": "6a782282bea4ca73203061bc"
+      }
+    ]
+  },
+  {
+    "_id": "6a788efc540522c3ada35689",
+    "serviceName": "Static Website",
+    "category": "standard_websites",
+    "startingNodeTitle": "website working started",
+    "price": 10496,
+    "totalPages": 4,
+    "clientProjectFeatures": [
+      {
+        "featureId": "67ab511c7bc4940983e09ac9",
+        "name": "Add New Page (4 pages)",
+        "price": 7996,
+        "_id": "6a788efc540522c3ada3568a"
+      }
+    ]
+  },
+  {
+    "_id": "6a788f23540522c3ada35694",
+    "serviceName": "Static Website",
+    "category": "standard_websites",
+    "startingNodeTitle": "website working started",
+    "price": 10496,
+    "totalPages": 4,
+    "clientProjectFeatures": [
+      {
+        "featureId": "67ab511c7bc4940983e09ac9",
+        "name": "Add New Page (4 pages)",
+        "price": 7996,
+        "_id": "6a788f23540522c3ada35695"
+      }
+    ]
+  },
+  {
+    "_id": "6a78b27fc81ebff9fec36c47",
+    "serviceName": "Dynamic Website",
+    "category": "dynamic_websites",
+    "startingNodeTitle": "Project Started",
+    "price": 55997,
+    "totalPages": 4,
+    "clientProjectFeatures": [
+      {
+        "featureId": "67a8a67fc46161fd031d6dc2",
+        "name": "User Management",
+        "price": 25999,
+        "_id": "6a78b27fc81ebff9fec36c48"
+      },
+      {
+        "featureId": "67a8a704c46161fd031d6e43",
+        "name": "Payment Gateway",
+        "price": 9999,
+        "_id": "6a78b27fc81ebff9fec36c49"
+      },
+      {
+        "featureId": "67a8a783c46161fd031d6ec4",
+        "name": "Live Chat",
+        "price": 4999,
+        "_id": "6a78b27fc81ebff9fec36c4a"
+      }
+    ]
+  },
+  {
+    "_id": "6a78b51cc81ebff9fec36d87",
+    "serviceName": "Dynamic Website",
+    "category": "dynamic_websites",
+    "startingNodeTitle": "Project Started",
+    "price": 19999,
+    "totalPages": 4,
+    "clientProjectFeatures": [
+      {
+        "featureId": "67a8a783c46161fd031d6ec4",
+        "name": "Live Chat",
+        "price": 4999,
+        "_id": "6a78b51cc81ebff9fec36d88"
+      }
+    ]
+  },
+  {
+    "_id": "6a7ab6aa863c085446162461",
+    "serviceName": "Dynamic Website",
+    "category": "dynamic_websites",
+    "startingNodeTitle": "Project Started",
+    "price": 45998,
+    "totalPages": 4,
+    "clientProjectFeatures": [
+      {
+        "featureId": "67a8a67fc46161fd031d6dc2",
+        "name": "User Management",
+        "price": 25999,
+        "_id": "6a7ab6aa863c085446162462"
+      },
+      {
+        "featureId": "67a8a783c46161fd031d6ec4",
+        "name": "Live Chat",
+        "price": 4999,
+        "_id": "6a7ab6aa863c085446162463"
+      }
+    ]
+  },
+  {
+    "_id": "6a7c7fbc1dbaee779ced775a",
+    "serviceName": "Static Website",
+    "category": "standard_websites",
+    "startingNodeTitle": "website working started",
+    "price": 18495,
+    "totalPages": 4,
+    "clientProjectFeatures": [
+      {
+        "featureId": "67a8ab65c46161fd031d714e",
+        "name": "Dynamic Gallery",
+        "price": 7999,
+        "_id": "6a7c7fbc1dbaee779ced775b"
+      },
+      {
+        "featureId": "67ab511c7bc4940983e09ac9",
+        "name": "Add New Page (4 pages)",
+        "price": 7996,
+        "_id": "6a7c7fbc1dbaee779ced775c"
+      }
+    ]
+  },
+  {
+    "_id": "6a7c800a1dbaee779ced776d",
+    "serviceName": "Static Website",
+    "category": "standard_websites",
+    "startingNodeTitle": "website working started",
+    "price": 18495,
+    "totalPages": 4,
+    "clientProjectFeatures": [
+      {
+        "featureId": "67a8ab65c46161fd031d714e",
+        "name": "Dynamic Gallery",
+        "price": 7999,
+        "_id": "6a7c800a1dbaee779ced776e"
+      },
+      {
+        "featureId": "67ab511c7bc4940983e09ac9",
+        "name": "Add New Page (4 pages)",
+        "price": 7996,
+        "_id": "6a7c800a1dbaee779ced776f"
+      }
+    ]
+  },
+  {
+    "_id": "6a7c80ac1dbaee779ced777e",
+    "serviceName": "Static Website",
+    "category": "standard_websites",
+    "startingNodeTitle": "website working started",
+    "price": 18495,
+    "totalPages": 4,
+    "clientProjectFeatures": [
+      {
+        "featureId": "67a8ab65c46161fd031d714e",
+        "name": "Dynamic Gallery",
+        "price": 7999,
+        "_id": "6a7c80ac1dbaee779ced777f"
+      },
+      {
+        "featureId": "67ab511c7bc4940983e09ac9",
+        "name": "Add New Page (4 pages)",
+        "price": 7996,
+        "_id": "6a7c80ac1dbaee779ced7780"
+      }
+    ]
+  },
+  {
+    "_id": "6a7c9995e6840c69aa3b7348",
+    "serviceName": "Static Website",
+    "category": "standard_websites",
+    "startingNodeTitle": "website working started",
+    "price": 16493,
+    "totalPages": 7,
+    "clientProjectFeatures": [
+      {
+        "featureId": "67ab511c7bc4940983e09ac9",
+        "name": "Add New Page (7 pages)",
+        "price": 13993,
+        "_id": "6a7c9995e6840c69aa3b7349"
+      }
+    ]
+  },
+  {
+    "_id": "6a7efcf3d6d8ee847855f8fb",
+    "serviceName": "Dynamic Website",
+    "category": "dynamic_websites",
+    "startingNodeTitle": "Project Started",
+    "price": 15000,
+    "totalPages": 4,
+    "clientProjectFeatures": []
+  },
+  {
+    "_id": "6a7efebc22823f34fdd8d1db",
+    "serviceName": "Dynamic Website",
+    "category": "dynamic_websites",
+    "startingNodeTitle": "Project Started",
+    "price": 15000,
+    "totalPages": 4,
+    "clientProjectFeatures": []
+  },
+  {
+    "_id": "6a7f1cdda6bd59a07e22518c",
+    "serviceName": "Static Website",
+    "category": "standard_websites",
+    "startingNodeTitle": "website working started",
+    "price": 10496,
+    "totalPages": 4,
+    "clientProjectFeatures": [
+      {
+        "featureId": "67ab511c7bc4940983e09ac9",
+        "name": "Add New Page (4 pages)",
+        "price": 7996,
+        "_id": "6a7f1cdda6bd59a07e22518d"
+      }
+    ]
+  },
+  {
+    "_id": "6a7f222ea6bd59a07e225484",
+    "serviceName": "Dynamic Website",
+    "category": "dynamic_websites",
+    "startingNodeTitle": "Project Started",
+    "price": 15000,
+    "totalPages": 4,
+    "clientProjectFeatures": []
+  },
+  {
+    "_id": "6a7f25f8a6bd59a07e2255ce",
+    "serviceName": "Dynamic Website",
+    "category": "dynamic_websites",
+    "startingNodeTitle": "Project Started",
+    "price": 15000,
+    "totalPages": 4,
+    "clientProjectFeatures": []
+  },
+  {
+    "_id": "6a7f29b7a6bd59a07e22593c",
+    "serviceName": "Standard Website",
+    "category": "standard_websites",
+    "startingNodeTitle": "Project start",
+    "price": 2500,
+    "totalPages": 4,
+    "clientProjectFeatures": []
+  },
+  {
+    "_id": "6a7f42c3c1a0b9089c60e0dc",
+    "serviceName": "Dynamic Website",
+    "category": "dynamic_websites",
+    "startingNodeTitle": "Project Started",
+    "price": 15000,
+    "totalPages": 4,
+    "clientProjectFeatures": []
+  },
+  {
+    "_id": "6a7f4439c1a0b9089c60e1c8",
+    "serviceName": "Dynamic Website",
+    "category": "dynamic_websites",
+    "startingNodeTitle": "Project Started",
+    "price": 15000,
+    "totalPages": 4,
+    "clientProjectFeatures": []
+  },
+  {
+    "_id": "6a7f44d8c1a0b9089c60e309",
+    "serviceName": "Dynamic Website",
+    "category": "dynamic_websites",
+    "startingNodeTitle": "Project Started",
+    "price": 15000,
+    "totalPages": 4,
+    "clientProjectFeatures": []
+  },
+  {
+    "_id": "6a7f4575c1a0b9089c60e40f",
+    "serviceName": "Static Website",
+    "category": "standard_websites",
+    "startingNodeTitle": "website working started",
+    "price": 10496,
+    "totalPages": 4,
+    "clientProjectFeatures": [
+      {
+        "featureId": "67ab511c7bc4940983e09ac9",
+        "name": "Add New Page (4 pages)",
+        "price": 7996,
+        "_id": "6a7f4575c1a0b9089c60e410"
+      }
+    ]
+  },
+  {
+    "_id": "6a7f46a3c1a0b9089c60e678",
+    "serviceName": "Static Website",
+    "category": "standard_websites",
+    "startingNodeTitle": "website working started",
+    "price": 10496,
+    "totalPages": 4,
+    "clientProjectFeatures": [
+      {
+        "featureId": "67ab511c7bc4940983e09ac9",
+        "name": "Add New Page (4 pages)",
+        "price": 7996,
+        "_id": "6a7f46a3c1a0b9089c60e679"
+      }
+    ]
+  },
+  {
+    "_id": "6a7fe99d41269e76259d2fdd",
+    "serviceName": "Dynamic Website",
+    "category": "dynamic_websites",
+    "startingNodeTitle": "Project Started",
+    "price": 15000,
+    "totalPages": 4,
+    "clientProjectFeatures": []
+  },
+  {
+    "_id": "6a801b74b868f8e122c0cf2e",
+    "serviceName": "Dynamic Website",
+    "category": "dynamic_websites",
+    "startingNodeTitle": "Project Started",
+    "price": 15000,
+    "totalPages": 4,
+    "clientProjectFeatures": []
+  },
+  {
+    "_id": "6a802c84bdc6fac31528bb80",
+    "serviceName": "Static Website",
+    "category": "standard_websites",
+    "startingNodeTitle": "website working started",
+    "price": 10496,
+    "totalPages": 4,
+    "clientProjectFeatures": [
+      {
+        "featureId": "67ab511c7bc4940983e09ac9",
+        "name": "Add New Page (4 pages)",
+        "price": 7996,
+        "_id": "6a802c84bdc6fac31528bb81"
+      }
+    ]
+  },
+  {
+    "_id": "6a8049edbfa39acf49716fc1",
+    "serviceName": "Static Website",
+    "category": "standard_websites",
+    "startingNodeTitle": "website working started",
+    "price": 10496,
+    "totalPages": 4,
+    "clientProjectFeatures": [
+      {
+        "featureId": "67ab511c7bc4940983e09ac9",
+        "name": "Add New Page (4 pages)",
+        "price": 7996,
+        "_id": "6a8049edbfa39acf49716fc2"
+      }
+    ]
+  },
+  {
+    "_id": "6a80773a615f7b5b318eed05",
+    "serviceName": "Static Website",
+    "category": "standard_websites",
+    "startingNodeTitle": "website working started",
+    "price": 10496,
+    "totalPages": 4,
+    "clientProjectFeatures": [
+      {
+        "featureId": "67ab511c7bc4940983e09ac9",
+        "name": "Add New Page (4 pages)",
+        "price": 7996,
+        "_id": "6a80773a615f7b5b318eed06"
+      }
+    ]
+  },
+  {
+    "_id": "6a82953c1892c07beca8278e",
+    "serviceName": "Dynamic Website",
+    "category": "dynamic_websites",
+    "startingNodeTitle": "Project Started",
+    "price": 15000,
+    "totalPages": 4,
+    "clientProjectFeatures": []
+  }
+]

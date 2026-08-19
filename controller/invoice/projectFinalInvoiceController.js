@@ -8,7 +8,7 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 const loadFinalInvoice = async (invoiceId) => {
   const invoice = await invoiceModel.findOne({ _id: invoiceId, invoiceType: "project_final" })
     .populate("userId", "name email")
-    .populate({ path: "orderId", populate: { path: "productId", select: "serviceName" } });
+    .populate({ path: "orderId", select: "productId projectSnapshot servicePlanSnapshot orderItems", populate: { path: "productId", select: "serviceName" } });
   if (!invoice) {
     const error = new Error("Final project invoice not found");
     error.statusCode = 404;

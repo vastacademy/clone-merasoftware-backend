@@ -59,19 +59,17 @@ const getAdminUserWorkspace = async (req, res) => {
       transactionModel
         .find({ userId: customerObjectId })
         .select("transactionId upiTransactionId amount status type sourceType paymentMethod invoiceId orderId installmentNumber date createdAt rejectionReason")
-        .populate({ path: "orderId", populate: { path: "productId", select: "serviceName" } })
+        .populate({ path: "orderId", select: "productId projectSnapshot servicePlanSnapshot orderItems", populate: { path: "productId", select: "serviceName" } })
         .sort({ createdAt: -1 }),
       monthlyInvoiceModel
         .find({ userId: customerObjectId })
         .select("orderId invoiceNumber amount status invoiceDate dueDate paidDate paymentMethod transactionReference createdAt")
-        .populate("orderId", "productId")
-        .populate({ path: "orderId", populate: { path: "productId", select: "serviceName" } })
+        .populate({ path: "orderId", select: "productId projectSnapshot servicePlanSnapshot orderItems", populate: { path: "productId", select: "serviceName" } })
         .sort({ createdAt: -1 }),
       invoiceModel
         .find({ userId: customerObjectId })
         .select("orderId invoiceNumber invoiceType amount amountPaid status invoiceDate dueDate paidDate installmentNumber lineItems paymentMethod transactionReference createdAt updatedAt")
-        .populate("orderId", "productId")
-        .populate({ path: "orderId", populate: { path: "productId", select: "serviceName" } })
+        .populate({ path: "orderId", select: "productId projectSnapshot servicePlanSnapshot orderItems", populate: { path: "productId", select: "serviceName" } })
         .sort({ createdAt: -1 }),
       updateRequestModel.aggregate([
         { $match: { userId: customerObjectId } },

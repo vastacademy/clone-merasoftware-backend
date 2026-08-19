@@ -1,0 +1,941 @@
+[
+  {
+    "order": {
+      "_id": "67ca900eb74653ac7d14d96a",
+      "productId": "67ca8f78b74653ac7d14d6de",
+      "price": 30000,
+      "isWebsiteProject": true,
+      "createdAt": "2024-07-07T06:19:58.416Z",
+      "orderItems": []
+    },
+    "product": {
+      "_id": "67ca8f78b74653ac7d14d6de",
+      "serviceName": "College Website ",
+      "category": "standard_websites",
+      "price": 70000,
+      "totalPages": 21
+    }
+  },
+  {
+    "order": {
+      "_id": "67e52b857f45d6d5e3eab02d",
+      "productId": "67e3be7f2f1de688ecac56e5",
+      "price": 12000,
+      "originalPrice": 115900,
+      "isWebsiteProject": true,
+      "totalAmount": 40000,
+      "orderItems": [
+        {
+          "id": "67e3be7f2f1de688ecac56e5",
+          "name": "CRM Based CMS",
+          "type": "main",
+          "quantity": 1,
+          "originalPrice": 115900,
+          "finalPrice": 115900,
+          "additionalQuantity": 0,
+          "_id": "67e52b857f45d6d5e3eab045"
+        }
+      ],
+      "createdAt": "2025-03-26T12:11:07.361Z"
+    },
+    "product": {
+      "_id": "67e3be7f2f1de688ecac56e5",
+      "serviceName": "CRM Based CMS",
+      "category": "cloud_software_development",
+      "price": 280000,
+      "totalPages": 4
+    }
+  },
+  {
+    "order": {
+      "_id": "68d290eabedcbebe30d512ea",
+      "productId": "67ac793d68fca4c7241a3585",
+      "price": 35000,
+      "originalPrice": 35000,
+      "isWebsiteProject": true,
+      "orderItems": [
+        {
+          "id": "67ac793d68fca4c7241a3585",
+          "name": "Blogging Website",
+          "type": "main",
+          "quantity": 1,
+          "originalPrice": 35000,
+          "finalPrice": 35000,
+          "additionalQuantity": 0,
+          "_id": "68d290eabedcbebe30d512f3"
+        }
+      ],
+      "createdAt": "2025-09-23T12:22:02.386Z"
+    },
+    "product": {
+      "_id": "67ac793d68fca4c7241a3585",
+      "serviceName": "Blogging Website",
+      "category": "dynamic_websites",
+      "price": 80000,
+      "totalPages": 4
+    }
+  },
+  {
+    "order": {
+      "_id": "68d3adb2bcc4dfda07074f90",
+      "productId": "67ac6b2d68fca4c7241a3516",
+      "price": 8999,
+      "originalPrice": 8999,
+      "isWebsiteProject": true,
+      "orderItems": [
+        {
+          "id": "67ac6b2d68fca4c7241a3516",
+          "name": "Restaurant Website",
+          "type": "main",
+          "quantity": 1,
+          "originalPrice": 8999,
+          "finalPrice": 8999,
+          "additionalQuantity": 0,
+          "_id": "68d3adb2bcc4dfda07074f9a"
+        }
+      ],
+      "createdAt": "2025-09-24T08:37:06.488Z"
+    },
+    "product": {
+      "_id": "67ac6b2d68fca4c7241a3516",
+      "serviceName": "Restaurant Website",
+      "category": "standard_websites",
+      "price": 23000,
+      "totalPages": 5
+    }
+  },
+  {
+    "order": {
+      "_id": "69f24a556f8943f2c409d213",
+      "productId": "67ac6e2768fca4c7241a3539",
+      "price": 0,
+      "originalPrice": 8999,
+      "isWebsiteProject": true,
+      "orderItems": [
+        {
+          "id": "67ac6e2768fca4c7241a3539",
+          "name": "Local Service Webiste",
+          "type": "main",
+          "quantity": 1,
+          "originalPrice": 8999,
+          "finalPrice": 8999,
+          "additionalQuantity": 0,
+          "_id": "69f24a556f8943f2c409d21d"
+        }
+      ],
+      "createdAt": "2026-04-29T18:13:41.866Z"
+    },
+    "product": {
+      "_id": "67ac6e2768fca4c7241a3539",
+      "serviceName": "Local Service Webiste",
+      "category": "standard_websites",
+      "price": 23000,
+      "totalPages": 5
+    }
+  },
+  {
+    "order": {
+      "_id": "6a0b0f8a23826b27e82ef44a",
+      "productId": "67ac6b2d68fca4c7241a3516",
+      "price": 8999,
+      "originalPrice": 8999,
+      "isWebsiteProject": true,
+      "orderItems": [
+        {
+          "id": "67ac6b2d68fca4c7241a3516",
+          "name": "Restaurant Website",
+          "type": "main",
+          "quantity": 1,
+          "originalPrice": 8999,
+          "finalPrice": 8999,
+          "additionalQuantity": 0,
+          "_id": "6a0b0f8a23826b27e82ef454"
+        }
+      ],
+      "createdAt": "2026-05-18T13:09:30.428Z"
+    },
+    "product": {
+      "_id": "67ac6b2d68fca4c7241a3516",
+      "serviceName": "Restaurant Website",
+      "category": "standard_websites",
+      "price": 23000,
+      "totalPages": 5
+    }
+  },
+  {
+    "order": {
+      "_id": "6a0b5d1823826b27e82f59cd",
+      "productId": "67ac6e2768fca4c7241a3539",
+      "price": 8999,
+      "originalPrice": 8999,
+      "isWebsiteProject": true,
+      "orderItems": [
+        {
+          "id": "67ac6e2768fca4c7241a3539",
+          "name": "Local Service Webiste",
+          "type": "main",
+          "quantity": 1,
+          "originalPrice": 8999,
+          "finalPrice": 8999,
+          "additionalQuantity": 0,
+          "_id": "6a0b5d1823826b27e82f59d7"
+        }
+      ],
+      "createdAt": "2026-05-18T18:40:24.640Z"
+    },
+    "product": {
+      "_id": "67ac6e2768fca4c7241a3539",
+      "serviceName": "Local Service Webiste",
+      "category": "standard_websites",
+      "price": 23000,
+      "totalPages": 5
+    }
+  },
+  {
+    "order": {
+      "_id": "6a0bf0af23826b27e82f866c",
+      "productId": "67ac6b2d68fca4c7241a3516",
+      "price": 8999,
+      "originalPrice": 8999,
+      "isWebsiteProject": true,
+      "orderItems": [
+        {
+          "id": "67ac6b2d68fca4c7241a3516",
+          "name": "Restaurant Website",
+          "type": "main",
+          "quantity": 1,
+          "originalPrice": 8999,
+          "finalPrice": 8999,
+          "additionalQuantity": 0,
+          "_id": "6a0bf0af23826b27e82f8676"
+        }
+      ],
+      "createdAt": "2026-05-19T05:10:07.140Z"
+    },
+    "product": {
+      "_id": "67ac6b2d68fca4c7241a3516",
+      "serviceName": "Restaurant Website",
+      "category": "standard_websites",
+      "price": 23000,
+      "totalPages": 5
+    }
+  },
+  {
+    "order": {
+      "_id": "6a1010706c1884b60d505dea",
+      "productId": "67ac6b2d68fca4c7241a3516",
+      "price": 8999,
+      "originalPrice": 8999,
+      "isWebsiteProject": true,
+      "orderItems": [
+        {
+          "id": "67ac6b2d68fca4c7241a3516",
+          "name": "Restaurant Website",
+          "type": "main",
+          "quantity": 1,
+          "originalPrice": 8999,
+          "finalPrice": 8999,
+          "additionalQuantity": 0,
+          "_id": "6a1010706c1884b60d505df4"
+        }
+      ],
+      "createdAt": "2026-05-22T08:14:40.298Z"
+    },
+    "product": {
+      "_id": "67ac6b2d68fca4c7241a3516",
+      "serviceName": "Restaurant Website",
+      "category": "standard_websites",
+      "price": 23000,
+      "totalPages": 5
+    }
+  },
+  {
+    "order": {
+      "_id": "6a743ef62f88080ced6b8ade",
+      "productId": "6a743ef62f88080ced6b8ad0",
+      "price": 6500,
+      "originalPrice": null,
+      "isWebsiteProject": true,
+      "totalAmount": 6500,
+      "orderItems": [],
+      "createdAt": "2026-08-06T07:59:50.525Z"
+    },
+    "product": {
+      "_id": "6a743ef62f88080ced6b8ad0",
+      "serviceName": "Standard Website",
+      "category": "standard_websites",
+      "startingNodeTitle": "Collectin Documentation",
+      "price": 19497,
+      "totalPages": 5,
+      "clientProjectFeatures": [
+        {
+          "featureId": "67a8a783c46161fd031d6ec4",
+          "name": "Live Chat",
+          "price": 4999,
+          "_id": "6a743ef62f88080ced6b8ad1"
+        },
+        {
+          "featureId": "67a8a84cc46161fd031d6fc6",
+          "name": "Dynamic Page with Panel  ",
+          "price": 3999,
+          "_id": "6a743ef62f88080ced6b8ad2"
+        },
+        {
+          "featureId": "67a8ab65c46161fd031d714e",
+          "name": "Dynamic Gallery",
+          "price": 7999,
+          "_id": "6a743ef62f88080ced6b8ad3"
+        }
+      ]
+    }
+  },
+  {
+    "order": {
+      "_id": "6a788efc540522c3ada3568c",
+      "productId": "6a788efc540522c3ada35689",
+      "price": 10496,
+      "originalPrice": 10496,
+      "isWebsiteProject": true,
+      "totalAmount": 10496,
+      "orderItems": [
+        {
+          "id": "6a788efc540522c3ada35689",
+          "name": "Static Website (Base)",
+          "type": "main",
+          "quantity": 1,
+          "originalPrice": 2500,
+          "finalPrice": 2500,
+          "additionalQuantity": 0,
+          "_id": "6a788efc540522c3ada3568f"
+        },
+        {
+          "id": "67ab511c7bc4940983e09ac9",
+          "name": "Add New Page (4 pages)",
+          "type": "feature",
+          "quantity": 1,
+          "originalPrice": 7996,
+          "finalPrice": 7996,
+          "additionalQuantity": 0,
+          "_id": "6a788efc540522c3ada35690"
+        }
+      ],
+      "createdAt": "2026-08-09T14:30:20.750Z"
+    },
+    "product": {
+      "_id": "6a788efc540522c3ada35689",
+      "serviceName": "Static Website",
+      "category": "standard_websites",
+      "startingNodeTitle": "website working started",
+      "price": 10496,
+      "totalPages": 4,
+      "clientProjectFeatures": [
+        {
+          "featureId": "67ab511c7bc4940983e09ac9",
+          "name": "Add New Page (4 pages)",
+          "price": 7996,
+          "_id": "6a788efc540522c3ada3568a"
+        }
+      ]
+    }
+  },
+  {
+    "order": {
+      "_id": "6a788f23540522c3ada35697",
+      "productId": "6a788f23540522c3ada35694",
+      "price": 10496,
+      "originalPrice": 10496,
+      "isWebsiteProject": true,
+      "totalAmount": 10496,
+      "orderItems": [
+        {
+          "id": "6a788f23540522c3ada35694",
+          "name": "Static Website (Base)",
+          "type": "main",
+          "quantity": 1,
+          "originalPrice": 2500,
+          "finalPrice": 2500,
+          "additionalQuantity": 0,
+          "_id": "6a788f23540522c3ada3569b"
+        },
+        {
+          "id": "67ab511c7bc4940983e09ac9",
+          "name": "Add New Page (4 pages)",
+          "type": "feature",
+          "quantity": 1,
+          "originalPrice": 7996,
+          "finalPrice": 7996,
+          "additionalQuantity": 0,
+          "_id": "6a788f23540522c3ada3569c"
+        }
+      ],
+      "createdAt": "2026-08-09T14:30:59.873Z"
+    },
+    "product": {
+      "_id": "6a788f23540522c3ada35694",
+      "serviceName": "Static Website",
+      "category": "standard_websites",
+      "startingNodeTitle": "website working started",
+      "price": 10496,
+      "totalPages": 4,
+      "clientProjectFeatures": [
+        {
+          "featureId": "67ab511c7bc4940983e09ac9",
+          "name": "Add New Page (4 pages)",
+          "price": 7996,
+          "_id": "6a788f23540522c3ada35695"
+        }
+      ]
+    }
+  },
+  {
+    "order": {
+      "_id": "6a7ab6aa863c085446162465",
+      "productId": "6a7ab6aa863c085446162461",
+      "price": 45998,
+      "originalPrice": 45998,
+      "isWebsiteProject": true,
+      "totalAmount": 45998,
+      "orderItems": [
+        {
+          "id": "6a7ab6aa863c085446162461",
+          "name": "Dynamic Website (Base)",
+          "type": "main",
+          "quantity": 1,
+          "originalPrice": 15000,
+          "finalPrice": 15000,
+          "additionalQuantity": 0,
+          "_id": "6a7ab6aa863c085446162466"
+        },
+        {
+          "id": "67a8a67fc46161fd031d6dc2",
+          "name": "User Management",
+          "type": "feature",
+          "quantity": 1,
+          "originalPrice": 25999,
+          "finalPrice": 25999,
+          "additionalQuantity": 0,
+          "_id": "6a7ab6aa863c085446162467"
+        },
+        {
+          "id": "67a8a783c46161fd031d6ec4",
+          "name": "Live Chat",
+          "type": "feature",
+          "quantity": 1,
+          "originalPrice": 4999,
+          "finalPrice": 4999,
+          "additionalQuantity": 0,
+          "_id": "6a7ab6aa863c085446162468"
+        }
+      ],
+      "createdAt": "2026-08-11T05:44:10.478Z"
+    },
+    "product": {
+      "_id": "6a7ab6aa863c085446162461",
+      "serviceName": "Dynamic Website",
+      "category": "dynamic_websites",
+      "startingNodeTitle": "Project Started",
+      "price": 45998,
+      "totalPages": 4,
+      "clientProjectFeatures": [
+        {
+          "featureId": "67a8a67fc46161fd031d6dc2",
+          "name": "User Management",
+          "price": 25999,
+          "_id": "6a7ab6aa863c085446162462"
+        },
+        {
+          "featureId": "67a8a783c46161fd031d6ec4",
+          "name": "Live Chat",
+          "price": 4999,
+          "_id": "6a7ab6aa863c085446162463"
+        }
+      ]
+    }
+  },
+  {
+    "order": {
+      "_id": "6a7c9995e6840c69aa3b734b",
+      "productId": "6a7c9995e6840c69aa3b7348",
+      "price": 16493,
+      "originalPrice": 16493,
+      "isWebsiteProject": true,
+      "totalAmount": 16493,
+      "orderItems": [
+        {
+          "id": "6a7c9995e6840c69aa3b7348",
+          "name": "Static Website (Base)",
+          "type": "main",
+          "quantity": 1,
+          "originalPrice": 2500,
+          "finalPrice": 2500,
+          "additionalQuantity": 0,
+          "_id": "6a7c9995e6840c69aa3b734c"
+        },
+        {
+          "id": "67ab511c7bc4940983e09ac9",
+          "name": "Add New Page (7 pages)",
+          "type": "feature",
+          "quantity": 1,
+          "originalPrice": 13993,
+          "finalPrice": 13993,
+          "additionalQuantity": 0,
+          "_id": "6a7c9995e6840c69aa3b734d"
+        }
+      ],
+      "createdAt": "2026-08-12T16:04:37.951Z"
+    },
+    "product": {
+      "_id": "6a7c9995e6840c69aa3b7348",
+      "serviceName": "Static Website",
+      "category": "standard_websites",
+      "startingNodeTitle": "website working started",
+      "price": 16493,
+      "totalPages": 7,
+      "clientProjectFeatures": [
+        {
+          "featureId": "67ab511c7bc4940983e09ac9",
+          "name": "Add New Page (7 pages)",
+          "price": 13993,
+          "_id": "6a7c9995e6840c69aa3b7349"
+        }
+      ]
+    }
+  },
+  {
+    "order": {
+      "_id": "6a7f42c3c1a0b9089c60e0de",
+      "productId": "6a7f42c3c1a0b9089c60e0dc",
+      "price": 15000,
+      "originalPrice": 15000,
+      "isWebsiteProject": true,
+      "totalAmount": 15000,
+      "orderItems": [
+        {
+          "id": "6a7f42c3c1a0b9089c60e0dc",
+          "name": "Dynamic Website (Base)",
+          "type": "main",
+          "quantity": 1,
+          "originalPrice": 15000,
+          "finalPrice": 15000,
+          "additionalQuantity": 0,
+          "_id": "6a7f42c3c1a0b9089c60e0df"
+        }
+      ],
+      "createdAt": "2026-08-14T16:30:59.826Z"
+    },
+    "product": {
+      "_id": "6a7f42c3c1a0b9089c60e0dc",
+      "serviceName": "Dynamic Website",
+      "category": "dynamic_websites",
+      "startingNodeTitle": "Project Started",
+      "price": 15000,
+      "totalPages": 4,
+      "clientProjectFeatures": []
+    }
+  },
+  {
+    "order": {
+      "_id": "6a7f4439c1a0b9089c60e1ca",
+      "productId": "6a7f4439c1a0b9089c60e1c8",
+      "price": 15000,
+      "originalPrice": 15000,
+      "isWebsiteProject": true,
+      "totalAmount": 15000,
+      "orderItems": [
+        {
+          "id": "6a7f4439c1a0b9089c60e1c8",
+          "name": "Dynamic Website (Base)",
+          "type": "main",
+          "quantity": 1,
+          "originalPrice": 15000,
+          "finalPrice": 15000,
+          "additionalQuantity": 0,
+          "_id": "6a7f4439c1a0b9089c60e1cb"
+        }
+      ],
+      "createdAt": "2026-08-14T16:37:13.735Z"
+    },
+    "product": {
+      "_id": "6a7f4439c1a0b9089c60e1c8",
+      "serviceName": "Dynamic Website",
+      "category": "dynamic_websites",
+      "startingNodeTitle": "Project Started",
+      "price": 15000,
+      "totalPages": 4,
+      "clientProjectFeatures": []
+    }
+  },
+  {
+    "order": {
+      "_id": "6a7f44d9c1a0b9089c60e30b",
+      "productId": "6a7f44d8c1a0b9089c60e309",
+      "price": 15000,
+      "originalPrice": 15000,
+      "isWebsiteProject": true,
+      "totalAmount": 15000,
+      "orderItems": [
+        {
+          "id": "6a7f44d8c1a0b9089c60e309",
+          "name": "Dynamic Website (Base)",
+          "type": "main",
+          "quantity": 1,
+          "originalPrice": 15000,
+          "finalPrice": 15000,
+          "additionalQuantity": 0,
+          "_id": "6a7f44d9c1a0b9089c60e30c"
+        }
+      ],
+      "createdAt": "2026-08-14T16:39:53.228Z"
+    },
+    "product": {
+      "_id": "6a7f44d8c1a0b9089c60e309",
+      "serviceName": "Dynamic Website",
+      "category": "dynamic_websites",
+      "startingNodeTitle": "Project Started",
+      "price": 15000,
+      "totalPages": 4,
+      "clientProjectFeatures": []
+    }
+  },
+  {
+    "order": {
+      "_id": "6a7f4575c1a0b9089c60e412",
+      "productId": "6a7f4575c1a0b9089c60e40f",
+      "price": 10496,
+      "originalPrice": 10496,
+      "isWebsiteProject": true,
+      "totalAmount": 10496,
+      "orderItems": [
+        {
+          "id": "6a7f4575c1a0b9089c60e40f",
+          "name": "Static Website (Base)",
+          "type": "main",
+          "quantity": 1,
+          "originalPrice": 2500,
+          "finalPrice": 2500,
+          "additionalQuantity": 0,
+          "_id": "6a7f4575c1a0b9089c60e415"
+        },
+        {
+          "id": "67ab511c7bc4940983e09ac9",
+          "name": "Add New Page (4 pages)",
+          "type": "feature",
+          "quantity": 1,
+          "originalPrice": 7996,
+          "finalPrice": 7996,
+          "additionalQuantity": 0,
+          "_id": "6a7f4575c1a0b9089c60e416"
+        }
+      ],
+      "createdAt": "2026-08-14T16:42:29.322Z"
+    },
+    "product": {
+      "_id": "6a7f4575c1a0b9089c60e40f",
+      "serviceName": "Static Website",
+      "category": "standard_websites",
+      "startingNodeTitle": "website working started",
+      "price": 10496,
+      "totalPages": 4,
+      "clientProjectFeatures": [
+        {
+          "featureId": "67ab511c7bc4940983e09ac9",
+          "name": "Add New Page (4 pages)",
+          "price": 7996,
+          "_id": "6a7f4575c1a0b9089c60e410"
+        }
+      ]
+    }
+  },
+  {
+    "order": {
+      "_id": "6a7f46a3c1a0b9089c60e67b",
+      "productId": "6a7f46a3c1a0b9089c60e678",
+      "price": 10496,
+      "originalPrice": 10496,
+      "isWebsiteProject": true,
+      "totalAmount": 10496,
+      "orderItems": [
+        {
+          "id": "6a7f46a3c1a0b9089c60e678",
+          "name": "Static Website (Base)",
+          "type": "main",
+          "quantity": 1,
+          "originalPrice": 2500,
+          "finalPrice": 2500,
+          "additionalQuantity": 0,
+          "_id": "6a7f46a3c1a0b9089c60e67c"
+        },
+        {
+          "id": "67ab511c7bc4940983e09ac9",
+          "name": "Add New Page (4 pages)",
+          "type": "feature",
+          "quantity": 1,
+          "originalPrice": 7996,
+          "finalPrice": 7996,
+          "additionalQuantity": 0,
+          "_id": "6a7f46a3c1a0b9089c60e67d"
+        }
+      ],
+      "createdAt": "2026-08-14T16:47:31.611Z"
+    },
+    "product": {
+      "_id": "6a7f46a3c1a0b9089c60e678",
+      "serviceName": "Static Website",
+      "category": "standard_websites",
+      "startingNodeTitle": "website working started",
+      "price": 10496,
+      "totalPages": 4,
+      "clientProjectFeatures": [
+        {
+          "featureId": "67ab511c7bc4940983e09ac9",
+          "name": "Add New Page (4 pages)",
+          "price": 7996,
+          "_id": "6a7f46a3c1a0b9089c60e679"
+        }
+      ]
+    }
+  },
+  {
+    "order": {
+      "_id": "6a7fe99d41269e76259d2fdf",
+      "productId": "6a7fe99d41269e76259d2fdd",
+      "price": 15000,
+      "originalPrice": 15000,
+      "isWebsiteProject": true,
+      "totalAmount": 15000,
+      "orderItems": [
+        {
+          "id": "6a7fe99d41269e76259d2fdd",
+          "name": "Dynamic Website (Base)",
+          "type": "main",
+          "quantity": 1,
+          "originalPrice": 15000,
+          "finalPrice": 15000,
+          "additionalQuantity": 0,
+          "_id": "6a7fe99d41269e76259d2fe0"
+        }
+      ],
+      "createdAt": "2026-08-15T04:22:53.940Z"
+    },
+    "product": {
+      "_id": "6a7fe99d41269e76259d2fdd",
+      "serviceName": "Dynamic Website",
+      "category": "dynamic_websites",
+      "startingNodeTitle": "Project Started",
+      "price": 15000,
+      "totalPages": 4,
+      "clientProjectFeatures": []
+    }
+  },
+  {
+    "order": {
+      "_id": "6a801b74b868f8e122c0cf30",
+      "productId": "6a801b74b868f8e122c0cf2e",
+      "price": 15000,
+      "originalPrice": 15000,
+      "isWebsiteProject": true,
+      "totalAmount": 15000,
+      "orderItems": [
+        {
+          "id": "6a801b74b868f8e122c0cf2e",
+          "name": "Dynamic Website (Base)",
+          "type": "main",
+          "quantity": 1,
+          "originalPrice": 15000,
+          "finalPrice": 15000,
+          "additionalQuantity": 0,
+          "_id": "6a801b74b868f8e122c0cf33"
+        }
+      ],
+      "createdAt": "2026-08-15T07:55:32.977Z"
+    },
+    "product": {
+      "_id": "6a801b74b868f8e122c0cf2e",
+      "serviceName": "Dynamic Website",
+      "category": "dynamic_websites",
+      "startingNodeTitle": "Project Started",
+      "price": 15000,
+      "totalPages": 4,
+      "clientProjectFeatures": []
+    }
+  },
+  {
+    "order": {
+      "_id": "6a802c85bdc6fac31528bb83",
+      "productId": "6a802c84bdc6fac31528bb80",
+      "price": 10496,
+      "originalPrice": 10496,
+      "isWebsiteProject": true,
+      "totalAmount": 10496,
+      "orderItems": [
+        {
+          "id": "6a802c84bdc6fac31528bb80",
+          "name": "Static Website (Base)",
+          "type": "main",
+          "quantity": 1,
+          "originalPrice": 2500,
+          "finalPrice": 2500,
+          "additionalQuantity": 0,
+          "_id": "6a802c85bdc6fac31528bb87"
+        },
+        {
+          "id": "67ab511c7bc4940983e09ac9",
+          "name": "Add New Page (4 pages)",
+          "type": "feature",
+          "quantity": 1,
+          "originalPrice": 7996,
+          "finalPrice": 7996,
+          "additionalQuantity": 0,
+          "_id": "6a802c85bdc6fac31528bb88"
+        }
+      ],
+      "createdAt": "2026-08-15T09:08:21.026Z"
+    },
+    "product": {
+      "_id": "6a802c84bdc6fac31528bb80",
+      "serviceName": "Static Website",
+      "category": "standard_websites",
+      "startingNodeTitle": "website working started",
+      "price": 10496,
+      "totalPages": 4,
+      "clientProjectFeatures": [
+        {
+          "featureId": "67ab511c7bc4940983e09ac9",
+          "name": "Add New Page (4 pages)",
+          "price": 7996,
+          "_id": "6a802c84bdc6fac31528bb81"
+        }
+      ]
+    }
+  },
+  {
+    "order": {
+      "_id": "6a8049eebfa39acf49716fc4",
+      "productId": "6a8049edbfa39acf49716fc1",
+      "price": 10496,
+      "originalPrice": 10496,
+      "isWebsiteProject": true,
+      "totalAmount": 10496,
+      "orderItems": [
+        {
+          "id": "6a8049edbfa39acf49716fc1",
+          "name": "Static Website (Base)",
+          "type": "main",
+          "quantity": 1,
+          "originalPrice": 2500,
+          "finalPrice": 2500,
+          "additionalQuantity": 0,
+          "_id": "6a8049eebfa39acf49716fc7"
+        },
+        {
+          "id": "67ab511c7bc4940983e09ac9",
+          "name": "Add New Page (4 pages)",
+          "type": "feature",
+          "quantity": 1,
+          "originalPrice": 7996,
+          "finalPrice": 7996,
+          "additionalQuantity": 0,
+          "_id": "6a8049eebfa39acf49716fc8"
+        }
+      ],
+      "createdAt": "2026-08-15T11:13:50.061Z"
+    },
+    "product": {
+      "_id": "6a8049edbfa39acf49716fc1",
+      "serviceName": "Static Website",
+      "category": "standard_websites",
+      "startingNodeTitle": "website working started",
+      "price": 10496,
+      "totalPages": 4,
+      "clientProjectFeatures": [
+        {
+          "featureId": "67ab511c7bc4940983e09ac9",
+          "name": "Add New Page (4 pages)",
+          "price": 7996,
+          "_id": "6a8049edbfa39acf49716fc2"
+        }
+      ]
+    }
+  },
+  {
+    "order": {
+      "_id": "6a80773a615f7b5b318eed08",
+      "productId": "6a80773a615f7b5b318eed05",
+      "price": 10496,
+      "originalPrice": 10496,
+      "isWebsiteProject": true,
+      "totalAmount": 10496,
+      "orderItems": [
+        {
+          "id": "6a80773a615f7b5b318eed05",
+          "name": "Static Website (Base)",
+          "type": "main",
+          "quantity": 1,
+          "originalPrice": 2500,
+          "finalPrice": 2500,
+          "additionalQuantity": 0,
+          "_id": "6a80773a615f7b5b318eed0c"
+        },
+        {
+          "id": "67ab511c7bc4940983e09ac9",
+          "name": "Add New Page (4 pages)",
+          "type": "feature",
+          "quantity": 1,
+          "originalPrice": 7996,
+          "finalPrice": 7996,
+          "additionalQuantity": 0,
+          "_id": "6a80773a615f7b5b318eed0d"
+        }
+      ],
+      "createdAt": "2026-08-15T14:27:06.506Z"
+    },
+    "product": {
+      "_id": "6a80773a615f7b5b318eed05",
+      "serviceName": "Static Website",
+      "category": "standard_websites",
+      "startingNodeTitle": "website working started",
+      "price": 10496,
+      "totalPages": 4,
+      "clientProjectFeatures": [
+        {
+          "featureId": "67ab511c7bc4940983e09ac9",
+          "name": "Add New Page (4 pages)",
+          "price": 7996,
+          "_id": "6a80773a615f7b5b318eed06"
+        }
+      ]
+    }
+  },
+  {
+    "order": {
+      "_id": "6a82953c1892c07beca82790",
+      "productId": "6a82953c1892c07beca8278e",
+      "price": 15000,
+      "originalPrice": 15000,
+      "isWebsiteProject": true,
+      "totalAmount": 15000,
+      "orderItems": [
+        {
+          "id": "6a82953c1892c07beca8278e",
+          "name": "Dynamic Website (Base)",
+          "type": "main",
+          "quantity": 1,
+          "originalPrice": 15000,
+          "finalPrice": 15000,
+          "additionalQuantity": 0,
+          "_id": "6a82953c1892c07beca82794"
+        }
+      ],
+      "createdAt": "2026-08-17T04:59:40.876Z"
+    },
+    "product": {
+      "_id": "6a82953c1892c07beca8278e",
+      "serviceName": "Dynamic Website",
+      "category": "dynamic_websites",
+      "startingNodeTitle": "Project Started",
+      "price": 15000,
+      "totalPages": 4,
+      "clientProjectFeatures": []
+    }
+  }
+]

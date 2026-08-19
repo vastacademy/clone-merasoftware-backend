@@ -27,18 +27,17 @@ const getMyPaymentWorkspace = async (req, res) => {
       transactionModel
         .find({ userId: customerObjectId })
         .select("transactionId upiTransactionId amount status type sourceType paymentMethod invoiceId orderId date createdAt rejectionReason")
+        .populate({ path: "orderId", select: "productId projectSnapshot servicePlanSnapshot orderItems", populate: { path: "productId", select: "serviceName" } })
         .sort({ createdAt: -1 }),
       monthlyInvoiceModel
         .find({ userId: customerObjectId })
         .select("orderId invoiceNumber amount status invoiceDate dueDate paidDate paymentMethod transactionReference createdAt")
-        .populate("orderId", "productId")
-        .populate({ path: "orderId", populate: { path: "productId", select: "serviceName" } })
+        .populate({ path: "orderId", select: "productId projectSnapshot servicePlanSnapshot orderItems", populate: { path: "productId", select: "serviceName" } })
         .sort({ createdAt: -1 }),
       invoiceModel
         .find({ userId: customerObjectId })
         .select("orderId invoiceNumber invoiceType amount status invoiceDate dueDate paidDate installmentNumber lineItems paymentMethod transactionReference createdAt")
-        .populate("orderId", "productId")
-        .populate({ path: "orderId", populate: { path: "productId", select: "serviceName" } })
+        .populate({ path: "orderId", select: "productId projectSnapshot servicePlanSnapshot orderItems", populate: { path: "productId", select: "serviceName" } })
         .sort({ createdAt: -1 }),
     ]);
 
