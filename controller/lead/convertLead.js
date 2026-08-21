@@ -2,6 +2,7 @@ const bcrypt = require("bcryptjs");
 const leadModel = require("../../models/leadModel");
 const userModel = require("../../models/userModel");
 const { STORE_PLAIN_PASSWORD } = require("../../config/accessControlConfig");
+const { executeGuestCascadeDelete } = require("../../helpers/guestCascadeDelete");
 
 // Universal default password given to a converted lead. The customer is
 // prompted to set their own on first login (mustResetPassword flag).
@@ -55,14 +56,28 @@ const convertLeadController = async (req, res) => {
       });
     }
 
-    // Existing-user guard (same email cannot become a second account).
-    const existingUser = await userModel.findOne({ email: cleanEmail }).lean();
+    // Existing-user guard (same email cannot become a second account) — unless
+    // the existing user IS this lead's own live guest account. A guest shares
+    // its lead's exact email/phone (requirement of the guest login system), so
+    // without this exception every guest-originated lead would be wrongly
+    // rejected here as "already exists". The guest account is cascade-deleted
+    // before the real account is created below, since userModel.email has a
+    // hard unique index — both cannot exist at once.
+    const existingUser = await userModel.findOne({ email: cleanEmail });
     if (existingUser) {
-      return res.status(409).json({
-        message: "A user with this email already exists. Cannot convert.",
-        error: true,
-        success: false,
-      });
+      const isOwnGuest =
+        lead.guestUserId && String(existingUser._id) === String(lead.guestUserId);
+
+      if (!isOwnGuest) {
+        return res.status(409).json({
+          message: "A user with this email already exists. Cannot convert.",
+          error: true,
+          success: false,
+        });
+      }
+
+      await executeGuestCascadeDelete(existingUser._id);
+      lead.guestUserId = null;
     }
 
     // Reuse the same hashing approach as userSignUp.

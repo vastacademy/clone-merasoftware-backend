@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken')
+const userModel = require('../models/userModel')
 
 async function authToken(req, res, next) {
     try {
@@ -41,7 +42,16 @@ async function authToken(req, res, next) {
                     success: false
                 });
             }
-            
+
+            // Guest inactivity clock: only guests carry lastActivityAt, so this
+            // adds a DB write only for guest requests, not every request.
+            userModel.updateOne(
+                { _id: req.userId, isGuest: true },
+                { $set: { lastActivityAt: new Date() } }
+            ).catch((updateErr) => {
+                console.error("Failed to refresh guest lastActivityAt:", updateErr.message);
+            });
+
             next();
         });
         

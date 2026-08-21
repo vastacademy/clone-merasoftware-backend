@@ -128,6 +128,24 @@ const userSchema = new mongoose.Schema({
         ref: 'user',
         default: null
     },
+    // Guest login system. isGuest flags a temporary, fully-functional demo
+    // account (same models as a real customer). guestLeadId links back to the
+    // leadModel record created alongside it. lastActivityAt drives 24h-inactivity
+    // expiry (refreshed on every authenticated request); a guest with no activity
+    // for 24h and no live chess game is cascade-deleted, but its lead is kept.
+    isGuest: {
+        type: Boolean,
+        default: false
+    },
+    guestLeadId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'lead',
+        default: null
+    },
+    lastActivityAt: {
+        type: Date,
+        default: null
+    },
     walletBalance: {
         type: Number,
         default: 0    

@@ -4,6 +4,7 @@ const updateRequestModel = require("../../models/updateRequestModel");
 const transactionModel = require("../../models/transactionModel");
 const monthlyInvoiceModel = require("../../models/monthlyInvoiceModel");
 const ticketModel = require("../../models/ticketModel");
+const purgeExpiredGuests = require("../../helpers/purgeExpiredGuests");
 
 const toTimestamp = (value) => {
   const timestamp = value ? new Date(value).getTime() : NaN;
@@ -116,8 +117,12 @@ async function getAdminClients(req, res) {
       });
     }
 
+    // Lazy purge, same pattern as controller/trash/getTrash.js: opening this
+    // list is what opportunistically cleans up expired guest accounts.
+    await purgeExpiredGuests();
+
     const clients = await userModel
-      .find({ roles: "customer", deletedAt: null })
+      .find({ roles: "customer", deletedAt: null, isGuest: { $ne: true } })
       .select("name email phone status createdAt")
       .lean();
 

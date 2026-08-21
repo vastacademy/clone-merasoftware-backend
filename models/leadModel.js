@@ -140,6 +140,15 @@ const leadSchema = new mongoose.Schema({
     ref: "user",
     default: null,
   },
+  // Set while a live temporary guest account (userModel.isGuest) exists for this
+  // lead. Cleared (not the lead itself) once the guest expires or is converted.
+  // Deliberately separate from convertedToUserId: that field means "permanently
+  // converted, Won" while this one means "a still-alive, possibly-expiring guest."
+  guestUserId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "user",
+    default: null,
+  },
   // Soft-delete (Trash system). null = active/visible as before; a date = in Trash
   // (hidden from lead lists/search), permanently purged 30 days later. Restore
   // clears it back to null. Additive + default null so existing leads are unaffected.

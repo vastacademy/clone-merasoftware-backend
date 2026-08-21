@@ -86,6 +86,8 @@ const { downloadProjectFinalInvoice, viewProjectFinalInvoice, resendProjectFinal
 const getCategoryBasePricesController = require('../controller/admin/getCategoryBasePrices');
 const updateCategoryBasePriceController = require('../controller/admin/updateCategoryBasePrice');
 const createLeadController = require('../controller/lead/createLead');
+const guestLoginController = require('../controller/user/guestLogin');
+const guestDummyWalletCreditController = require('../controller/user/guestDummyWalletCredit');
 const getLeadsController = require('../controller/lead/getLeads');
 const getLeadDetailController = require('../controller/lead/getLeadDetail');
 const updateLeadController = require('../controller/lead/updateLead');
@@ -171,6 +173,8 @@ const upload = multer({
 
 //user
 router.post("/signup", userSignUpController);
+router.post("/guest-login", guestLoginController);
+router.post("/guest/demo-wallet-credit", authToken, guestDummyWalletCreditController);
 
 router.get("/partner-customers", authToken, getPartnerCustomers);
 router.post("/signin", userSignInController);
