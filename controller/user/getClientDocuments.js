@@ -1,7 +1,7 @@
 const buildClientDocumentsTimeline = require("../../helpers/clientDocumentsTimeline");
 
 // Customer-facing: returns every admin-sent document for the logged-in client in
-// one newest-first timeline (userModel.documents[] + converted-lead proposals[]).
+// one newest-first timeline (userModel.documents[] + converted-lead files).
 // The merge logic lives in the shared helper so the admin side returns the exact
 // same shape. This endpoint only reads; it owns no data. Nothing but admin-sent
 // files appears here.
