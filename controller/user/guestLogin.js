@@ -5,8 +5,7 @@ const crypto = require("crypto");
 const userModel = require("../../models/userModel");
 const leadModel = require("../../models/leadModel");
 const purgeExpiredGuests = require("../../helpers/purgeExpiredGuests");
-
-const GUEST_INACTIVITY_MS = 24 * 60 * 60 * 1000;
+const { findIdentityMatch } = require("../../helpers/guestIdentityMatch");
 
 const issueLoginCookie = (res, user) => {
   const tokenData = { _id: user._id, email: user.email, role: "customer" };
@@ -42,51 +41,59 @@ const guestLoginController = async (req, res) => {
     }
 
     // Opportunistic cleanup before deciding create-vs-resume, so an expired
-    // guest matching this email/phone doesn't get treated as still-alive.
+    // guest matching this email/phone is already gone before the identity
+    // check below runs (an expired guest must not block a fresh signup).
     await purgeExpiredGuests();
 
-    const cutoff = new Date(Date.now() - GUEST_INACTIVITY_MS);
+    // Identity-safety check: never auto-login into a REAL customer's account
+    // (no password was collected here), and never guess when only one of
+    // email/phone matches something (ambiguous — could be a different
+    // person). Only an exact email+phone match on a live guest resumes.
+    const match = await findIdentityMatch(cleanEmail, cleanPhone);
 
-    // Cross-device resume: same person (email AND phone both match) with a
-    // still-alive guest account resumes it instead of getting a new one.
-    const existingLead = await leadModel.findOne({
-      source: "guest",
-      email: cleanEmail,
-      phone: cleanPhone,
-      guestUserId: { $ne: null },
-    });
-
-    if (existingLead?.guestUserId) {
-      const existingGuest = await userModel.findOne({
-        _id: existingLead.guestUserId,
-        isGuest: true,
-        $or: [{ lastActivityAt: { $gte: cutoff } }, { lastActivityAt: null, createdAt: { $gte: cutoff } }],
+    if (match.type === "real_user") {
+      return res.status(409).json({
+        message: "This email or phone is already registered. Please sign in with your password.",
+        outcomeType: "real_user",
+        error: true,
+        success: false,
       });
-
-      if (existingGuest) {
-        existingGuest.lastActivityAt = new Date();
-        await existingGuest.save();
-        issueLoginCookie(res, existingGuest);
-
-        return res.status(200).json({
-          message: "Guest session resumed",
-          data: {
-            user: {
-              _id: existingGuest._id,
-              name: existingGuest.name,
-              email: existingGuest.email,
-              role: "customer",
-              isGuest: true,
-            },
-            walletBalance: existingGuest.walletBalance,
-          },
-          success: true,
-          error: false,
-        });
-      }
     }
 
-    // No live guest to resume — create a fresh lead + guest account together.
+    if (match.type === "conflict") {
+      return res.status(409).json({
+        message: "This email or phone is already in use.",
+        outcomeType: "conflict",
+        error: true,
+        success: false,
+      });
+    }
+
+    if (match.type === "guest_resume") {
+      const existingGuest = match.guestUser;
+      existingGuest.lastActivityAt = new Date();
+      await existingGuest.save();
+      issueLoginCookie(res, existingGuest);
+
+      return res.status(200).json({
+        message: "Guest session resumed",
+        outcomeType: "guest_resume",
+        data: {
+          user: {
+            _id: existingGuest._id,
+            name: existingGuest.name,
+            email: existingGuest.email,
+            role: "customer",
+            isGuest: true,
+          },
+          walletBalance: existingGuest.walletBalance,
+        },
+        success: true,
+        error: false,
+      });
+    }
+
+    // match.type === "none" — no live guest to resume, create a fresh lead + guest account together.
     const session = await mongoose.startSession();
     try {
       session.startTransaction();
@@ -132,6 +139,7 @@ const guestLoginController = async (req, res) => {
 
       return res.status(201).json({
         message: "Guest account created",
+        outcomeType: "created",
         data: {
           user: {
             _id: guestUser._id,
