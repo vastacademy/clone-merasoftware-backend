@@ -6,6 +6,8 @@ const userModel = require("../../models/userModel");
 const leadModel = require("../../models/leadModel");
 const purgeExpiredGuests = require("../../helpers/purgeExpiredGuests");
 const { findIdentityMatch } = require("../../helpers/guestIdentityMatch");
+const { creditWalletInstant } = require("../../helpers/transactionService");
+const { GUEST_DEMO_CREDIT_AMOUNT } = require("../../config/guestDemoConfig");
 
 const issueLoginCookie = (res, user) => {
   const tokenData = { _id: user._id, email: user.email, role: "customer" };
@@ -135,6 +137,26 @@ const guestLoginController = async (req, res) => {
 
       await session.commitTransaction();
 
+      // Auto-credit demo wallet money right after the account exists, so a
+      // guest can explore the full portal (create a project, buy a service,
+      // pay an invoice) without ever needing admin approval — a
+      // wallet-covered purchase is approved instantly by the existing
+      // payment engine. Runs after commit (its own atomic guard already
+      // lives inside creditWalletInstant, no need to nest transactions).
+      let walletBalance = guestUser.walletBalance;
+      try {
+        const { newBalance } = await creditWalletInstant({
+          userId: guestUser._id,
+          transactionId: `GUEST-SIGNUP-${guestUser._id}`,
+          amount: GUEST_DEMO_CREDIT_AMOUNT,
+          paymentMethod: "demo",
+          description: "Guest demo wallet credit (not real money)",
+        });
+        walletBalance = newBalance;
+      } catch (creditError) {
+        console.error("Failed to auto-credit new guest wallet:", creditError.message);
+      }
+
       issueLoginCookie(res, guestUser);
 
       return res.status(201).json({
@@ -148,7 +170,7 @@ const guestLoginController = async (req, res) => {
             role: "customer",
             isGuest: true,
           },
-          walletBalance: guestUser.walletBalance,
+          walletBalance,
         },
         success: true,
         error: false,

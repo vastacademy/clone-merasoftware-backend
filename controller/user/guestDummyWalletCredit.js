@@ -1,9 +1,7 @@
 const crypto = require("crypto");
 const userModel = require("../../models/userModel");
 const { creditWalletInstant } = require("../../helpers/transactionService");
-
-// Fixed demo amount — guests never choose a real amount, this is not a payment flow.
-const DUMMY_CREDIT_AMOUNT = 5000;
+const { GUEST_DEMO_CREDIT_AMOUNT } = require("../../config/guestDemoConfig");
 
 // Guest-only fake wallet top-up. Reuses the same creditWalletInstant SSOT as the
 // real admin-recharge path so wallet history isn't a separate/empty system for
@@ -22,20 +20,18 @@ const guestDummyWalletCreditController = async (req, res) => {
 
     const transactionId = `GUEST-DEMO-${crypto.randomBytes(8).toString("hex")}`;
 
-    const transaction = await creditWalletInstant({
+    const { transaction, newBalance } = await creditWalletInstant({
       userId: req.userId,
       transactionId,
-      amount: DUMMY_CREDIT_AMOUNT,
+      amount: GUEST_DEMO_CREDIT_AMOUNT,
       paymentMethod: "demo",
       description: "Guest demo wallet credit (not real money)",
     });
 
-    const updatedUser = await userModel.findById(req.userId).select("walletBalance");
-
     return res.status(200).json({
       message: "Demo wallet credited",
       data: {
-        walletBalance: updatedUser.walletBalance,
+        walletBalance: newBalance,
         transactionId: transaction.transactionId,
       },
       success: true,

@@ -30,9 +30,14 @@ const getAdminUserWorkspace = async (req, res) => {
 
     const customer = await userModel
       .findById(customerObjectId)
-      .select("name email phone status walletBalance createdAt updatedAt")
+      .select("name email phone status walletBalance createdAt updatedAt isGuest")
       .lean();
-    if (!customer) {
+    // Guests are demo-only accounts (see guestLogin.js) and must never surface
+    // in any admin workspace — same boundary getAdminClients.js already
+    // enforces for the client list, applied here for the per-client detail
+    // view too, since this endpoint takes customerId directly and has no
+    // list-level filter to rely on.
+    if (!customer || customer.isGuest) {
       return res.status(404).json({
         message: "Customer not found",
         error: true,

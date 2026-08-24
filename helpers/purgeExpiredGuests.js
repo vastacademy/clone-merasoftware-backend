@@ -1,7 +1,6 @@
 const userModel = require("../models/userModel");
 const { executeGuestCascadeDelete } = require("./guestCascadeDelete");
-
-const GUEST_INACTIVITY_MS = 24 * 60 * 60 * 1000;
+const { GUEST_INACTIVITY_MS } = require("../config/guestDemoConfig");
 
 // Lazy purge, same pattern as controller/trash/getTrash.js: no cron anywhere in
 // this codebase deletes users, so expired guests are cleaned up opportunistically
