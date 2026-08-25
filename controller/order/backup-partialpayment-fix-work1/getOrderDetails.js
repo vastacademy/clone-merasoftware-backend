@@ -84,40 +84,13 @@ const getOrderDetails = async (req, res) => {
         // Send the complete order details
         const orderData = toPlainObject(order);
 
-        // The unpaid/overdue invoice actually due right now — used by ProjectDetails.js to show
-        // a "Payment Pending" lock. Only invoiceModel (project invoices) is checked here, not
-        // monthlyInvoiceModel (recurring plans), since this endpoint only serves project orders.
-        //
-        // For a partial-payment order, a future installment's invoice is created upfront
-        // (adminCreateProjectOrder.js) or on-demand (settleInstallmentInvoice.js) and legitimately
-        // stays 'unpaid' until its own progressThreshold is reached — that is not "payment
-        // pending" for the customer right now. Bug fix: this query used to match ANY unpaid
-        // invoice on the order, so paying installment #1 still left installment #2's naturally-
-        // unpaid invoice matching, re-showing the "Payment Pending" lock immediately after a
-        // correctly-approved payment.
-        //
-        // Fixed by scoping to order.currentInstallment (the one payment is actually waiting on —
-        // it advances only when the previous installment is paid, see transactionApprovalController.js
-        // / walletPayInstant.js / approveProjectOrder.js), AND additionally gating on
-        // progressThreshold: if that installment has a configured threshold not yet reached by
-        // order.projectProgress, it is not due yet either, so it is excluded too (owner-confirmed:
-        // "Payment Pending" should only ever reflect a payment the customer can actually act on
-        // right now). progressThreshold === null means "always due" (matches installment #1 and
-        // pre-existing orders created before this field existed). One-time (non-partial) orders
-        // have no installments array, so this falls through unchanged — their single invoice is
-        // matched exactly as before.
-        const unpaidInvoiceFilter = { orderId: order._id, status: { $in: ['unpaid', 'overdue'] } };
-        if (Array.isArray(order.installments) && order.installments.length > 0) {
-            const dueInstallment = order.installments.find(
-                (installment) => installment.installmentNumber === order.currentInstallment
-            );
-            const isDue = !dueInstallment
-                || dueInstallment.progressThreshold == null
-                || Number(order.projectProgress || 0) >= Number(dueInstallment.progressThreshold);
-            unpaidInvoiceFilter.installmentNumber = isDue ? order.currentInstallment : -1;
-        }
+        // The earliest unpaid/overdue invoice for this order (installment #1 for partial
+        // payment, or the single invoice for one-time payment) — used by ProjectDetails.js
+        // to show a "Payment Pending" lock. Only invoiceModel (project invoices) is checked
+        // here, not monthlyInvoiceModel (recurring plans), since this endpoint only serves
+        // project orders.
         const earliestUnpaidInvoice = await invoiceModel
-            .findOne(unpaidInvoiceFilter)
+            .findOne({ orderId: order._id, status: { $in: ['unpaid', 'overdue'] } })
             .sort({ installmentNumber: 1, invoiceDate: 1 })
             .select('amount status invoiceNumber installmentNumber')
             .lean();
