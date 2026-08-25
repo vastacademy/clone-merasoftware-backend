@@ -85,6 +85,10 @@ const approveProjectOrderController = require('../controller/order/approveProjec
 const { downloadProjectFinalInvoice, viewProjectFinalInvoice, resendProjectFinalInvoice } = require('../controller/invoice/projectFinalInvoiceController');
 const getCategoryBasePricesController = require('../controller/admin/getCategoryBasePrices');
 const updateCategoryBasePriceController = require('../controller/admin/updateCategoryBasePrice');
+const getMessageTemplatesController = require('../controller/admin/getMessageTemplates');
+const createMessageTemplateController = require('../controller/admin/createMessageTemplate');
+const updateMessageTemplateController = require('../controller/admin/updateMessageTemplate');
+const deleteMessageTemplateController = require('../controller/admin/deleteMessageTemplate');
 const createLeadController = require('../controller/lead/createLead');
 const guestLoginController = require('../controller/user/guestLogin');
 const guestDummyWalletCreditController = require('../controller/user/guestDummyWalletCredit');
@@ -197,6 +201,10 @@ router.post("/admin/projects/:orderId/approval", authToken, approveProjectOrderC
 router.post("/admin/clients/:customerId/recharge-wallet", authToken, adminRechargeWallet);
 router.get("/admin/category-base-prices", authToken, getCategoryBasePricesController);
 router.post("/admin/category-base-prices", authToken, updateCategoryBasePriceController);
+router.get("/admin/message-templates", authToken, getMessageTemplatesController);
+router.post("/admin/message-templates", authToken, createMessageTemplateController);
+router.put("/admin/message-templates/:templateId", authToken, updateMessageTemplateController);
+router.delete("/admin/message-templates/:templateId", authToken, deleteMessageTemplateController);
 router.get("/admin/leads", authToken, getLeadsController);
 router.post("/admin/leads", authToken, createLeadController);
 router.get("/admin/search", authToken, globalSearchController);

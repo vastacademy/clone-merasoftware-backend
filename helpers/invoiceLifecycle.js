@@ -33,6 +33,16 @@ const resumeOrderForPaidInvoice = async (order, session = null) => {
     return false;
   }
 
+  // Don't resume while a different invoice on this same order is still unpaid/overdue — the
+  // invoice being settled here has already been saved as "paid" by the caller before this runs,
+  // so it never matches this query itself.
+  const stillOverdue = await monthlyInvoiceModel
+    .exists({ orderId: order._id, status: { $in: ["unpaid", "overdue"] } })
+    .session(session);
+  if (stillOverdue) {
+    return false;
+  }
+
   order.isActive = true;
   order.autoRenewalStatus = "active";
   await order.save({ session });
