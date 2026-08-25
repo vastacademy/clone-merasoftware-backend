@@ -29,9 +29,6 @@ const CATEGORY_LABELS = {
   app_development: "App Development",
 };
 
-const DEFAULT_STARTING_NODE_TITLE = "Project Started";
-const ADD_NEW_PAGE_FEATURE_NAME = "Add New Page";
-
 // Default progress-gate thresholds (node-system %, admin-editable per project — Layer B):
 // installment #1 (advance) has no threshold (always due at creation, gates nothing);
 // 2-installment split: #2 due at 90% progress; 3-installment split: #2 at 50%, #3 at 90%.
@@ -85,27 +82,23 @@ const adminCreateProjectOrderController = async (req, res) => {
     }
 
     const {
-      projectName,
       startingNodeTitle,
       category,
       totalPages,
       sellingPrice,
       featureIds: requestedFeatureIds = [],
-      featureQuantities = {},
       paymentType,
       installmentCount,
       recordPayment,
     } = req.body;
 
-    if (!category || !sellingPrice) {
+    if (!startingNodeTitle?.trim() || !category || !sellingPrice) {
       return res.status(400).json({
-        message: "Category and selling price are required",
+        message: "Starting node title, category, and selling price are required",
         error: true,
         success: false,
       });
     }
-
-    const resolvedStartingNodeTitle = startingNodeTitle?.trim() || DEFAULT_STARTING_NODE_TITLE;
 
     if (!PROJECT_CATEGORIES.includes(category)) {
       return res.status(400).json({
@@ -148,18 +141,11 @@ const adminCreateProjectOrderController = async (req, res) => {
           .lean()
       : [];
 
-    const clientProjectFeatures = featureDocs.map((feature) => {
-      const unitPrice = feature.sellingPrice || feature.price || 0;
-      const isAddNewPage = feature.serviceName === ADD_NEW_PAGE_FEATURE_NAME;
-      const requestedQuantity = Number(featureQuantities[String(feature._id)]) || 1;
-      const quantity = isAddNewPage ? Math.max(1, requestedQuantity) : 1;
-      return {
-        featureId: feature._id,
-        name: feature.serviceName,
-        price: unitPrice * quantity,
-        quantity,
-      };
-    });
+    const clientProjectFeatures = featureDocs.map((feature) => ({
+      featureId: feature._id,
+      name: feature.serviceName,
+      price: feature.sellingPrice || feature.price || 0,
+    }));
     const featuresTotal = clientProjectFeatures.reduce((sum, feature) => sum + (feature.price || 0), 0);
     const referenceTotal = basePrice + featuresTotal;
 
@@ -181,9 +167,9 @@ const adminCreateProjectOrderController = async (req, res) => {
       remainingAmount: finalPrice,
       paymentComplete: false,
       projectSnapshot: {
-        displayName: projectName?.trim() || CATEGORY_LABELS[category],
+        displayName: CATEGORY_LABELS[category],
         category,
-        startingNodeTitle: resolvedStartingNodeTitle,
+        startingNodeTitle: startingNodeTitle.trim(),
         totalPages: totalPages || undefined,
         basePrice,
         referenceTotal,
@@ -192,7 +178,7 @@ const adminCreateProjectOrderController = async (req, res) => {
       },
       orderItems: [
         { id: `project:${category}`, name: `${CATEGORY_LABELS[category]} (Base)`, type: "main", quantity: 1, originalPrice: basePrice, finalPrice: basePrice },
-        ...clientProjectFeatures.map((feature) => ({ id: String(feature.featureId), name: feature.name, type: "feature", quantity: feature.quantity, originalPrice: feature.price, finalPrice: feature.price })),
+        ...clientProjectFeatures.map((feature) => ({ id: String(feature.featureId), name: feature.name, type: "feature", quantity: 1, originalPrice: feature.price, finalPrice: feature.price })),
       ],
     };
 
@@ -204,7 +190,7 @@ const adminCreateProjectOrderController = async (req, res) => {
 
     initializeProjectTimeline({
       order,
-      startingNodeTitle: resolvedStartingNodeTitle,
+      startingNodeTitle: startingNodeTitle.trim(),
       actorId: req.userId,
     });
 
