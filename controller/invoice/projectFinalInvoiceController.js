@@ -1,65 +1,27 @@
-const invoiceModel = require("../../models/invoiceModel");
-const transactionModel = require("../../models/transactionModel");
 const { Resend } = require("resend");
-const { generateProjectFinalInvoicePdf } = require("../../helpers/generateProjectFinalInvoicePdf");
+const { generateInvoiceDocumentPdf } = require("../../helpers/generateInvoiceDocumentPdf");
+const { loadInvoiceDocument } = require("./invoiceDocumentController");
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-const loadFinalInvoice = async (invoiceId) => {
-  const invoice = await invoiceModel.findOne({ _id: invoiceId, invoiceType: "project_final" })
-    .populate("userId", "name email")
-    .populate({ path: "orderId", select: "productId projectSnapshot servicePlanSnapshot orderItems", populate: { path: "productId", select: "serviceName" } });
-  if (!invoice) {
-    const error = new Error("Final project invoice not found");
-    error.statusCode = 404;
-    throw error;
-  }
-  const transactions = await transactionModel.find({
-    orderId: invoice.orderId._id,
-    type: "payment",
-    status: "completed",
-  }).sort({ date: 1, createdAt: 1 }).lean();
-  return { invoice, transactions };
-};
-
+// Emailing a project statement to the customer is an admin action, so it stays here.
+// Downloading and viewing one are NOT admin actions — they moved to the shared
+// /invoices/:invoiceId/download|view pair in invoiceDocumentController.js, which serves the
+// customer and the admin the same document. Only the send-by-email step is admin-only, and it
+// builds its attachment from that same shared loader + generator so the emailed PDF can never
+// differ from the downloaded one.
 const requireAdmin = (req, res) => {
   if (req.userRole === "admin") return true;
   res.status(403).json({ message: "Forbidden", success: false, error: true });
   return false;
 };
 
-const sendProjectFinalInvoicePdf = async (req, res, disposition) => {
-  const { invoice, transactions } = await loadFinalInvoice(req.params.invoiceId);
-  const pdf = await generateProjectFinalInvoicePdf({ invoice, order: invoice.orderId, customer: invoice.userId, transactions });
-  res.setHeader("Content-Type", "application/pdf");
-  res.setHeader("Content-Disposition", `${disposition}; filename=${invoice.invoiceNumber}.pdf`);
-  return res.send(pdf);
-};
-
-const downloadProjectFinalInvoice = async (req, res) => {
-  try {
-    if (!requireAdmin(req, res)) return;
-    return await sendProjectFinalInvoicePdf(req, res, "attachment");
-  } catch (error) {
-    return res.status(error.statusCode || 500).json({ message: error.message || "Failed to download final invoice", success: false, error: true });
-  }
-};
-
-const viewProjectFinalInvoice = async (req, res) => {
-  try {
-    if (!requireAdmin(req, res)) return;
-    return await sendProjectFinalInvoicePdf(req, res, "inline");
-  } catch (error) {
-    return res.status(error.statusCode || 500).json({ message: error.message || "Failed to view final invoice", success: false, error: true });
-  }
-};
-
 const resendProjectFinalInvoice = async (req, res) => {
   try {
     if (!requireAdmin(req, res)) return;
-    const { invoice, transactions } = await loadFinalInvoice(req.params.invoiceId);
+    const { invoice, transactions } = await loadInvoiceDocument(req.params.invoiceId, req);
     if (!invoice.userId?.email) throw new Error("Customer email is not available");
-    const pdf = await generateProjectFinalInvoicePdf({ invoice, order: invoice.orderId, customer: invoice.userId, transactions });
+    const pdf = await generateInvoiceDocumentPdf({ invoice, order: invoice.orderId, customer: invoice.userId, transactions });
     const result = await resend.emails.send({
       from: `${process.env.FROM_NAME || "Mera Software"} <${process.env.FROM_EMAIL}>`,
       to: [invoice.userId.email],
@@ -74,4 +36,4 @@ const resendProjectFinalInvoice = async (req, res) => {
   }
 };
 
-module.exports = { downloadProjectFinalInvoice, viewProjectFinalInvoice, resendProjectFinalInvoice };
+module.exports = { resendProjectFinalInvoice };
