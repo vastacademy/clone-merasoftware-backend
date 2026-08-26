@@ -1,7 +1,8 @@
 const orderProductModel = require("../../models/orderProductModel")
 const invoiceModel = require("../../models/invoiceModel");
 const mongoose = require('mongoose');
-const { applyOrderSummary } = require("../../helpers/orderSummary");
+const { applyOrderSummary, ORDER_SUMMARY_FIELDS } = require("../../helpers/orderSummary");
+const { getDueUnpaidInvoiceFilter } = require("../../helpers/projectDuePayment");
 
 const getUserOrders = async (req, res) => {
     try {
@@ -17,18 +18,31 @@ const getUserOrders = async (req, res) => {
         }
 
         // Add userId filter to only get orders for the current user
+        // `installments`/`currentInstallment` are added on top of the shared
+        // ORDER_SUMMARY_FIELDS (select() is additive) so this controller alone gets what it
+        // needs for the due-installment check below, without changing the payload for
+        // ORDER_SUMMARY_FIELDS's other callers (getAdminUserWorkspace.js, getMyPaymentWorkspace.js).
         const orders = await applyOrderSummary(
-            orderProductModel.find({ userId: userObjectId }).sort({ createdAt: -1 })
+            orderProductModel
+                .find({ userId: userObjectId })
+                .sort({ createdAt: -1 })
+                .select("installments currentInstallment")
         );
 
-        // Flag orders that still have an unpaid/overdue project invoice, so the list's
-        // status badge can show "Payment Pending" (admin-created projects left unpaid).
-        // Same source as getOrderDetails.js's single-order check, batched here into one
-        // query (build a Set of orderIds with an outstanding invoice) to avoid N+1.
-        const unpaidInvoices = await invoiceModel
-            .find({ userId: userObjectId, status: { $in: ['unpaid', 'overdue'] } })
-            .select('orderId')
-            .lean();
+        // Flag project orders whose currently-due installment invoice is unpaid/overdue, so the
+        // list's status badge shows "Payment Pending" only when a payment is actually actionable
+        // right now — matches getOrderDetails.js's single-order rule (helpers/projectDuePayment.js).
+        // A future installment's invoice legitimately stays 'unpaid' until its own
+        // progressThreshold is reached; that is not "payment pending" for the customer today.
+        // Plan orders (monthlyInvoiceModel-based) never have installments and fall through
+        // getDueUnpaidInvoiceFilter's plain orderId+status match unchanged.
+        const projectOrders = orders.filter((order) => order.isWebsiteProject);
+        const unpaidInvoices = projectOrders.length
+            ? await invoiceModel
+                .find({ $or: projectOrders.map((order) => getDueUnpaidInvoiceFilter(order)) })
+                .select('orderId')
+                .lean()
+            : [];
         const unpaidOrderIds = new Set(unpaidInvoices.map((invoice) => String(invoice.orderId)));
         orders.forEach((order) => {
             order.hasUnpaidInvoice = unpaidOrderIds.has(String(order._id));

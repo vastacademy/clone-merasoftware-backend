@@ -1,6 +1,7 @@
 const orderProductModel = require("../../models/orderProductModel");
 const invoiceModel = require("../../models/invoiceModel");
 const transactionModel = require("../../models/transactionModel");
+const { getDueUnpaidInvoiceFilter } = require("../../helpers/projectDuePayment");
 
 const toPlainObject = (doc) => {
     if (!doc) return null;
@@ -106,18 +107,10 @@ const getOrderDetails = async (req, res) => {
         // pre-existing orders created before this field existed). One-time (non-partial) orders
         // have no installments array, so this falls through unchanged — their single invoice is
         // matched exactly as before.
-        const unpaidInvoiceFilter = { orderId: order._id, status: { $in: ['unpaid', 'overdue'] } };
-        if (Array.isArray(order.installments) && order.installments.length > 0) {
-            const dueInstallment = order.installments.find(
-                (installment) => installment.installmentNumber === order.currentInstallment
-            );
-            const isDue = !dueInstallment
-                || dueInstallment.progressThreshold == null
-                || Number(order.projectProgress || 0) >= Number(dueInstallment.progressThreshold);
-            unpaidInvoiceFilter.installmentNumber = isDue ? order.currentInstallment : -1;
-        }
+        //
+        // Rule lives in helpers/projectDuePayment.js (shared with getUserOrder.js's list/badge feed).
         const earliestUnpaidInvoice = await invoiceModel
-            .findOne(unpaidInvoiceFilter)
+            .findOne(getDueUnpaidInvoiceFilter(order))
             .sort({ installmentNumber: 1, invoiceDate: 1 })
             .select('amount status invoiceNumber installmentNumber')
             .lean();
