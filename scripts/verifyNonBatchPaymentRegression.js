@@ -150,6 +150,8 @@ const createdOrderIds = [];
   const balAfterBuy = (await userModel.findById(user._id).select("walletBalance").lean())?.walletBalance;
   check("wallet debited at purchase", Number(balAfterBuy) === 0, `balance=${balAfterBuy}`);
 
+  const txn3Doc = await transactionModel.findOne({ transactionId: txn3 }).lean();
+
   const reject3 = mockRes();
   await rejectTransaction(
     { userRole: "admin", userId, params: { transactionId: txn3 }, body: { rejectionReason: "regression combined" } },
@@ -159,6 +161,20 @@ const createdOrderIds = [];
 
   const balAfterReject = (await userModel.findById(user._id).select("walletBalance").lean())?.walletBalance;
   check("wallet portion refunded", Number(balAfterReject) === walletSeed, `balance=${balAfterReject}, expected=${walletSeed}`);
+
+  const order3 = await orderModel.findById(txn3Doc.orderId).lean();
+  const invoices3 = await invoiceModel.find({ orderId: txn3Doc.orderId, invoiceType: { $ne: "service_statement" } }).lean();
+  check("rejected combined order has no paid balance", Number(order3?.paidAmount || 0) === 0 && Number(order3?.remainingAmount || 0) === price, `paid=${order3?.paidAmount}, remaining=${order3?.remainingAmount}`);
+  check("rejected combined order is payment-rejected", order3?.orderVisibility === "payment-rejected", order3?.orderVisibility);
+  check("rejected combined invoice is unpaid", invoices3.length > 0 && invoices3.every((invoice) => Number(invoice.amountPaid || 0) === 0 && invoice.status === "unpaid"), invoices3.map((invoice) => `${invoice.status}:${invoice.amountPaid}`).join(","));
+
+  const retryReject3 = mockRes();
+  await rejectTransaction(
+    { userRole: "admin", userId, params: { transactionId: txn3 }, body: { rejectionReason: "retry regression combined" } },
+    retryReject3
+  );
+  const balanceAfterRetry = (await userModel.findById(user._id).select("walletBalance").lean())?.walletBalance;
+  check("repeat reject cannot double-refund", retryReject3.statusCode === 400 && Number(balanceAfterRetry) === walletSeed, `response=${retryReject3.statusCode}, balance=${balanceAfterRetry}`);
 
   // =====================================================================
   // Teardown

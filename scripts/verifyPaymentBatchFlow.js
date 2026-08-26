@@ -206,6 +206,21 @@ const runBulk = async ({ planIds, txnId, upiTxnId }) => {
   const balanceAfterReject = (await userModel.findById(user._id).select("walletBalance").lean())?.walletBalance;
   check("wallet portion refunded on reject", Number(balanceAfterReject) === walletSeed, `balance=${balanceAfterReject}, expected=${walletSeed}`);
 
+  const children3After = await transactionModel.find({ parentTransactionId: txn3 }).lean();
+  const orders3 = await orderModel.find({ _id: { $in: children3After.map((child) => child.orderId) } }).lean();
+  const invoices3 = await invoiceModel.find({ orderId: { $in: orders3.map((order) => order._id) }, invoiceType: { $ne: "service_statement" } }).lean();
+  check("combined batch orders have no paid balance", orders3.every((order) => Number(order.paidAmount || 0) === 0 && Number(order.remainingAmount || 0) === Number(order.totalAmount || 0)), orders3.map((order) => `${order.paidAmount}/${order.remainingAmount}`).join(","));
+  check("combined batch orders are payment-rejected", orders3.every((order) => order.orderVisibility === "payment-rejected"), orders3.map((order) => order.orderVisibility).join(","));
+  check("combined batch invoices are unpaid", invoices3.length > 0 && invoices3.every((invoice) => Number(invoice.amountPaid || 0) === 0 && invoice.status === "unpaid"), invoices3.map((invoice) => `${invoice.status}:${invoice.amountPaid}`).join(","));
+
+  const retryReject3 = mockRes();
+  await rejectTransaction(
+    { userRole: "admin", userId: String(user._id), params: { transactionId: txn3 }, body: { rejectionReason: "retry combined reject" } },
+    retryReject3
+  );
+  const balanceAfterRetry = (await userModel.findById(user._id).select("walletBalance").lean())?.walletBalance;
+  check("repeat batch reject cannot double-refund", retryReject3.statusCode === 400 && Number(balanceAfterRetry) === walletSeed, `response=${retryReject3.statusCode}, balance=${balanceAfterRetry}`);
+
   // =====================================================================
   // Final invariant
   // =====================================================================

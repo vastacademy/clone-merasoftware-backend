@@ -101,6 +101,26 @@ const markProjectInvoicePaid = async ({
   return { invoice, transaction };
 };
 
+// Reverses a previously-applied wallet portion when its linked UPI remainder is
+// rejected. This is deliberately the counterpart of markProjectInvoicePaid:
+// amountPaid, status and paidDate are derived from the remaining settled amount,
+// never assigned by a caller.
+const reverseProjectInvoicePayment = async ({ invoice, amount }) => {
+  const amountNow = Number(amount || 0);
+  if (!invoice || !(amountNow > 0)) return invoice;
+
+  invoice.amountPaid = Math.max(0, Number(invoice.amountPaid || 0) - amountNow);
+  invoice.status =
+    invoice.amountPaid >= Number(invoice.amount || 0)
+      ? "paid"
+      : invoice.amountPaid > 0
+      ? "partially_paid"
+      : "unpaid";
+  if (invoice.status !== "paid") invoice.paidDate = null;
+  await invoice.save();
+  return invoice;
+};
+
 // Creates one project invoice on the shared invoiceModel (invoiceType: "project").
 // Used both at create-time (adminCreateProjectOrder) and at approval-time for a
 // Pay-Later order that was created without any invoice, so a single invoice model
@@ -134,6 +154,7 @@ const createProjectInvoice = async ({
 
 module.exports = {
   markProjectInvoicePaid,
+  reverseProjectInvoicePayment,
   createProjectInvoice,
   buildLineItemsFromOrder,
 };

@@ -4,10 +4,11 @@ const userModel = require("../../models/userModel");
 const orderProductModel = require("../../models/orderProductModel");
 const invoiceModel = require("../../models/invoiceModel"); // project invoices (invoiceType:'project')
 const { markInvoicePaidAndResumePlan } = require("../../helpers/invoiceLifecycle"); // monthlyInvoiceModel only
-const { markProjectInvoicePaid } = require("../../helpers/paymentRecording");
+const { markProjectInvoicePaid, reverseProjectInvoicePayment } = require("../../helpers/paymentRecording");
 const { settleInstallmentInvoice } = require("../../helpers/installmentSettlement");
 const { syncProjectFinalInvoice } = require("../../helpers/projectFinalInvoice");
 const { settleServiceCycle } = require('../../helpers/serviceCycleSettlement');
+const { syncServiceBillingStatement } = require('../../helpers/serviceBillingStatement');
 // Refund helper — when a combined payment's UPI portion is rejected, its already-debited
 // wallet portion must be returned to the customer.
 const { refundWalletInstant } = require("../../helpers/transactionService");
@@ -267,17 +268,16 @@ const settleChildTransactions = async (parentTransaction, adminId) => {
 
   const settledOrders = [];
   for (const child of children) {
-    child.status = "completed";
-    child.paymentStatus = "approved";
     child.verifiedBy = adminId;
     child.verificationDate = new Date();
     child.rejectionReason = null;
     child.rejectedAt = null;
     child.rejectedBy = null;
-    await child.save();
-
     // Same single-order settlement used by every other approved payment.
     const result = await applyApprovedOrderPayment(child);
+    child.status = "completed";
+    child.paymentStatus = "approved";
+    await child.save();
     if (result?.order) settledOrders.push(result.order);
   }
 
@@ -347,9 +347,38 @@ const rejectLinkedOrderPayment = async (transaction, rejectionReason) => {
   return order;
 };
 
+// Rolls back the financial state previously advanced by an instant wallet portion. The paired UPI
+// transaction was rejected, so that wallet money never became a valid payment for its invoice/order.
+const reverseWalletPortionSettlement = async (walletPortion) => {
+  const amount = Number(walletPortion?.amount || 0);
+  if (!walletPortion?.orderId || !(amount > 0)) return null;
+
+  if (walletPortion.invoiceId) {
+    const invoice = await invoiceModel.findById(walletPortion.invoiceId);
+    if (invoice) await reverseProjectInvoicePayment({ invoice, amount });
+  }
+
+  const order = await orderProductModel.findById(walletPortion.orderId);
+  if (!order) return null;
+
+  const orderTotal = getOrderTotal(order);
+  order.paidAmount = Math.max(0, Number(order.paidAmount || 0) - amount);
+  order.remainingAmount = Math.max(0, orderTotal - Number(order.paidAmount || 0));
+  order.paymentComplete = order.remainingAmount <= 0;
+  await order.save();
+
+  if (order.isServicePlan) {
+    await syncServiceBillingStatement(order);
+  } else {
+    await syncProjectFinalInvoice(order);
+  }
+
+  return order;
+};
+
 // Refund every wallet debit that hangs off a parent id. A combined payment has one; a batch
-// has one per service. Idempotent on transactionId, so a retried rejection never double-refunds.
-// Shared by the transaction- and batch-rejection paths so the refund rule lives in one place.
+// has one per service. The financial rollback happens before its wallet credit, so the customer
+// can never have refunded money while the invoice/order still shows it as paid.
 const refundWalletPortionsFor = async (parentRef, rejectedRef) => {
   if (!parentRef) return;
 
@@ -361,6 +390,7 @@ const refundWalletPortionsFor = async (parentRef, rejectedRef) => {
   });
 
   for (const walletPortion of walletPortions) {
+    await reverseWalletPortionSettlement(walletPortion);
     await refundWalletInstant({
       userId: walletPortion.userId,
       transactionId: `${walletPortion.transactionId}-REFUND`,
@@ -389,6 +419,9 @@ const approvePaymentBatch = async (batch, req, res) => {
     });
   }
 
+  const childResult = await settleChildTransactions(batch, req.userId);
+  const childCount = childResult ? childResult.childCount : 0;
+
   batch.status = "approved";
   batch.verifiedBy = req.userId;
   batch.verificationDate = new Date();
@@ -396,9 +429,6 @@ const approvePaymentBatch = async (batch, req, res) => {
   batch.rejectedAt = null;
   batch.rejectedBy = null;
   await batch.save();
-
-  const childResult = await settleChildTransactions(batch, req.userId);
-  const childCount = childResult ? childResult.childCount : 0;
 
   return res.status(200).json({
     message: `Payment approved — ${childCount} service${childCount === 1 ? "" : "s"} activated`,
@@ -422,6 +452,9 @@ const rejectPaymentBatch = async (batch, rejectionReason, req, res) => {
     });
   }
 
+  // A batch's wallet debits hang off its own batchRef (children carry it as parentTransactionId).
+  await refundWalletPortionsFor(batch.batchRef, batch.batchRef);
+
   batch.status = "rejected";
   batch.rejectionReason = rejectionReason;
   batch.rejectedAt = new Date();
@@ -431,9 +464,6 @@ const rejectPaymentBatch = async (batch, rejectionReason, req, res) => {
   await batch.save();
 
   const childResult = await rejectChildTransactions(batch, rejectionReason, req.userId);
-
-  // A batch's wallet debits hang off its own batchRef (children carry it as parentTransactionId).
-  await refundWalletPortionsFor(batch.batchRef, batch.batchRef);
 
   return res.status(200).json({
     message: "Payment rejected successfully",
@@ -518,16 +548,16 @@ const approveTransaction = async (req, res) => {
       await user.save();
     }
 
-    transaction.status = "completed";
-    transaction.paymentStatus = "approved";
     transaction.verifiedBy = req.userId;
     transaction.verificationDate = new Date();
     transaction.rejectionReason = null;
     transaction.rejectedAt = null;
     transaction.rejectedBy = null;
-    await transaction.save();
-
     const linkedResult = await applyApprovedOrderPayment(transaction);
+
+    transaction.status = "completed";
+    transaction.paymentStatus = "approved";
+    await transaction.save();
 
     const updatedTransaction = await transactionModel
       .findById(transaction._id)
@@ -609,17 +639,6 @@ const rejectTransaction = async (req, res) => {
       });
     }
 
-    transaction.status = "rejected";
-    transaction.paymentStatus = "rejected";
-    transaction.rejectionReason = rejectionReason;
-    transaction.rejectedAt = new Date();
-    transaction.rejectedBy = req.userId;
-    transaction.verifiedBy = req.userId;
-    transaction.verificationDate = new Date();
-    await transaction.save();
-
-    const order = await rejectLinkedOrderPayment(transaction, rejectionReason);
-
     // Combined payment: refund the paired wallet portion that was already debited at purchase.
     // The wallet debit stores the UPI transaction's id in its parentTransactionId, and the two
     // creation paths write that link from opposite ends:
@@ -631,6 +650,17 @@ const rejectTransaction = async (req, res) => {
     // wallet money.
     await refundWalletPortionsFor(transaction.transactionId, transaction.transactionId);
     await refundWalletPortionsFor(transaction.parentTransactionId, transaction.transactionId);
+
+    transaction.status = "rejected";
+    transaction.paymentStatus = "rejected";
+    transaction.rejectionReason = rejectionReason;
+    transaction.rejectedAt = new Date();
+    transaction.rejectedBy = req.userId;
+    transaction.verifiedBy = req.userId;
+    transaction.verificationDate = new Date();
+    await transaction.save();
+
+    const order = await rejectLinkedOrderPayment(transaction, rejectionReason);
 
     const updatedTransaction = await transactionModel
       .findById(transaction._id)
