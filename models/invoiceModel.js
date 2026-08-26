@@ -88,6 +88,18 @@ const invoiceSchema = new mongoose.Schema({
     ref: "user",
     default: null,
   },
+  // Written by deleteOrder.js right before the order it belongs to is hard-deleted, so this
+  // invoice can still name/date/type itself in the admin "Deleted Projects" tab afterward —
+  // orderId will resolve to nothing once the order is gone.
+  deletedProjectName: {
+    type: String,
+    default: null,
+  },
+  deletedProjectType: {
+    type: String,
+    enum: ["project", "plan", null],
+    default: null,
+  },
 }, {
   timestamps: true,
 });

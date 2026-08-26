@@ -3,6 +3,7 @@ const userModel = require("../../models/userModel");
 const orderModel = require("../../models/orderProductModel");
 const updateRequestModel = require("../../models/updateRequestModel");
 const monthlyInvoiceModel = require("../../models/monthlyInvoiceModel");
+const invoiceModel = require("../../models/invoiceModel");
 const transactionModel = require("../../models/transactionModel");
 const partnerCommissionModel = require("../../models/partnerCommissionModel");
 const GoogleDriveService = require("../../helpers/googleDriveService");
@@ -102,6 +103,10 @@ const deleteOrderController = async (req, res) => {
         await driveService.deleteFile(fileId);
       }
 
+      await invoiceModel.updateMany(
+        { orderId: orderObjectId },
+        { deletedProjectName: plan.serviceName, deletedProjectType: plan.orderType }
+      ).session(session);
       await updateRequestModel.deleteMany({ updatePlanId: orderObjectId }).session(session);
       await monthlyInvoiceModel.deleteMany({ orderId: orderObjectId }).session(session);
       await transactionModel.deleteMany({ orderId: orderObjectId }).session(session);
