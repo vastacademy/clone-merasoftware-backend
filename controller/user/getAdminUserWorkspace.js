@@ -63,7 +63,7 @@ const getAdminUserWorkspace = async (req, res) => {
       }),
       transactionModel
         .find({ userId: customerObjectId })
-        .select("transactionId upiTransactionId amount status type sourceType paymentMethod invoiceId orderId installmentNumber date createdAt rejectionReason")
+        .select("transactionId upiTransactionId amount status type sourceType paymentMethod invoiceId orderId installmentNumber date createdAt rejectionReason paymentDetails")
         .populate({ path: "orderId", select: "productId projectSnapshot servicePlanSnapshot orderItems", populate: { path: "productId", select: "serviceName" } })
         .sort({ createdAt: -1 }),
       monthlyInvoiceModel
@@ -92,7 +92,38 @@ const getAdminUserWorkspace = async (req, res) => {
       return plain;
     };
 
-    const transactionsWithDeletedFlag = transactions.map(markOrderDeleted);
+    // A service-batch transaction (customerCreateServicePlanOrdersBulk.js's parent) deliberately
+    // carries no orderId — settling it must never touch a project order directly (see that
+    // file's comment on why). Its only project reference is paymentDetails.linkedProjectOrderId,
+    // which existing display code never reads, so the ledger fell back to a nameless "Payment"
+    // label. Batch-fetch a display-only snapshot for those linked orders (same fields already
+    // populated on orderId above) so the frontend can name the payment without duplicating the
+    // linkedProjectOrderId -> order lookup or the settlement path itself.
+    const linkedProjectOrderIds = [
+      ...new Set(
+        transactions
+          .filter((transaction) => !transaction.orderId && transaction.paymentDetails?.linkedProjectOrderId)
+          .map((transaction) => String(transaction.paymentDetails.linkedProjectOrderId))
+      ),
+    ];
+    const linkedProjectSnapshots = linkedProjectOrderIds.length
+      ? await orderModel
+          .find({ _id: { $in: linkedProjectOrderIds } })
+          .select("productId projectSnapshot servicePlanSnapshot orderItems")
+          .populate("productId", "serviceName")
+          .lean()
+      : [];
+    const linkedProjectSnapshotMap = new Map(
+      linkedProjectSnapshots.map((order) => [String(order._id), order])
+    );
+
+    const transactionsWithDeletedFlag = transactions.map(markOrderDeleted).map((transaction) => {
+      const linkedProjectOrderId = transaction.paymentDetails?.linkedProjectOrderId;
+      if (!transaction.orderId && linkedProjectOrderId) {
+        transaction.linkedProjectSnapshot = linkedProjectSnapshotMap.get(String(linkedProjectOrderId)) || null;
+      }
+      return transaction;
+    });
     const monthlyInvoicesWithDeletedFlag = monthlyInvoices.map(markOrderDeleted);
     const projectInvoicesWithDeletedFlag = projectInvoices.map(markOrderDeleted);
 
