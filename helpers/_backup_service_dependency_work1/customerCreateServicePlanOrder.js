@@ -14,9 +14,6 @@ const {
 // Shared SSOT for what a purchased service plan looks like — also used by the
 // bulk (wallet-only) path, so the two can never drift on price, duration,
 // cycle dates or snapshot shape.
-// SSOT for the admin's own `dependency` setting: whether this service may be
-// bought attached to a project or only on its own.
-const { SURFACE, evaluateServiceSurface } = require("../../helpers/serviceDependencyRules");
 const {
   SERVICE_PLAN_CATEGORY,
   buildServicePlanOrderData,
@@ -102,22 +99,6 @@ const customerCreateServicePlanOrder = async (req, res) => {
         message: "Could not determine a price for this plan. Please contact support.",
         error: true,
         success: false,
-      });
-    }
-
-    // ----- The admin's dependency rule, enforced (not just displayed). The
-    // purchase surface is derived from the request itself — a linked project id
-    // means this is being bought from inside a project — so the client cannot
-    // claim one surface while acting on the other. The listing filters mirror
-    // this same rule, but the decision is made here. -----
-    const surface = linkedProjectOrderId ? SURFACE.PROJECT : SURFACE.STANDALONE;
-    const surfaceCheck = evaluateServiceSurface(servicePlan, surface);
-    if (!surfaceCheck.allowed) {
-      return res.status(400).json({
-        message: surfaceCheck.reason,
-        error: true,
-        success: false,
-        data: { dependency: surfaceCheck.dependency, surface },
       });
     }
 

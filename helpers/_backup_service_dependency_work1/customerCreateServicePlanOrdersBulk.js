@@ -5,9 +5,6 @@ const paymentBatchModel = require("../../models/paymentBatchModel");
 const { createProjectInvoice, markProjectInvoicePaid } = require("../../helpers/paymentRecording");
 const { settleServiceCycle } = require("../../helpers/serviceCycleSettlement");
 const { createPaymentTransaction, deductWalletInstant } = require("../../helpers/transactionService");
-// SSOT for the admin's own `dependency` setting: whether this service may be
-// bought attached to a project or only on its own.
-const { SURFACE, evaluateServiceSurface } = require("../../helpers/serviceDependencyRules");
 const {
   SERVICE_PLAN_CATEGORY,
   buildServicePlanOrderData,
@@ -111,22 +108,6 @@ const customerCreateServicePlanOrdersBulk = async (req, res) => {
 
     // Price and duration are re-derived server-side for every plan — the client
     // never tells us what anything costs.
-    // The admin's dependency rule, enforced for every service in the batch before
-    // any money moves — same guarantee the single-service path gives. The surface
-    // comes from the request shape, never from the client's claim about it.
-    const batchSurface = linkedProjectOrderId ? SURFACE.PROJECT : SURFACE.STANDALONE;
-    for (const plan of plans) {
-      const surfaceCheck = evaluateServiceSurface(plan.servicePlan, batchSurface);
-      if (!surfaceCheck.allowed) {
-        return res.status(400).json({
-          message: `"${plan.serviceName}": ${surfaceCheck.reason}`,
-          error: true,
-          success: false,
-          data: { planId: plan._id, dependency: surfaceCheck.dependency, surface: batchSurface },
-        });
-      }
-    }
-
     const priced = [];
     for (const plan of plans) {
       const selection = selectionByPlanId.get(String(plan._id));
