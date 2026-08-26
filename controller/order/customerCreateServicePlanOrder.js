@@ -4,6 +4,7 @@ const userModel = require("../../models/userModel");
 // SSOT: every paid order gets an invoice through the same shared helper used by
 // the project paths — a service plan is money owed exactly like a project is.
 const { createProjectInvoice, markProjectInvoicePaid } = require("../../helpers/paymentRecording");
+const { settleServiceCycle } = require("../../helpers/serviceCycleSettlement");
 // Shared transaction-creation SSOT. Wallet is the customer's own money so it is
 // debited instantly; any UPI remainder is a pending transaction admin approves.
 const {
@@ -170,6 +171,7 @@ const customerCreateServicePlanOrder = async (req, res) => {
       amount: finalPrice,
       lineItems: [{ name: plan.serviceName, price: finalPrice }],
       invoiceDate: new Date(),
+      serviceCycleNumber: 1,
     });
 
     // ----- Payment. The wallet/UPI split is decided HERE, server-side, from the
@@ -218,13 +220,16 @@ const customerCreateServicePlanOrder = async (req, res) => {
       // Settle the invoice by exactly the wallet amount, reusing the SAME wallet
       // transaction — a payment never writes two transactions.
       if (invoice) {
-        await markProjectInvoicePaid({
+        const settled = await markProjectInvoicePaid({
           invoice,
           customerId: userId,
           paymentMethod: "wallet",
           amount: walletPart,
           existingTransaction: walletTxn.transaction,
         });
+        invoice.status = settled.invoice.status;
+        invoice.amountPaid = settled.invoice.amountPaid;
+        invoice.paidDate = settled.invoice.paidDate;
       }
     }
 
@@ -257,6 +262,9 @@ const customerCreateServicePlanOrder = async (req, res) => {
     }
 
     await order.save();
+    if (upiPart === 0 && invoice.status === "paid") {
+      await settleServiceCycle({ orderId: order._id, invoice });
+    }
 
     return res.status(201).json({
       message: "Service plan purchased successfully",

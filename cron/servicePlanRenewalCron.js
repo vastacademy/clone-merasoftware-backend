@@ -2,6 +2,8 @@ const cron = require('node-cron');
 const orderModel = require('../models/orderProductModel');
 const invoiceModel = require('../models/invoiceModel');
 const { createProjectInvoice } = require('../helpers/paymentRecording');
+const { getNextCycleNumber, isFinalCycle, isFixedTenureService, getCycleDates } = require('../helpers/serviceBillingSchedule');
+const { syncServiceBillingStatement } = require('../helpers/serviceBillingStatement');
 
 const resolveRenewalPrice = (service) => {
   const snapshot = service.servicePlanSnapshot || {};
@@ -11,7 +13,16 @@ const resolveRenewalPrice = (service) => {
 const processServicePlanRenewals = async (now = new Date()) => {
   const dueServices = await orderModel.find({ isServicePlan: true, servicePlanStatus: 'active', serviceNextBillingDate: { $lte: now } });
   for (const service of dueServices) {
-    if (!service.serviceAutoRenew) {
+    // New fixed-tenure services must complete every contracted cycle. Old records
+    // without serviceTotalCycles retain their pre-existing auto-renew behaviour.
+    if (isFixedTenureService(service) && isFinalCycle(service, service.serviceCurrentCycleNumber)) {
+      service.servicePlanStatus = 'expired';
+      service.serviceNextBillingDate = null;
+      await service.save();
+      await syncServiceBillingStatement(service);
+      continue;
+    }
+    if (!isFixedTenureService(service) && !service.serviceAutoRenew) {
       service.servicePlanStatus = 'inactive';
       await service.save();
       continue;
@@ -24,7 +35,9 @@ const processServicePlanRenewals = async (now = new Date()) => {
     }
     const amount = resolveRenewalPrice(service);
     if (!(amount > 0)) continue;
-    await createProjectInvoice({ customerId: service.userId, orderId: service._id, amount, lineItems: [{ name: `Renewal: ${service.orderItems?.[0]?.name || 'Service'}`, price: amount }], invoiceDate: now, dueDate: now, invoiceType: 'plan_renewal' });
+    const cycleNumber = getNextCycleNumber(service);
+    const cycle = getCycleDates(service, cycleNumber, now);
+    await createProjectInvoice({ customerId: service.userId, orderId: service._id, amount, lineItems: [{ name: `Cycle ${cycleNumber}: ${service.orderItems?.[0]?.name || 'Service'}`, price: amount }], invoiceDate: now, dueDate: now, invoiceType: 'plan_renewal', serviceCycleNumber: cycleNumber });
     service.servicePlanStatus = 'paused';
     await service.save();
   }

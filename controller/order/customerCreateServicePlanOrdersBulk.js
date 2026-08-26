@@ -1,7 +1,9 @@
 const productModel = require("../../models/productModel");
 const orderModel = require("../../models/orderProductModel");
 const userModel = require("../../models/userModel");
+const paymentBatchModel = require("../../models/paymentBatchModel");
 const { createProjectInvoice, markProjectInvoicePaid } = require("../../helpers/paymentRecording");
+const { settleServiceCycle } = require("../../helpers/serviceCycleSettlement");
 const { createPaymentTransaction, deductWalletInstant } = require("../../helpers/transactionService");
 const {
   SERVICE_PLAN_CATEGORY,
@@ -21,16 +23,17 @@ const {
 //
 // That is solved here without touching the single-order approval logic (docs 52/53):
 //
-//   PARENT transaction  = the money the customer actually paid by UPI. This is the
-//                         one and only thing the admin approves or rejects.
-//   CHILD transactions  = one per service, each carrying parentTransactionId and its
-//                         own orderId/invoiceId — the exact single-ref shape the rest
-//                         of the system already expects.
+//   BATCH record (paymentBatchModel) = the approval group the admin acts on. NOT a
+//                         transaction: a transaction means one payment against one order,
+//                         which a batch can never be. See paymentBatchModel.js.
+//   CHILD transactions  = one per service, each carrying parentTransactionId (= batchRef)
+//                         and its own orderId/invoiceId — the exact single-ref shape the
+//                         rest of the system already expects.
 //
-// Approving the parent settles every child (see settleChildTransactions in
+// Approving the batch settles every child (see settleChildTransactions in
 // transactionApprovalController.js); rejecting it rejects them all and refunds any
 // wallet portion. So all approvals for services added to a project stay under that
-// one project payment, which is how this business already works.
+// one payment, which is how this business already works.
 //
 // Split is decided SERVER-SIDE from the real balance, never sent by the client:
 //   walletPart = min(walletBalance, total)   -> instant debit, no approval
@@ -224,6 +227,7 @@ const customerCreateServicePlanOrdersBulk = async (req, res) => {
         amount: price,
         lineItems: [{ name: plan.serviceName, price }],
         invoiceDate: new Date(),
+        serviceCycleNumber: 1,
       });
       created[index].invoice = invoice;
 
@@ -245,13 +249,16 @@ const customerCreateServicePlanOrdersBulk = async (req, res) => {
         // Settle the invoice by exactly the wallet amount, reusing the SAME
         // transaction — a payment never writes two transactions.
         if (invoice) {
-          await markProjectInvoicePaid({
+          const settled = await markProjectInvoicePaid({
             invoice,
             customerId: userId,
             paymentMethod: "wallet",
             amount: walletShare,
             existingTransaction: walletTxn.transaction,
           });
+          invoice.status = settled.invoice.status;
+          invoice.amountPaid = settled.invoice.amountPaid;
+          invoice.paidDate = settled.invoice.paidDate;
         }
       }
 
@@ -285,56 +292,45 @@ const customerCreateServicePlanOrdersBulk = async (req, res) => {
         if (order.status === "pending") order.status = "in_progress";
       }
       await order.save();
+      if (upiShare === 0 && invoice.status === "paid") {
+        await settleServiceCycle({ orderId: order._id, invoice });
+      }
     }
 
-    // ----- The PARENT transaction: the single pending entry the admin sees and acts
-    // on for this whole batch. Created after the children so that, if anything above
-    // fails, no parent is ever left pointing at a rolled-back batch.
+    // ----- The BATCH record: the single pending entry the admin approves or rejects for
+    // this whole purchase. Created after the children so that, if anything above fails,
+    // no batch is ever left pointing at a rolled-back purchase.
     //
-    // It deliberately carries NO orderId and NO invoiceId. Settling is delegated
-    // entirely to its children, which each carry their own. This matters: if the
-    // parent carried the PROJECT's orderId, the generic order-payment path would
-    // treat the parent as a payment against the project itself and could mark that
-    // project payment-rejected on rejection — the project is only the context these
-    // services were bought for, not the thing being paid for.
+    // This is deliberately NOT a transactionModel row. A transaction means "one real payment
+    // applied to one order" (single orderId/invoiceId refs, and transactionService.js infers
+    // "no orderId => wallet recharge"). A batch covers N orders, so it can never satisfy that
+    // shape — forcing it in produced an orderId-less transaction that had to override the
+    // wallet-recharge inference and still showed up in the admin ledger as a nameless payment
+    // in the "Wallet / General Payments" bucket. See paymentBatchModel.js.
     //
-    // The project is recorded in paymentDetails instead, so admin UI can still show
-    // "3 services on <project>" without that reference being mistaken for a target
-    // to settle.
-    let parentTransaction = null;
+    // The real money stays in the children (one per service, each with its own orderId/
+    // invoiceId). batchRef reuses parentTxnId — the exact value children already carry in
+    // parentTransactionId — so every child lookup, wallet-refund query and rollback below
+    // keeps working unchanged.
+    let paymentBatch = null;
     if (upiPart > 0) {
-      parentTransaction = await createPaymentTransaction({
+      paymentBatch = await paymentBatchModel.create({
         userId,
-        transactionId: parentTxnId,
-        amount: upiPart,
+        batchRef: parentTxnId,
         upiTransactionId,
-        paymentMethod: isCombined ? "combined" : "upi",
-        // type/sourceType/paymentStatus are set EXPLICITLY. The helper infers
-        // "wallet recharge" from the absence of an orderId, which would make this a
-        // `deposit` and CREDIT the customer's wallet on approval. This is a payment
-        // the customer owes, not money coming in — it must never be a deposit.
-        type: "payment",
-        sourceType: "order",
-        paymentStatus: "pending-approval",
-        description:
-          `Payment (UPI) for ${priced.length} service${priced.length === 1 ? "" : "s"}` +
-          (linkedOrder ? ` on project ${linkedOrder._id}` : ""),
-      });
-
-      // Recorded after creation so the helper's own field set stays untouched.
-      parentTransaction.paymentDetails = {
-        isServiceBatch: true,
-        serviceCount: priced.length,
-        linkedProjectOrderId: linkedOrder ? String(linkedOrder._id) : null,
+        totalAmount,
         walletPart,
         upiPart,
+        paymentMethod: isCombined ? "combined" : "upi",
+        linkedProjectOrderId: linkedOrder ? linkedOrder._id : null,
+        orderIds: created.filter((item) => item.order).map((item) => item.order._id),
         childTransactionIds: created
           .filter((item) => item.childTxn)
           .map((item) => item.childTxn.transactionId),
-      };
-      await parentTransaction.save();
+        status: "pending-approval",
+      });
 
-      created.push({ parentOnly: true, parentTransaction });
+      created.push({ batchOnly: true, paymentBatch });
     }
 
     const approved = upiPart === 0;
@@ -354,7 +350,7 @@ const customerCreateServicePlanOrdersBulk = async (req, res) => {
         walletPaid: walletPart,
         upiPending: upiPart,
         approved,
-        parentTransactionId: parentTransaction ? parentTransaction.transactionId : null,
+        batchRef: paymentBatch ? paymentBatch.batchRef : null,
         count: priced.length,
         orders: priced.map((item, index) => ({
           orderId: created[index].order._id,
@@ -377,10 +373,10 @@ const customerCreateServicePlanOrdersBulk = async (req, res) => {
 
     for (const item of created) {
       try {
-        // The parent-only entry has no order/invoice of its own — just remove it.
-        if (item.parentOnly) {
-          if (item.parentTransaction?._id) {
-            await transactionModel.deleteOne({ _id: item.parentTransaction._id });
+        // The batch entry has no order/invoice of its own — just remove it.
+        if (item.batchOnly) {
+          if (item.paymentBatch?._id) {
+            await paymentBatchModel.deleteOne({ _id: item.paymentBatch._id });
           }
           continue;
         }

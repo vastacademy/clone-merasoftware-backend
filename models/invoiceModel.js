@@ -26,7 +26,7 @@ const invoiceSchema = new mongoose.Schema({
     // `project_final` is the one cumulative statement for a project. It is not a
     // new payment request; the normal `project` records remain the individual
     // installment/payment invoices.
-    enum: ["project", "project_final", "plan_renewal"],
+    enum: ["project", "project_final", "plan_renewal", "service_statement"],
     required: true,
   },
   amount: {
@@ -59,6 +59,10 @@ const invoiceSchema = new mongoose.Schema({
     default: null,
   },
   installmentNumber: {
+    type: Number,
+    default: null,
+  },
+  serviceCycleNumber: {
     type: Number,
     default: null,
   },
@@ -111,6 +115,10 @@ invoiceSchema.index({ orderId: 1 });
 invoiceSchema.index(
   { orderId: 1, invoiceType: 1 },
   { unique: true, partialFilterExpression: { invoiceType: "project_final" } }
+);
+invoiceSchema.index(
+  { orderId: 1, invoiceType: 1 },
+  { unique: true, partialFilterExpression: { invoiceType: "service_statement" } }
 );
 
 const invoiceModel = mongoose.model("invoice", invoiceSchema);

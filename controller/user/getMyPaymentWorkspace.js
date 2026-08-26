@@ -36,7 +36,7 @@ const getMyPaymentWorkspace = async (req, res) => {
         .sort({ createdAt: -1 }),
       invoiceModel
         .find({ userId: customerObjectId })
-        .select("orderId invoiceNumber invoiceType amount status invoiceDate dueDate paidDate installmentNumber lineItems paymentMethod transactionReference createdAt")
+        .select("orderId invoiceNumber invoiceType amount amountPaid status invoiceDate dueDate paidDate installmentNumber serviceCycleNumber lineItems paymentMethod transactionReference createdAt")
         .populate({ path: "orderId", select: "productId projectSnapshot servicePlanSnapshot orderItems", populate: { path: "productId", select: "serviceName" } })
         .sort({ createdAt: -1 }),
     ]);

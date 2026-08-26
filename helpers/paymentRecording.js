@@ -111,6 +111,7 @@ const createProjectInvoice = async ({
   amount,
   lineItems,
   installmentNumber,
+  serviceCycleNumber,
   invoiceDate = new Date(),
   dueDate,
   invoiceType = "project",
@@ -126,6 +127,7 @@ const createProjectInvoice = async ({
     invoiceDate,
     dueDate: dueDate || invoiceDate,
     ...(installmentNumber ? { installmentNumber } : {}),
+    ...(serviceCycleNumber ? { serviceCycleNumber } : {}),
     lineItems,
   });
 };

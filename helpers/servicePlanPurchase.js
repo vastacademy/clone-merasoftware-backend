@@ -7,6 +7,7 @@
 // shape. Payment mechanics stay in each controller, since they genuinely differ.
 
 const SERVICE_PLAN_CATEGORY = "service_plan";
+const { deriveTotalCycles, addMonths } = require("./serviceBillingSchedule");
 
 const VALIDITY_UNIT_DAYS = { day: 1, week: 7, month: 30, year: 365 };
 
@@ -36,11 +37,6 @@ const BILLING_CYCLE_MONTHS = {
 };
 
 const addDays = (date, days) => new Date(date.getTime() + days * 24 * 60 * 60 * 1000);
-const addMonths = (date, months) => {
-  const result = new Date(date);
-  result.setMonth(result.getMonth() + months);
-  return result;
-};
 
 // Selling price wins when set, else base price. Never read from the client.
 const resolveServicePlanPrice = (plan) =>
@@ -71,15 +67,17 @@ const resolveCustomerBillingSelection = ({ servicePlan = {}, billingCycle, tenur
   if (!cycleMonths || !option || !Number.isFinite(Number(option.pricePerCycle)) || Number(option.pricePerCycle) < 0) {
     throw new Error('The selected billing option is not available for this service');
   }
-  const hasTenure = tenureMonths !== undefined && tenureMonths !== null && tenureMonths !== '';
-  if (hasTenure && (!Number.isInteger(Number(tenureMonths)) || Number(tenureMonths) < cycleMonths || Number(tenureMonths) % cycleMonths !== 0)) {
-    throw new Error('Total tenure must be a whole multiple of the selected billing period');
+  if (tenureMonths === undefined || tenureMonths === null || tenureMonths === '') {
+    throw new Error('Total tenure is required for a recurring service');
   }
+  const resolvedTenureMonths = Number(tenureMonths);
+  const totalCycles = deriveTotalCycles({ tenureMonths: resolvedTenureMonths, cycleMonths });
   return {
     billingCycle,
     cycleMonths,
-    tenureMonths: hasTenure ? Number(tenureMonths) : null,
-    autoRenew: !hasTenure,
+    tenureMonths: resolvedTenureMonths,
+    totalCycles,
+    autoRenew: false,
     firstPayment: Number(option.pricePerCycle),
   };
 };
@@ -103,7 +101,7 @@ const buildServicePlanOrderData = ({
   const waitsForProjectCompletion = servicePlan.timing === 'after' && addedDuringProjectPhase === 'in_progress' && linkedProjectOrderId;
 
   const isCustomerConfigured = Boolean(billingSelection);
-  const isIndefinite = isCustomerConfigured ? billingSelection.autoRenew : runsIndefinitely(servicePlan);
+  const isIndefinite = isCustomerConfigured ? false : runsIndefinitely(servicePlan);
   const endDate = waitsForProjectCompletion ? null : (isCustomerConfigured
     ? (billingSelection.tenureMonths ? addMonths(startDate, billingSelection.tenureMonths) : null)
     : (isIndefinite ? null : addDays(startDate, validityInDays)));
@@ -167,7 +165,8 @@ const buildServicePlanOrderData = ({
       selectedBillingCycle: billingSelection?.billingCycle,
       selectedBillingCycleMonths: billingSelection?.cycleMonths,
       tenureMonths: billingSelection?.tenureMonths,
-      autoRenew: billingSelection?.autoRenew,
+      totalCycles: billingSelection?.totalCycles,
+      autoRenew: false,
     },
     servicePlanStartDate: waitsForProjectCompletion ? null : startDate,
     servicePlanEndDate: endDate,
@@ -177,7 +176,10 @@ const buildServicePlanOrderData = ({
     serviceSelectedBillingCycle: billingSelection?.billingCycle || null,
     serviceBillingCycleMonths: billingSelection?.cycleMonths || null,
     serviceTenureMonths: billingSelection?.tenureMonths || null,
-    serviceAutoRenew: billingSelection?.autoRenew || false,
+    serviceTotalCycles: billingSelection?.totalCycles || null,
+    serviceCompletedCycles: 0,
+    serviceCyclePrice: billingSelection?.firstPayment || price,
+    serviceAutoRenew: false,
     serviceNextBillingDate: firstCycleEnd,
     serviceAccessUsedInCycle: 0,
     serviceAccessUsedTotal: 0,

@@ -218,25 +218,24 @@ const adminCreateProjectOrderController = async (req, res) => {
     const invoiceDate = new Date();
     const createdInvoices = [];
     if (isPartialPayment) {
-      // Sequential, not Promise.all — generateInvoiceNumber() reads the last invoice
-      // number and would race if multiple installments requested one concurrently.
-      for (const installment of order.installments) {
-        const invoiceNumber = await generateInvoiceNumber();
-        const dueDate = installment.dueDate || invoiceDate;
-        const invoice = await invoiceModel.create({
-          userId: customerId,
-          orderId: order._id,
-          invoiceNumber,
-          invoiceType: "project",
-          amount: installment.amount,
-          status: "unpaid",
-          invoiceDate,
-          dueDate,
-          installmentNumber: installment.installmentNumber,
-          lineItems,
-        });
-        createdInvoices.push(invoice);
-      }
+      // A future installment is not an actionable debt. Create only installment
+      // #1 now; settleInstallmentInvoice creates #2/#3 when they are actually due.
+      const installment = order.installments[0];
+      const invoiceNumber = await generateInvoiceNumber();
+      const dueDate = installment.dueDate || invoiceDate;
+      const invoice = await invoiceModel.create({
+        userId: customerId,
+        orderId: order._id,
+        invoiceNumber,
+        invoiceType: "project",
+        amount: installment.amount,
+        status: "unpaid",
+        invoiceDate,
+        dueDate,
+        installmentNumber: installment.installmentNumber,
+        lineItems,
+      });
+      createdInvoices.push(invoice);
     } else {
       const invoiceNumber = await generateInvoiceNumber();
       const invoice = await invoiceModel.create({

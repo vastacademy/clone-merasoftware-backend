@@ -83,6 +83,7 @@ const scanDeleteOrderController = require('../controller/order/scanDeleteOrder')
 const adminCreateProjectOrderController = require('../controller/order/adminCreateProjectOrder');
 const approveProjectOrderController = require('../controller/order/approveProjectOrder');
 const { downloadProjectFinalInvoice, viewProjectFinalInvoice, resendProjectFinalInvoice } = require('../controller/invoice/projectFinalInvoiceController');
+const { viewInvoiceDocument, downloadInvoiceDocument } = require('../controller/invoice/invoiceDocumentController');
 const getCategoryBasePricesController = require('../controller/admin/getCategoryBasePrices');
 const updateCategoryBasePriceController = require('../controller/admin/updateCategoryBasePrice');
 const getMessageTemplatesController = require('../controller/admin/getMessageTemplates');
@@ -299,6 +300,8 @@ router.get("/user-renewal-status", authToken, getUserRenewalStatus)
 router.post("/manual-renewal-check", authToken, manualRenewalCheck)
 router.post("/invoices/update-overdue", authToken, updateOverdueInvoices)
 router.post("/invoices/:invoiceId/mark-paid", authToken, markInvoiceAsPaid)
+router.get("/invoices/:invoiceId/view", authToken, viewInvoiceDocument)
+router.get("/invoices/:invoiceId/download", authToken, downloadInvoiceDocument)
 router.get("/admin/project-final-invoices/:invoiceId/download", authToken, downloadProjectFinalInvoice)
 router.get("/admin/project-final-invoices/:invoiceId/view", authToken, viewProjectFinalInvoice)
 router.post("/admin/project-final-invoices/:invoiceId/resend", authToken, resendProjectFinalInvoice)

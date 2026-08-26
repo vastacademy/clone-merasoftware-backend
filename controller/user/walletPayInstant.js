@@ -98,6 +98,10 @@ const walletPayInstant = async (req, res) => {
       const projectInvoice = await invoiceModel.findOne({ _id: invoiceId, userId });
 
       if (projectInvoice) {
+        const outstanding = Math.max(0, Number(projectInvoice.amount || 0) - Number(projectInvoice.amountPaid || 0));
+        if (numericAmount <= 0 || numericAmount > outstanding) {
+          return res.status(400).json({ message: "Payment amount must not exceed the invoice balance", error: true, success: false });
+        }
         const invoiceTxnId = `WPAY${Date.now()}${Math.floor(Math.random() * 10000)}`;
         const { transaction, newBalance } = await deductWalletInstant({
           userId,

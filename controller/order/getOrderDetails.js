@@ -116,7 +116,7 @@ const getOrderDetails = async (req, res) => {
             .lean();
 
         const serviceInvoices = order.isServicePlan
-            ? await invoiceModel.find({ orderId: order._id }).sort({ invoiceDate: -1 }).select('invoiceNumber amount status invoiceDate dueDate').lean()
+            ? await invoiceModel.find({ orderId: order._id }).sort({ invoiceDate: -1 }).select('invoiceNumber invoiceType amount amountPaid status invoiceDate dueDate serviceCycleNumber').lean()
             : [];
 
         // A project is the owner of its add-on service relationship. Return its

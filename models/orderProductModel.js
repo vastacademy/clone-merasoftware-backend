@@ -599,6 +599,18 @@ const orderSchema = new mongoose.Schema({
         type: Number,
         default: null
     },
+    serviceTotalCycles: {
+        type: Number,
+        default: null
+    },
+    serviceCompletedCycles: {
+        type: Number,
+        default: 0
+    },
+    serviceCyclePrice: {
+        type: Number,
+        default: null
+    },
     serviceAutoRenew: {
         type: Boolean,
         default: false
@@ -624,7 +636,10 @@ const orderSchema = new mongoose.Schema({
             cycleNumber: Number,
             cycleStart: Date,
             cycleEnd: Date,
-            accessUsed: Number
+            accessUsed: Number,
+            invoiceId: { type: mongoose.Schema.Types.ObjectId, ref: 'invoice' },
+            amount: Number,
+            paidAt: Date
         }],
         default: []
     },

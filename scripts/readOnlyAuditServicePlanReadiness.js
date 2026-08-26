@@ -6,7 +6,7 @@
  * and is their config complete enough for the purchase controller to accept
  * them) and the project side (do customers have projects the card would show on).
  */
-require("dotenv").config();
+require("dotenv").config({ path: require("path").join(__dirname, "..", ".env") });
 const mongoose = require("mongoose");
 const productModel = require("../models/productModel");
 const orderModel = require("../models/orderProductModel");
@@ -31,11 +31,23 @@ const VALIDITY_UNIT_DAYS = { day: 1, week: 7, month: 30, year: 365 };
       Number(sp.validityInDays) ||
       Number(sp.validityValue || 0) * (VALIDITY_UNIT_DAYS[sp.validityUnit] || 0);
 
-    // Exactly the conditions customerCreateServicePlanOrder.js enforces.
+    const hasPurchasableBillingOption = Array.isArray(sp.billingOptions) &&
+      sp.billingOptions.some((option) =>
+        ['monthly', 'quarterly', 'half_yearly', 'yearly', 'every_2_years', 'every_3_years', 'every_4_years', 'every_5_years'].includes(option.billingCycle) &&
+        Number(option.pricePerCycle) > 0
+      );
+
+    // Exactly the conditions customerCreateServicePlanOrder.js enforces. A
+    // configured billing option uses the customer-selected tenure, so it does
+    // not require the legacy validity field.
     const blockers = [];
     if (plan.isHidden) blockers.push("hidden from customers");
-    if (!(Number(price) > 0)) blockers.push("no price");
-    if (!(validityInDays > 0)) blockers.push("no valid duration");
+    if (hasPurchasableBillingOption) {
+      // Price comes from the chosen option in this path.
+    } else {
+      if (!(Number(price) > 0)) blockers.push("no price");
+      if (!(validityInDays > 0)) blockers.push("no valid duration");
+    }
 
     if (blockers.length === 0) buyable += 1;
 
@@ -43,6 +55,7 @@ const VALIDITY_UNIT_DAYS = { day: 1, week: 7, month: 30, year: 365 };
       `  ${blockers.length === 0 ? "BUYABLE " : "BLOCKED "} ${plan.serviceName}` +
         ` | behavior=${sp.serviceBehavior || "(not set)"}` +
         ` | billing=${sp.billingCycle || "(none)"}` +
+        ` | tenureBilling=${hasPurchasableBillingOption ? "available" : "not configured"}` +
         ` | validityDays=${validityInDays || 0}` +
         ` | price=${price ?? "(none)"}` +
         (blockers.length ? `\n            blockers: ${blockers.join(", ")}` : "")

@@ -344,17 +344,19 @@ console.log('Product category from DB:', product.category);
         }));
         const projectInvoiceDate = new Date();
         if (order.isPartialPayment && Array.isArray(order.installments) && order.installments.length > 0) {
-          for (const installment of order.installments) {
-            await createProjectInvoice({
-              customerId: userId,
-              orderId: order._id,
-              amount: installment.amount,
-              lineItems: invoiceLineItems,
-              installmentNumber: installment.installmentNumber,
-              invoiceDate: projectInvoiceDate,
-              dueDate: installment.dueDate || projectInvoiceDate,
-            });
-          }
+          // Only the currently due first installment is invoiced at creation.
+          // Later installments are created by settleInstallmentInvoice exactly when
+          // their payment is due/settled, matching every other project path.
+          const installment = order.installments[0];
+          await createProjectInvoice({
+            customerId: userId,
+            orderId: order._id,
+            amount: installment.amount,
+            lineItems: invoiceLineItems,
+            installmentNumber: installment.installmentNumber,
+            invoiceDate: projectInvoiceDate,
+            dueDate: installment.dueDate || projectInvoiceDate,
+          });
         } else {
           await createProjectInvoice({
             customerId: userId,
