@@ -52,8 +52,22 @@ const buildOrderDeletePlan = async (orderId) => {
 
   const driveFileIds = collectDriveFileIds(relatedUpdateRequests);
   const relatedProduct = order?.productId || relatedUpdateRequests?.[0]?.updatePlanId?.productId || null;
-  const serviceName = relatedProduct?.serviceName || "Project";
-  const isUpdatePlan = Boolean(relatedProduct?.isWebsiteUpdate || relatedProduct?.category === "website_updates");
+  // Same name-priority as frontend/src/helpers/orderPresentation.js's getOrderDisplayName —
+  // a custom client project (no catalog product link) only has projectSnapshot.displayName.
+  const serviceName =
+    order?.projectSnapshot?.displayName ||
+    relatedProduct?.serviceName ||
+    order?.servicePlanSnapshot?.serviceName ||
+    (order?.orderItems || []).find((item) => item.type === "main")?.name ||
+    order?.orderItems?.[0]?.name ||
+    "Project";
+  // Same plan/project split as frontend/src/helpers/orderType.js's PLAN_CATEGORIES —
+  // isWebsiteProject is the order-level SSOT set at creation; category is only a fallback
+  // for the rare order missing that field (service_plan category orders are plans too).
+  const PLAN_CATEGORIES = new Set(["website_updates", "service_plan"]);
+  const isUpdatePlan = order?.isWebsiteProject === undefined
+    ? Boolean(relatedProduct?.isWebsiteUpdate || PLAN_CATEGORIES.has(relatedProduct?.category))
+    : !order.isWebsiteProject;
   const orderType = isUpdatePlan ? "plan" : "project";
 
   const sections = [
