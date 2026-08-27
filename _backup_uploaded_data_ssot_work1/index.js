@@ -60,8 +60,6 @@ const deleteGuestSlidesController = require('../controller/welcomeBanner/deleteG
 const getUserUpdatePlans = require('../controller/user/getUserUpdatePlans');
 const submitUpdateRequest = require('../controller/user/submitUpdateRequest');
 const getUserUpdateRequests = require('../controller/user/getUserUpdateRequests');
-const getOrderUploads = require('../controller/order/getOrderUploads');
-const downloadUploadRequestZip = require('../controller/order/downloadUploadRequestZip');
 const verifyPaymentController = require('../controller/user/verifyPaymentController');
 const getWalletHistory = require('../controller/user/getWalletHistory');
 const { approveTransaction, rejectTransaction } = require('../controller/user/transactionApprovalController');
@@ -237,11 +235,6 @@ router.post("/addRole", authToken, addRoleToUserController)
 router.get("/user-update-plans", authToken, getUserUpdatePlans)
 router.post("/user-request-update", authToken, upload.any(), submitUpdateRequest)
 router.get("/get-update-requests", authToken, getUserUpdateRequests)
-// Uploaded-data surface. One pair of routes for customer and admin alike — each
-// authorises internally (admin reads any order, everyone else only their own), so the
-// two sides can never see a different history or a different set of downloadable files.
-router.get("/orders/:orderId/uploads", authToken, getOrderUploads)
-router.get("/uploads/:requestId/download", authToken, downloadUploadRequestZip)
 router.post("/validate-coupon", authToken, validateCoupon)
 router.post("/pay-installment", authToken, payInstallment)
 router.get("/user-notifications", authToken, getUserNotifications);

@@ -38,14 +38,6 @@ const updateRequestSchema = new mongoose.Schema({
     driveLink: {
       type: String
     },
-    // submitUpdateRequest.js has always built and passed a downloadLink, but the field
-    // was missing here, so Mongoose silently dropped it on every save — zero of the 45
-    // stored files carry one. Declared now to match clientDocumentSchema (userModel),
-    // where the same field has always worked. Existing records stay readable: the link
-    // is derivable from driveFileId, so nothing depends on this being backfilled.
-    downloadLink: {
-      type: String
-    },
     embedLink: {
       type: String
     },

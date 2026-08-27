@@ -149,27 +149,6 @@ class GoogleDriveService {
     }
   }
 
-  // Read a file's bytes back out of Drive as a stream.
-  //
-  // The service could upload, delete and list, but never read — so nothing on the server
-  // could touch a file a customer had sent. Anything that needs the actual bytes (the ZIP
-  // download) goes through here rather than building its own Drive client, which is what
-  // the old app's downloadAllFiles.js did.
-  //
-  // The existing 'auth/drive' scope already permits reads; no new permission is needed.
-  async getFileStream(fileId) {
-    try {
-      const response = await this.driveClient.files.get(
-        { fileId, alt: 'media' },
-        { responseType: 'stream' }
-      );
-      return response.data;
-    } catch (error) {
-      console.error('Error reading file from Drive:', error.message);
-      throw error;
-    }
-  }
-
   // List files from a specific folder
   async listFiles(folderId) {
     try {
