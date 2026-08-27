@@ -1,0 +1,348 @@
+const mongoose = require("mongoose");
+const orderModel = require("../../models/orderProductModel");
+const invoiceModel = require("../../models/invoiceModel"); // project invoices (invoiceType:'project')
+const monthlyInvoiceModel = require("../../models/monthlyInvoiceModel"); // recurring-plan invoices
+const { deductWalletInstant } = require("../../helpers/transactionService");
+const { markInvoicePaidAndResumePlan } = require("../../helpers/invoiceLifecycle");
+const {
+  markProjectInvoicePaid,
+} = require("../../helpers/paymentRecording");
+const { settleInstallmentInvoice } = require("../../helpers/installmentSettlement");
+const { syncProjectFinalInvoice } = require("../../helpers/projectFinalInvoice");
+
+// Instant wallet payment for an EXISTING order/installment — no admin approval.
+//
+// The wallet is the customer's own (already-approved) money, so spending it is instant. This
+// is the shared, SSOT-safe replacement for the dead `/wallet/deduct` route that several pages
+// called (InstallmentPayment.js, InvoiceDetailPage.js, and the customize flow). It:
+//   1. atomically debits the wallet via deductWalletInstant() (guarded, records a completed txn)
+//   2. applies that payment to the order exactly like transactionApprovalController does when it
+//      approves a payment — marking the installment paid / advancing money + approving the order.
+// If the wallet can't cover the amount it throws (caller then falls back to UPI for the rest).
+//
+// Two payment shapes are supported:
+//   - Full settlement (amount covers the whole installment / due): wallet debit settles it, the
+//     installment is marked paid and the order is approved immediately.
+//   - Partial wallet + UPI remainder (a combined payment): the caller sends only the wallet part
+//     here plus a `parentTransactionId`; this debits that part and advances `paidAmount` WITHOUT
+//     marking the installment paid or approving the order. The UPI remainder is a separate pending
+//     transaction (same parentTransactionId) that the admin approves later — that approval marks
+//     the installment paid and flips the order to approved (transactionApprovalController), and its
+//     `paidAmount += upiPart` adds onto the wallet part seeded here, so nothing double-counts. If
+//     the UPI part is later rejected, the paired wallet part is auto-refunded (same controller).
+
+const getOrderTotal = (order) =>
+  Number(order?.totalAmount || order?.totalPrice || order?.price || 0);
+
+const walletPayInstant = async (req, res) => {
+  try {
+    const userId = req.userId;
+    if (!userId) {
+      return res.status(401).json({
+        message: "Authentication required",
+        error: true,
+        success: false,
+      });
+    }
+
+    const { orderId, amount, installmentNumber, parentTransactionId, invoiceId } = req.body;
+
+    if (!orderId || !mongoose.Types.ObjectId.isValid(orderId)) {
+      return res.status(400).json({
+        message: "Valid orderId is required",
+        error: true,
+        success: false,
+      });
+    }
+
+    const numericAmount = Number(amount);
+    if (!Number.isFinite(numericAmount) || numericAmount <= 0) {
+      return res.status(400).json({
+        message: "A positive amount is required",
+        error: true,
+        success: false,
+      });
+    }
+
+    // The order must belong to the caller — a customer can only spend their own wallet on
+    // their own order.
+    const order = await orderModel.findOne({ _id: orderId, userId });
+    if (!order) {
+      return res.status(404).json({
+        message: "Order not found",
+        error: true,
+        success: false,
+      });
+    }
+
+    // ---- Invoice mode ----
+    // When paying a specific plan invoice (InvoiceDetailPage), settling the order alone is not
+    // enough — the invoice document carries its own status and must be marked paid too. This mirrors
+    // transactionApprovalController's invoice branch exactly: debit the wallet, then hand off to the
+    // shared markInvoicePaidAndResumePlan helper (which marks the invoice paid, ensures a completed
+    // transaction, and resumes the order/plan). Order-payment math below is skipped for this mode.
+    // Two invoice models exist (doc 52 §2a): the NEW generic invoiceModel (invoiceType:'project',
+    // used by every project order) and the legacy monthlyInvoiceModel (recurring plans only). We
+    // look up the project invoice first — that is what every InvoiceDetailPage/project payment is
+    // — and fall back to the legacy model only if not found there, so recurring-plan invoice
+    // payment (if ever routed through this endpoint) keeps working unchanged.
+    if (invoiceId) {
+      if (!mongoose.Types.ObjectId.isValid(invoiceId)) {
+        return res.status(400).json({
+          message: "Valid invoiceId is required",
+          error: true,
+          success: false,
+        });
+      }
+
+      const projectInvoice = await invoiceModel.findOne({ _id: invoiceId, userId });
+
+      if (projectInvoice) {
+        const outstanding = Math.max(0, Number(projectInvoice.amount || 0) - Number(projectInvoice.amountPaid || 0));
+        if (numericAmount <= 0 || numericAmount > outstanding) {
+          return res.status(400).json({ message: "Payment amount must not exceed the invoice balance", error: true, success: false });
+        }
+        const invoiceTxnId = `WPAY${Date.now()}${Math.floor(Math.random() * 10000)}`;
+        const { transaction, newBalance } = await deductWalletInstant({
+          userId,
+          transactionId: invoiceTxnId,
+          amount: numericAmount,
+          orderId: order._id,
+          sourceType: "invoice",
+          description: `Payment (wallet) for invoice ${projectInvoice.invoiceNumber || projectInvoice._id}`,
+        });
+
+        // Settle by exactly the amount paid now, reusing the SAME wallet transaction (no second
+        // transaction — doc 52 Q1). Fully covers it -> 'paid'; a smaller amount -> 'partially_paid'.
+        const { invoice: settledInvoice } = await markProjectInvoicePaid({
+          invoice: projectInvoice,
+          customerId: userId,
+          paymentMethod: "wallet",
+          amount: numericAmount,
+          existingTransaction: transaction,
+        });
+
+        // A project invoice is only a payment record; its matching order is the
+        // financial aggregate. Keep both sources in lockstep for direct invoice
+        // payments as well as the normal installment route below.
+        const amountDue = getOrderTotal(order);
+        order.paidAmount = Math.min(amountDue, Number(order.paidAmount || 0) + numericAmount);
+        order.remainingAmount = Math.max(0, amountDue - Number(order.paidAmount || 0));
+        if (projectInvoice.installmentNumber && Array.isArray(order.installments)) {
+          const installment = order.installments.find(
+            (item) => Number(item.installmentNumber) === Number(projectInvoice.installmentNumber)
+          );
+          if (installment && settledInvoice.status === "paid") {
+            installment.paid = true;
+            installment.paidDate = new Date();
+            installment.paymentStatus = "none";
+            installment.transactionId = transaction.transactionId;
+          }
+        }
+        if (settledInvoice.status === "paid") {
+          const nextInstallment = Array.isArray(order.installments)
+            ? order.installments.find((item) => !item.paid)
+            : null;
+          if (nextInstallment) order.currentInstallment = nextInstallment.installmentNumber;
+          order.orderVisibility = "approved";
+          if (order.status === "pending") order.status = "in_progress";
+        }
+        if (order.remainingAmount <= 0) order.paymentComplete = true;
+        await order.save();
+        await syncProjectFinalInvoice(order);
+
+        return res.status(200).json({
+          message: "Wallet payment successful",
+          success: true,
+          error: false,
+          data: {
+            transactionId: transaction.transactionId,
+            amount: numericAmount,
+            walletBalance: newBalance,
+            invoiceStatus: settledInvoice.status,
+            approved: settledInvoice.status === "paid",
+          },
+        });
+      }
+
+      const monthlyInvoice = await monthlyInvoiceModel.findOne({ _id: invoiceId, userId });
+      if (!monthlyInvoice) {
+        return res.status(404).json({
+          message: "Invoice not found",
+          error: true,
+          success: false,
+        });
+      }
+
+      const invoiceTxnId = `WPAY${Date.now()}${Math.floor(Math.random() * 10000)}`;
+      const { transaction, newBalance } = await deductWalletInstant({
+        userId,
+        transactionId: invoiceTxnId,
+        amount: numericAmount,
+        orderId: order._id,
+        sourceType: "invoice",
+        description: `Payment (wallet) for invoice ${monthlyInvoice.invoiceNumber || monthlyInvoice._id}`,
+      });
+
+      const paidResult = await markInvoicePaidAndResumePlan({
+        invoiceId: monthlyInvoice._id,
+        paymentMethod: "wallet",
+        transactionReference: transaction.transactionId,
+        markedPaidBy: userId,
+        transaction,
+      });
+
+      return res.status(200).json({
+        message: "Wallet payment successful",
+        success: true,
+        error: false,
+        data: {
+          transactionId: transaction.transactionId,
+          amount: numericAmount,
+          walletBalance: newBalance,
+          invoiceStatus: paidResult.invoice?.status || "paid",
+          approved: true,
+        },
+      });
+    }
+
+    const isInstallment =
+      installmentNumber != null &&
+      Array.isArray(order.installments) &&
+      order.installments.length > 0;
+
+    const targetInstallment = isInstallment
+      ? order.installments.find(
+          (item) => Number(item.installmentNumber) === Number(installmentNumber)
+        )
+      : null;
+
+    // A partial wallet payment (only part of a combined wallet+UPI payment) settles nothing on its
+    // own: the wallet part is debited and `paidAmount` advances, but the installment stays unpaid
+    // and the order stays pending until the UPI remainder is approved. We recognise it two ways:
+    // the caller sent a parentTransactionId (the UPI remainder's id), OR — for an installment — the
+    // wallet amount doesn't cover the whole installment.
+    const isCombinedPayment = Boolean(parentTransactionId);
+    const coversInstallment =
+      !isInstallment ||
+      !targetInstallment ||
+      numericAmount >= Number(targetInstallment.amount || 0);
+    const isFullSettlement = !isCombinedPayment && coversInstallment;
+
+    // Debit the wallet atomically (throws if it can't cover the amount) + record a completed txn.
+    // For a combined payment the wallet part uses the `${parent}-W` id + links the parent, so a
+    // later rejection of the UPI part can find and auto-refund this wallet part
+    // (transactionApprovalController's reject path matches parentTransactionId + type 'payment').
+    const transactionId = isCombinedPayment
+      ? `${parentTransactionId}-W`
+      : `WPAY${Date.now()}${Math.floor(Math.random() * 10000)}`;
+    const { transaction, newBalance } = await deductWalletInstant({
+      userId,
+      transactionId,
+      amount: numericAmount,
+      orderId: order._id,
+      installmentNumber: isInstallment ? installmentNumber : null,
+      isInstallmentPayment: isInstallment,
+      description: `${
+        isInstallment ? `Installment ${installmentNumber}` : "Payment"
+      } (wallet) for order ${order._id}`,
+      parentTransactionId: isCombinedPayment ? parentTransactionId : null,
+    });
+
+    // Apply the payment to the order — same math as transactionApprovalController's approval.
+    // Only a FULL settlement marks the installment paid; a partial wallet part just advances the
+    // paid amount and leaves the installment/order for the UPI approval to finish.
+    if (isInstallment && targetInstallment && !targetInstallment.paid) {
+      if (isFullSettlement) {
+        targetInstallment.paid = true;
+        targetInstallment.paidDate = new Date();
+        targetInstallment.paymentStatus = "none";
+        targetInstallment.transactionId = transaction.transactionId;
+      }
+      order.paidAmount = Number(order.paidAmount || 0) + numericAmount;
+    } else {
+      order.paidAmount = Number(order.paidAmount || 0) + numericAmount;
+    }
+
+    const orderTotal = getOrderTotal(order);
+    order.paidAmount = Math.min(
+      Number(order.paidAmount || 0),
+      orderTotal || Number(order.paidAmount || 0)
+    );
+    order.remainingAmount = Math.max(0, orderTotal - Number(order.paidAmount || 0));
+
+    const allInstallmentsPaid =
+      Array.isArray(order.installments) &&
+      order.installments.length > 0 &&
+      order.installments.every((item) => item.paid);
+
+    if (!order.isPartialPayment || order.remainingAmount <= 0 || allInstallmentsPaid) {
+      order.paymentComplete = true;
+    }
+
+    const nextInstallment = Array.isArray(order.installments)
+      ? order.installments.find((item) => !item.paid)
+      : null;
+    if (nextInstallment) {
+      order.currentInstallment = nextInstallment.installmentNumber;
+    }
+
+    // Approve the order only when this wallet payment fully settles the amount due. For a combined
+    // payment the order stays as-is (pending-approval) until the admin approves the UPI remainder.
+    if (isFullSettlement) {
+      order.orderVisibility = "approved";
+      if (order.status === "pending") order.status = "in_progress";
+      order.rejectionReason = null;
+    }
+
+    await order.save();
+
+    // Due-based installment invoicing (doc 52 Phase 3): installment #1's invoice already exists
+    // from order creation, but #2/#3 only get theirs when they actually become due — i.e. right
+    // now, when this installment is being paid. Shared with the UPI-approval route
+    // (transactionApprovalController.js) via settleInstallmentInvoice — same find-or-create +
+    // markProjectInvoicePaid logic, one settle path regardless of payment method.
+    let invoiceStatus = null;
+    if (isInstallment) {
+      const settledInvoice = await settleInstallmentInvoice({
+        order,
+        installmentNumber,
+        amount: numericAmount,
+        paymentMethod: "wallet",
+        transaction,
+        customerId: userId,
+      });
+      invoiceStatus = settledInvoice?.status || null;
+    }
+    await syncProjectFinalInvoice(order);
+
+    return res.status(200).json({
+      message: "Wallet payment successful",
+      success: true,
+      error: false,
+      data: {
+        transactionId: transaction.transactionId,
+        amount: numericAmount,
+        walletBalance: newBalance,
+        remainingAmount: order.remainingAmount,
+        paymentComplete: order.paymentComplete,
+        invoiceStatus,
+        // true => the wallet fully settled this payment and the order is approved now; false =>
+        // this was the wallet part of a combined payment and a UPI remainder still needs approval.
+        approved: isFullSettlement,
+      },
+    });
+  } catch (error) {
+    console.error("Error in wallet instant payment:", error);
+    const message = error.message || "Wallet payment failed";
+    // Insufficient balance is a client error, not a server fault.
+    const status = message.includes("Insufficient") ? 400 : 500;
+    return res.status(status).json({
+      message,
+      error: true,
+      success: false,
+    });
+  }
+};
+
+module.exports = walletPayInstant;

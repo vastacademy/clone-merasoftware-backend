@@ -376,52 +376,11 @@ const approveTransaction = async (req, res) => {
     transaction.rejectionReason = null;
     transaction.rejectedAt = null;
     transaction.rejectedBy = null;
-
-    // An approval settles three things — the invoice, the order, and this transaction's own
-    // status. They must move together or not at all. Was: applyApprovedOrderPayment() ran first
-    // and the transaction was only marked 'completed' afterwards, so anything that threw in
-    // between (a real case: settleServiceCycle -> getCycleDates on a plan with no billing-cycle
-    // length) left the invoice already marked PAID while the transaction stayed 'pending'. The
-    // order was then unapprovable forever: retrying hit the invoice-balance guard, because the
-    // invoice had no outstanding amount left to settle. Marking the transaction BEFORE applying
-    // the money keeps every write inside one try — if applying throws, the catch below restores
-    // the transaction to exactly the state it was read in, so a failed approval leaves nothing
-    // half-written and can simply be retried once the underlying cause is fixed.
-    // walletDelta records the balance change already applied above, so a failed apply can put
-    // the customer's money back too — otherwise a throw would leave them debited for a payment
-    // that never completed.
-    const previousState = {
-      status: transaction.status,
-      paymentStatus: transaction.paymentStatus,
-      walletDelta:
-        transaction.paymentMethod === "wallet" && ["payment", "renewal"].includes(transaction.type)
-          ? amount
-          : transaction.type === "deposit"
-          ? -amount
-          : 0,
-    };
+    const linkedResult = await applyApprovedOrderPayment(transaction);
 
     transaction.status = "completed";
     transaction.paymentStatus = "approved";
     await transaction.save();
-
-    let linkedResult;
-    try {
-      linkedResult = await applyApprovedOrderPayment(transaction);
-    } catch (applyError) {
-      transaction.status = previousState.status;
-      transaction.paymentStatus = previousState.paymentStatus;
-      transaction.verifiedBy = null;
-      transaction.verificationDate = null;
-      await transaction.save();
-      if (previousState.walletDelta) {
-        await userModel.updateOne(
-          { _id: transaction.userId },
-          { $inc: { walletBalance: previousState.walletDelta } }
-        );
-      }
-      throw applyError;
-    }
 
     const updatedTransaction = await transactionModel
       .findById(transaction._id)
