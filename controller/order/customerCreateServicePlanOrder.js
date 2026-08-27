@@ -36,9 +36,9 @@ const {
 //   add-on to a project   -> linkedProjectOrderId + addedDuringProjectPhase sent
 // The linkage is stored as reference/reporting data; it does not branch any logic.
 //
-// This path accepts wallet, UPI or a combination. Buying SEVERAL services at once
-// is a separate endpoint (customerCreateServicePlanOrdersBulk.js) and is
-// wallet-only — see doc 55 §10 for why.
+// This path accepts wallet, UPI or a combination, and is the ONLY way a service is
+// bought — both the standalone page and the in-project Add-a-Service modal call it.
+// One payment settles one order, so a service is always bought one at a time.
 
 const PROJECT_PHASES = ["in_progress", "after_completion"];
 

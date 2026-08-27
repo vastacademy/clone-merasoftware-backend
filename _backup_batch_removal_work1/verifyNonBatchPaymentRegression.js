@@ -16,6 +16,7 @@ const productModel = require("../models/productModel");
 const orderModel = require("../models/orderProductModel");
 const invoiceModel = require("../models/invoiceModel");
 const transactionModel = require("../models/transactionModel");
+const paymentBatchModel = require("../models/paymentBatchModel");
 
 const singleController = require("../controller/order/customerCreateServicePlanOrder");
 const { approveTransaction, rejectTransaction } = require("../controller/user/transactionApprovalController");
@@ -100,6 +101,7 @@ const createdOrderIds = [];
 
   const txn1Doc = await transactionModel.findOne({ transactionId: txn1 }).lean();
   check("payment IS a transaction (not a batch)", Boolean(txn1Doc));
+  check("no batch created for a single purchase", !(await paymentBatchModel.exists({ batchRef: txn1 })));
   check("transaction carries its orderId", Boolean(txn1Doc?.orderId), String(txn1Doc?.orderId));
 
   const approve1 = mockRes();
@@ -181,6 +183,7 @@ const createdOrderIds = [];
   await invoiceModel.deleteMany({ orderId: { $in: allOrderIds } });
   await orderModel.deleteMany({ _id: { $in: allOrderIds } });
   await transactionModel.deleteMany({ userId: user._id });
+  await paymentBatchModel.deleteMany({ userId: user._id });
   await userModel.deleteOne({ _id: user._id });
   check("teardown removed all test data", (await orderModel.countDocuments({ _id: { $in: allOrderIds } })) === 0);
 

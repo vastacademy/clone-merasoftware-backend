@@ -5,6 +5,7 @@ const updateRequestModel = require("../../models/updateRequestModel");
 const monthlyInvoiceModel = require("../../models/monthlyInvoiceModel");
 const invoiceModel = require("../../models/invoiceModel");
 const transactionModel = require("../../models/transactionModel");
+const paymentBatchModel = require("../../models/paymentBatchModel");
 const { applyOrderSummary } = require("../../helpers/orderSummary");
 
 const getAdminUserWorkspace = async (req, res) => {
@@ -45,7 +46,7 @@ const getAdminUserWorkspace = async (req, res) => {
       });
     }
 
-    const [orders, rawOrderRefs, transactions, monthlyInvoices, projectInvoices, updateRequestCounts] = await Promise.all([
+    const [orders, rawOrderRefs, transactions, monthlyInvoices, projectInvoices, updateRequestCounts, paymentBatches] = await Promise.all([
       applyOrderSummary(orderModel.find({ userId: customerObjectId }).sort({ createdAt: -1 })),
       // Raw (unpopulated) orderId snapshot — used below to tell "no project linked" (e.g. wallet
       // deposit) apart from "project was deleted" (orderId was set but populate resolves to
@@ -80,6 +81,15 @@ const getAdminUserWorkspace = async (req, res) => {
         { $match: { userId: customerObjectId } },
         { $group: { _id: null, total: { $sum: 1 }, pending: { $sum: { $cond: [{ $eq: ["$status", "pending"] }, 1, 0] } } } },
       ]),
+      // Payment batches — one payment covering several service orders. Not transactions
+      // (see paymentBatchModel.js); returned separately so the admin can approve/reject the
+      // batch while the ledger keeps listing only real per-order payments.
+      paymentBatchModel
+        .find({ userId: customerObjectId })
+        .populate({ path: "orderIds", select: "productId projectSnapshot servicePlanSnapshot orderItems", populate: { path: "productId", select: "serviceName" } })
+        .populate({ path: "linkedProjectOrderId", select: "productId projectSnapshot orderItems", populate: { path: "productId", select: "serviceName" } })
+        .sort({ createdAt: -1 })
+        .lean(),
     ]);
 
     const markOrderDeleted = (doc) => {
@@ -134,6 +144,7 @@ const getAdminUserWorkspace = async (req, res) => {
         orders,
         renewals: [],
         transactions: transactionsWithDeletedFlag,
+        paymentBatches,
         invoices,
         updates: [],
         plans: [],

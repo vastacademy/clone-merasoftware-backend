@@ -1,10 +1,10 @@
-// Shared Service Plan purchase logic — SSOT for both purchase paths:
-//   customerCreateServicePlanOrder.js      (one service, wallet / UPI / combined)
-//   customerCreateServicePlanOrdersBulk.js (several services, wallet only)
+// Shared Service Plan purchase logic — SSOT for what a purchased service plan is:
+// its price, duration, cycle dates and frozen snapshot.
 //
-// Everything that decides WHAT a purchased service plan looks like lives here, so
-// the two paths can never drift apart on price, duration, cycle dates or snapshot
-// shape. Payment mechanics stay in each controller, since they genuinely differ.
+// One controller owns the purchase itself (customerCreateServicePlanOrder.js,
+// wallet / UPI / combined), serving both the standalone page and the in-project
+// Add-a-Service modal. This file stays separate so that shape is defined in one
+// place regardless of where the purchase is initiated from.
 
 const SERVICE_PLAN_CATEGORY = "service_plan";
 const { deriveTotalCycles, addMonths } = require("./serviceBillingSchedule");

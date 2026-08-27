@@ -1,4 +1,5 @@
 const transactionModel = require("../../models/transactionModel");
+const paymentBatchModel = require("../../models/paymentBatchModel");
 const userModel = require("../../models/userModel");
 const orderProductModel = require("../../models/orderProductModel");
 const invoiceModel = require("../../models/invoiceModel"); // project invoices (invoiceType:'project')
@@ -218,6 +219,93 @@ const applyApprovedOrderPayment = async (transaction) => {
 };
 
 // ---------------------------------------------------------------------------
+// Batch child settlement (one payment covering several orders)
+//
+// Several service plans can be bought in one go against a single UPI payment
+// (customerCreateServicePlanOrdersBulk.js). transactionModel.orderId/.invoiceId are single
+// refs — one transaction settles one order — so that purchase is recorded as:
+//
+//   BATCH (paymentBatchModel) — the approval group the admin acts on. Not a transaction:
+//              it has no orderId of its own because it covers many.
+//   CHILDREN — one transaction per service, each with its own orderId/invoiceId and
+//              carrying parentTransactionId = the batch's batchRef.
+//
+// The batch is resolved by settling each child through EXACTLY the same single-order code
+// path (applyApprovedOrderPayment / rejectLinkedOrderPayment) that handles every other
+// payment. Nothing about that logic changes — it is simply called once per child.
+//
+// These helpers are only reached from the batch paths. A plain combined payment's paired
+// wallet debit also carries parentTransactionId, but it is already completed at purchase
+// time and is filtered out below, so it is never re-settled here.
+// ---------------------------------------------------------------------------
+
+// True when this transaction belongs to a payment batch. A batch is all-or-nothing, so its
+// children are settled only through the batch, never individually. A plain combined payment
+// also carries parentTransactionId, but no batch exists for it, so it is unaffected.
+const isBatchChild = async (transaction) => {
+  if (!transaction?.parentTransactionId) return false;
+  return Boolean(await paymentBatchModel.exists({ batchRef: transaction.parentTransactionId }));
+};
+
+// Accepts anything carrying the shared parent id: a transaction (combined-payment parent)
+// via .transactionId, or a payment batch via .batchRef — both hold the exact same value
+// that children store in parentTransactionId.
+const findChildTransactions = async (parent) => {
+  const parentRef = parent?.transactionId || parent?.batchRef;
+  if (!parentRef) return [];
+  return transactionModel.find({
+    parentTransactionId: parentRef,
+    // The paired wallet debit of a combined payment is already completed and settled
+    // at purchase time — only the pending UPI children are settled on approval.
+    status: "pending",
+    paymentMethod: { $ne: "wallet" },
+  });
+};
+
+const settleChildTransactions = async (parentTransaction, adminId) => {
+  const children = await findChildTransactions(parentTransaction);
+  if (!children.length) return null;
+
+  const settledOrders = [];
+  for (const child of children) {
+    child.verifiedBy = adminId;
+    child.verificationDate = new Date();
+    child.rejectionReason = null;
+    child.rejectedAt = null;
+    child.rejectedBy = null;
+    // Same single-order settlement used by every other approved payment.
+    const result = await applyApprovedOrderPayment(child);
+    child.status = "completed";
+    child.paymentStatus = "approved";
+    await child.save();
+    if (result?.order) settledOrders.push(result.order);
+  }
+
+  return { childCount: children.length, orders: settledOrders };
+};
+
+const rejectChildTransactions = async (parentTransaction, rejectionReason, adminId) => {
+  const children = await findChildTransactions(parentTransaction);
+  if (!children.length) return null;
+
+  const rejectedOrders = [];
+  for (const child of children) {
+    child.status = "rejected";
+    child.paymentStatus = "rejected";
+    child.rejectionReason = rejectionReason;
+    child.rejectedAt = new Date();
+    child.rejectedBy = adminId;
+    child.verifiedBy = adminId;
+    child.verificationDate = new Date();
+    await child.save();
+
+    const order = await rejectLinkedOrderPayment(child, rejectionReason);
+    if (order) rejectedOrders.push(order);
+  }
+
+  return { childCount: children.length, orders: rejectedOrders };
+};
+
 const rejectLinkedOrderPayment = async (transaction, rejectionReason) => {
   // A plain order-payment transaction rejects its order/installment directly below. A project
   // invoice transaction (invoiceId points at invoiceModel) also has an order behind it and needs
@@ -314,6 +402,81 @@ const refundWalletPortionsFor = async (parentRef, rejectedRef) => {
   }
 };
 
+// ---------------------------------------------------------------------------
+// Payment batches (paymentBatchModel): one payment covering several orders.
+//
+// The batch is the approval group, not a payment — the real money lives in its child
+// transactions, one per order. Approving/rejecting a batch resolves those children through
+// the SAME single-order path every other payment uses; nothing in that logic changes.
+// ---------------------------------------------------------------------------
+
+const approvePaymentBatch = async (batch, req, res) => {
+  if (batch.status !== "pending-approval") {
+    return res.status(400).json({
+      message: `Payment is already ${batch.status === "approved" ? "approved" : "rejected"}`,
+      success: false,
+      error: true,
+    });
+  }
+
+  const childResult = await settleChildTransactions(batch, req.userId);
+  const childCount = childResult ? childResult.childCount : 0;
+
+  batch.status = "approved";
+  batch.verifiedBy = req.userId;
+  batch.verificationDate = new Date();
+  batch.rejectionReason = null;
+  batch.rejectedAt = null;
+  batch.rejectedBy = null;
+  await batch.save();
+
+  return res.status(200).json({
+    message: `Payment approved — ${childCount} service${childCount === 1 ? "" : "s"} activated`,
+    success: true,
+    error: false,
+    data: {
+      paymentBatch: batch,
+      order: childResult?.orders?.[0] || null,
+      invoice: null,
+      childOrders: childResult ? childResult.orders : [],
+    },
+  });
+};
+
+const rejectPaymentBatch = async (batch, rejectionReason, req, res) => {
+  if (batch.status !== "pending-approval") {
+    return res.status(400).json({
+      message: `Payment is already ${batch.status === "approved" ? "approved" : "rejected"}`,
+      success: false,
+      error: true,
+    });
+  }
+
+  // A batch's wallet debits hang off its own batchRef (children carry it as parentTransactionId).
+  await refundWalletPortionsFor(batch.batchRef, batch.batchRef);
+
+  batch.status = "rejected";
+  batch.rejectionReason = rejectionReason;
+  batch.rejectedAt = new Date();
+  batch.rejectedBy = req.userId;
+  batch.verifiedBy = req.userId;
+  batch.verificationDate = new Date();
+  await batch.save();
+
+  const childResult = await rejectChildTransactions(batch, rejectionReason, req.userId);
+
+  return res.status(200).json({
+    message: "Payment rejected successfully",
+    success: true,
+    error: false,
+    data: {
+      paymentBatch: batch,
+      order: childResult?.orders?.[0] || null,
+      childOrders: childResult ? childResult.orders : [],
+    },
+  });
+};
+
 const approveTransaction = async (req, res) => {
   try {
     if (!requireAdmin(req, res)) return;
@@ -329,6 +492,10 @@ const approveTransaction = async (req, res) => {
 
     const transaction = await transactionModel.findOne({ transactionId });
     if (!transaction) {
+      // Not a transaction — it may be a payment batch (one payment, several orders).
+      const batch = await paymentBatchModel.findOne({ batchRef: transactionId });
+      if (batch) return approvePaymentBatch(batch, req, res);
+
       return res.status(404).json({
         message: "Transaction not found",
         success: false,
@@ -339,6 +506,16 @@ const approveTransaction = async (req, res) => {
     if (transaction.status !== "pending") {
       return res.status(400).json({
         message: `Transaction is already ${transaction.status}`,
+        success: false,
+        error: true,
+      });
+    }
+
+    // A batch's child must never be settled on its own — the batch is all-or-nothing, and
+    // approving one child would leave the batch (and its siblings) stranded. Approve the batch.
+    if (await isBatchChild(transaction)) {
+      return res.status(400).json({
+        message: "This payment is part of a multi-service payment. Approve the payment itself, not one service.",
         success: false,
         error: true,
       });
@@ -434,6 +611,10 @@ const rejectTransaction = async (req, res) => {
 
     const transaction = await transactionModel.findOne({ transactionId });
     if (!transaction) {
+      // Not a transaction — it may be a payment batch (one payment, several orders).
+      const batch = await paymentBatchModel.findOne({ batchRef: transactionId });
+      if (batch) return rejectPaymentBatch(batch, rejectionReason, req, res);
+
       return res.status(404).json({
         message: "Transaction not found",
         success: false,
@@ -449,13 +630,24 @@ const rejectTransaction = async (req, res) => {
       });
     }
 
+    // Same all-or-nothing rule as approval — a batch's child is rejected via the batch.
+    if (await isBatchChild(transaction)) {
+      return res.status(400).json({
+        message: "This payment is part of a multi-service payment. Reject the payment itself, not one service.",
+        success: false,
+        error: true,
+      });
+    }
+
     // Combined payment: refund the paired wallet portion that was already debited at purchase.
-    // In every creation path (customerCreateServicePlanOrder.js,
-    // customerCreateCustomProjectOrder.js, walletPayInstant.js) the UPI leg IS the parent — its
-    // own transactionId is the shared id and its parentTransactionId is null — while the wallet
-    // debit carries that id in parentTransactionId. Checking this transaction's own id as well
-    // as its parent covers the link from either end; without the first, a rejected combined
-    // payment silently kept the customer's wallet money.
+    // The wallet debit stores the UPI transaction's id in its parentTransactionId, and the two
+    // creation paths write that link from opposite ends:
+    //   - customerCreateServicePlanOrder.js / customerCreateCustomProjectOrder.js: the UPI leg
+    //     IS the parent (its own transactionId is the shared id; its parentTransactionId is null).
+    //   - a batch child: the shared id lives in its parentTransactionId.
+    // Checking this transaction's own id as well as its parent covers both — without it, the
+    // first shape never matched and a rejected combined payment silently kept the customer's
+    // wallet money.
     await refundWalletPortionsFor(transaction.transactionId, transaction.transactionId);
     await refundWalletPortionsFor(transaction.parentTransactionId, transaction.transactionId);
 
