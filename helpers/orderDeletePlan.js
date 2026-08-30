@@ -70,6 +70,24 @@ const buildOrderDeletePlan = async (orderId) => {
     : !order.isWebsiteProject;
   const orderType = isUpdatePlan ? "plan" : "project";
 
+  // Facts that only exist while the order and its transactions are still alive. deleteOrder.js
+  // writes these onto the order's invoices before cascading, so the admin "Deleted Projects"
+  // tab can still state what was deleted, when it was bought, and how it was paid for.
+  const startDate = order?.createdAt || null;
+  // Money actually received — a pending or rejected transaction never paid for anything.
+  // "deposit" is a wallet recharge, not a payment against this order.
+  const paidMethods = [
+    ...new Set(
+      relatedTransactions
+        .filter((txn) => txn.status === "completed" && txn.type !== "deposit" && txn.paymentMethod)
+        .map((txn) => String(txn.paymentMethod))
+    ),
+  ];
+  // One method is reported as-is; several different methods across payments read as "combined",
+  // the same word transactionModel already uses for a split wallet+UPI payment.
+  const paymentMethod =
+    paidMethods.length === 1 ? paidMethods[0] : paidMethods.length > 1 ? "combined" : null;
+
   const sections = [
     createSection({
       key: "order_record",
@@ -147,6 +165,8 @@ const buildOrderDeletePlan = async (orderId) => {
     orderPresent: Boolean(order),
     orderType,
     serviceName,
+    startDate,
+    paymentMethod,
     sections,
     derivedImpacts,
     requiredSectionKeys,

@@ -105,7 +105,13 @@ const deleteOrderController = async (req, res) => {
 
       await invoiceModel.updateMany(
         { orderId: orderObjectId },
-        { deletedProjectName: plan.serviceName, deletedProjectType: plan.orderType }
+        {
+          deletedProjectName: plan.serviceName,
+          deletedProjectType: plan.orderType,
+          deletedProjectStartDate: plan.startDate,
+          deletedProjectDeletedAt: new Date(),
+          deletedProjectPaymentMethod: plan.paymentMethod,
+        }
       ).session(session);
       await updateRequestModel.deleteMany({ updatePlanId: orderObjectId }).session(session);
       await monthlyInvoiceModel.deleteMany({ orderId: orderObjectId }).session(session);

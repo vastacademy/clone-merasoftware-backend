@@ -73,7 +73,7 @@ const getAdminUserWorkspace = async (req, res) => {
         .sort({ createdAt: -1 }),
       invoiceModel
         .find({ userId: customerObjectId })
-        .select("orderId invoiceNumber invoiceType amount amountPaid status invoiceDate dueDate paidDate installmentNumber lineItems paymentMethod transactionReference createdAt updatedAt deletedProjectName deletedProjectType")
+        .select("orderId invoiceNumber invoiceType amount amountPaid status invoiceDate dueDate paidDate installmentNumber lineItems paymentMethod transactionReference createdAt updatedAt deletedProjectName deletedProjectType deletedProjectStartDate deletedProjectDeletedAt deletedProjectPaymentMethod")
         .populate({ path: "orderId", select: "productId projectSnapshot servicePlanSnapshot orderItems", populate: { path: "productId", select: "serviceName" } })
         .sort({ createdAt: -1 }),
       updateRequestModel.aggregate([

@@ -104,6 +104,25 @@ const invoiceSchema = new mongoose.Schema({
     enum: ["project", "plan", null],
     default: null,
   },
+  // The order's own creation date, copied here because orderId resolves to nothing once
+  // the order is hard-deleted — this is "when the project was purchased".
+  deletedProjectStartDate: {
+    type: Date,
+    default: null,
+  },
+  // When the delete itself happened. Previously the admin tab showed the latest payment
+  // date under a "Deleted on" label, which was not the delete date at all.
+  deletedProjectDeletedAt: {
+    type: Date,
+    default: null,
+  },
+  // How the project was actually paid for, derived from its completed transactions at
+  // delete time — transactionModel rows are cascade-deleted, so this cannot be read later.
+  // "combined" here means different payments used different methods.
+  deletedProjectPaymentMethod: {
+    type: String,
+    default: null,
+  },
 }, {
   timestamps: true,
 });
