@@ -11,6 +11,7 @@ const { syncServiceBillingStatement } = require('../../helpers/serviceBillingSta
 // Refund helper — when a combined payment's UPI portion is rejected, its already-debited
 // wallet portion must be returned to the customer.
 const { refundWalletInstant } = require("../../helpers/transactionService");
+const { markOrderApproved } = require("../../helpers/orderLifecycle");
 
 const requireAdmin = (req, res) => {
   if (req.userRole !== "admin") {
@@ -103,11 +104,11 @@ const applyOrderMoneyForTransaction = async (order, transaction, { settleInvoice
     order.currentInstallment = nextInstallment.installmentNumber;
   }
 
-  order.orderVisibility = "approved";
-  if (order.status === "pending") {
-    order.status = "in_progress";
+  // A cancelled order stays cancelled — approving a still-pending payment against it must
+  // never resurrect it (see helpers/orderLifecycle.js).
+  if (markOrderApproved(order)) {
+    order.rejectionReason = null;
   }
-  order.rejectionReason = null;
 
   await order.save();
 

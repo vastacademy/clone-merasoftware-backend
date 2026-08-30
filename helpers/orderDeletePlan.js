@@ -34,8 +34,14 @@ const createSection = ({ key, label, count, required = true, present = count > 0
 const buildOrderDeletePlan = async (orderId) => {
   const orderObjectId = new mongoose.Types.ObjectId(orderId);
 
-  const [order, relatedUpdateRequests, relatedInvoices, relatedTransactions, relatedCommissions] =
-    await Promise.all([
+  const [
+    order,
+    relatedUpdateRequests,
+    relatedInvoices,
+    relatedTransactions,
+    relatedCommissions,
+    linkedServices,
+  ] = await Promise.all([
       orderModel.findById(orderObjectId).populate("productId", "serviceName category isWebsiteUpdate"),
       updateRequestModel
         .find({ updatePlanId: orderObjectId })
@@ -49,6 +55,14 @@ const buildOrderDeletePlan = async (orderId) => {
       monthlyInvoiceModel.find({ orderId: orderObjectId }),
       transactionModel.find({ orderId: orderObjectId }),
       partnerCommissionModel.find({ orderId: orderObjectId }),
+      // Add-on services attached to this order. They are NOT deleted with it — each is its own
+      // order with its own payments. They are listed so the admin can clear them first instead
+      // of leaving them pointing at a project that no longer exists.
+      orderModel
+        .find({ linkedProjectOrderId: orderObjectId, isServicePlan: true })
+        .populate("productId", "serviceName")
+        .select("productId servicePlanSnapshot orderItems projectSnapshot orderVisibility servicePlanStatus createdAt")
+        .sort({ createdAt: -1 }),
     ]);
 
   const driveFileIds = collectDriveFileIds(relatedUpdateRequests);
@@ -175,6 +189,19 @@ const buildOrderDeletePlan = async (orderId) => {
     paymentMethod,
     // Deleting is cleanup, not a business action — the money must already have been settled by
     // a cancellation first. deleteOrder.js enforces this; the UI reads it to explain why.
+    // Listed for the delete dialog to warn about. Deleting is still allowed with services
+    // attached — the admin may mean to clear them afterwards.
+    linkedServices: linkedServices.map((service) => ({
+      orderId: String(service._id),
+      name:
+        service.projectSnapshot?.displayName ||
+        service.productId?.serviceName ||
+        service.servicePlanSnapshot?.serviceName ||
+        (service.orderItems || [])[0]?.name ||
+        "Service",
+      orderVisibility: service.orderVisibility || null,
+      servicePlanStatus: service.servicePlanStatus || null,
+    })),
     isCancelled: order?.orderVisibility === "cancelled",
     cancelledAt: order?.cancelledAt || null,
     // Same counting rules as helpers/orderPaymentTotals.js — an order that received real money

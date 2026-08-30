@@ -1,6 +1,7 @@
 const orderModel = require("../models/orderProductModel");
 const { getCycleDates, isFinalCycle } = require("./serviceBillingSchedule");
 const { syncServiceBillingStatement } = require("./serviceBillingStatement");
+const { markOrderApproved } = require("./orderLifecycle");
 
 const settleServiceCycle = async ({ orderId, invoice, now = new Date() }) => {
   const service = await orderModel.findOne({ _id: orderId, isServicePlan: true });
@@ -39,8 +40,9 @@ const settleServiceCycle = async ({ orderId, invoice, now = new Date() }) => {
     service.paidAmount = Number(invoice.amountPaid || invoice.amount || 0);
     service.remainingAmount = 0;
     service.paymentComplete = true;
-    service.orderVisibility = "approved";
-    if (service.status === "pending") service.status = "in_progress";
+    // A cancelled service stays cancelled — settling its first cycle must never
+    // resurrect it (see helpers/orderLifecycle.js).
+    markOrderApproved(service);
   }
 
   await service.save();

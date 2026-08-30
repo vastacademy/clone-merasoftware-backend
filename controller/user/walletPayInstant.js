@@ -3,6 +3,7 @@ const orderModel = require("../../models/orderProductModel");
 const invoiceModel = require("../../models/invoiceModel"); // project invoices (invoiceType:'project')
 const monthlyInvoiceModel = require("../../models/monthlyInvoiceModel"); // recurring-plan invoices
 const { deductWalletInstant } = require("../../helpers/transactionService");
+const { markOrderApproved, isOrderCancelled } = require("../../helpers/orderLifecycle");
 const { markInvoicePaidAndResumePlan } = require("../../helpers/invoiceLifecycle");
 const {
   markProjectInvoicePaid,
@@ -70,6 +71,16 @@ const walletPayInstant = async (req, res) => {
     if (!order) {
       return res.status(404).json({
         message: "Order not found",
+        error: true,
+        success: false,
+      });
+    }
+
+    // A cancelled order has already been settled and refunded — refuse the payment at the door
+    // rather than taking money and then declining to approve it further down.
+    if (isOrderCancelled(order)) {
+      return res.status(400).json({
+        message: "This project has been cancelled — no further payment can be made against it",
         error: true,
         success: false,
       });
@@ -144,8 +155,9 @@ const walletPayInstant = async (req, res) => {
             ? order.installments.find((item) => !item.paid)
             : null;
           if (nextInstallment) order.currentInstallment = nextInstallment.installmentNumber;
-          order.orderVisibility = "approved";
-          if (order.status === "pending") order.status = "in_progress";
+          // A cancelled order stays cancelled — settling money against it must never
+          // resurrect it (see helpers/orderLifecycle.js).
+          markOrderApproved(order);
         }
         if (order.remainingAmount <= 0) order.paymentComplete = true;
         await order.save();
@@ -289,9 +301,7 @@ const walletPayInstant = async (req, res) => {
 
     // Approve the order only when this wallet payment fully settles the amount due. For a combined
     // payment the order stays as-is (pending-approval) until the admin approves the UPI remainder.
-    if (isFullSettlement) {
-      order.orderVisibility = "approved";
-      if (order.status === "pending") order.status = "in_progress";
+    if (isFullSettlement && markOrderApproved(order)) {
       order.rejectionReason = null;
     }
 

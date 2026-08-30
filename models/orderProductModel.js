@@ -498,6 +498,31 @@ const orderSchema = new mongoose.Schema({
         type: Number,
         default: 0
     },
+    // What the system calculated vs what the admin actually gave. Cancellation is one-way, so
+    // the reasoning behind the figure is the only record there will ever be of why.
+    refundSuggestedAmount: {
+        type: Number,
+        default: null
+    },
+    refundBasis: {
+        type: String,
+        default: null
+    },
+    refundExplanation: {
+        type: String,
+        default: null
+    },
+    // How the refund was divided across payment methods, and — when the wallet got more than
+    // the source split would give it — the reason the customer asked for that.
+    refundMode: {
+        type: String,
+        enum: ['source', 'wallet_first', 'manual', null],
+        default: null
+    },
+    refundModeReason: {
+        type: String,
+        default: null
+    },
     orderItems: {
         type: [{
             id: String,
