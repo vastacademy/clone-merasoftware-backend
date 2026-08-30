@@ -134,6 +134,15 @@ const customerCreateServicePlanOrder = async (req, res) => {
           success: false,
         });
       }
+      // A cancelled project is finished — its money has already been settled and refunded,
+      // so no new service may attach to it and create a fresh payment against a dead project.
+      if (linkedOrder.orderVisibility === "cancelled") {
+        return res.status(400).json({
+          message: "This project has been cancelled — services cannot be added to it",
+          error: true,
+          success: false,
+        });
+      }
       if (addedDuringProjectPhase && !PROJECT_PHASES.includes(addedDuringProjectPhase)) {
         return res.status(400).json({
           message: "Invalid project phase",

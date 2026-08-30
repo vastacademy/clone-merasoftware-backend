@@ -450,12 +450,53 @@ const orderSchema = new mongoose.Schema({
     },
     orderVisibility: {
         type: String,
-        enum: ['visible', 'approved', 'pending-approval', 'payment-rejected', 'hidden'],
+        // 'cancelled' is a terminal state set by the admin cancel action. It is deliberately
+        // NOT part of any approved/active allowlist, so every existing visibility check treats
+        // a cancelled order as not-approved without needing to know the value exists.
+        enum: ['visible', 'approved', 'pending-approval', 'payment-rejected', 'hidden', 'cancelled'],
         default: 'visible'
     },
     rejectionReason: {
         type: String,
         default: null
+    },
+    // ---- Cancellation + refund (admin-only). A project is cancelled before it can be
+    // deleted, so the money is settled while its payment records still exist.
+    cancelledAt: {
+        type: Date,
+        default: null
+    },
+    cancelledBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "user",
+        default: null
+    },
+    cancellationReason: {
+        type: String,
+        default: null
+    },
+    // One entry per method the money actually came in through — a combined payment refunds
+    // to both. Wallet legs are credited instantly by the server; every other method is money
+    // the admin sends outside this system, so it carries the admin's own reference id.
+    refunds: {
+        type: [{
+            method: {
+                type: String,
+                enum: ['wallet', 'upi', 'cash', 'bank_transfer', 'combined', 'demo'],
+                required: true
+            },
+            amount: { type: Number, required: true },
+            // Set for wallet legs (the transactionModel row this refund created) and for
+            // external legs (the admin's bank/UPI reference the customer can look up).
+            transactionId: { type: String, default: null },
+            referenceId: { type: String, default: null },
+            refundedAt: { type: Date, default: Date.now }
+        }],
+        default: []
+    },
+    refundTotal: {
+        type: Number,
+        default: 0
     },
     orderItems: {
         type: [{

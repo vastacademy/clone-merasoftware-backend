@@ -72,7 +72,9 @@ const getOrderDetails = async (req, res) => {
         // Determine the order status for display
         let status = "Processing";
         
-        if (order.orderVisibility === 'payment-rejected') {
+        if (order.orderVisibility === 'cancelled') {
+            status = "Cancelled";
+        } else if (order.orderVisibility === 'payment-rejected') {
             status = "Rejected";
         } else if (order.orderVisibility === 'pending-approval') {
             status = "Processing";

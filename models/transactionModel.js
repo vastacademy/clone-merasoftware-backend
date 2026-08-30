@@ -130,6 +130,19 @@ const transactionSchema = new mongoose.Schema(
             type: mongoose.Schema.Types.ObjectId,
             ref: "user",
             default: null
+        },
+        // Written by deleteOrder.js right before the order is removed. Transactions are KEPT on
+        // delete (they are the only record that real money moved, including a cancellation's
+        // refund), but orderId then points at nothing — so the payment can still name itself.
+        // Same two fields, same purpose, as invoiceModel's deletedProject* snapshot.
+        deletedProjectName: {
+            type: String,
+            default: null
+        },
+        deletedProjectType: {
+            type: String,
+            enum: ["project", "plan", null],
+            default: null
         }
     },
     { timestamps: true }

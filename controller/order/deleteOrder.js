@@ -5,6 +5,7 @@ const updateRequestModel = require("../../models/updateRequestModel");
 const monthlyInvoiceModel = require("../../models/monthlyInvoiceModel");
 const invoiceModel = require("../../models/invoiceModel");
 const transactionModel = require("../../models/transactionModel");
+const { getOrderAmountReceived } = require("../../helpers/orderPaymentTotals");
 const partnerCommissionModel = require("../../models/partnerCommissionModel");
 const GoogleDriveService = require("../../helpers/googleDriveService");
 const buildOrderDeletePlan = require("../../helpers/orderDeletePlan");
@@ -75,6 +76,22 @@ const deleteOrderController = async (req, res) => {
       });
     }
 
+    // Cancel before delete. Cancelling is what settles and refunds the money while the payment
+    // records still exist; deleting is only cleanup afterwards. Allowing a straight delete is how
+    // a customer's money used to disappear with no refund and no record of the payment.
+    // An order nothing was ever paid on has no money to settle, so it can be deleted directly.
+    if (plan.orderPresent && !plan.isCancelled) {
+      const received = await getOrderAmountReceived(orderId);
+      if (received > 0) {
+        return res.status(400).json({
+          message: "Cancel this project first — its payments must be settled before it can be deleted",
+          error: true,
+          success: false,
+          data: { requiresCancellation: true, amountReceived: received },
+        });
+      }
+    }
+
     const { selectedSections } = req.body || {};
     const selectionCheck = validateSelection(plan, selectedSections);
     if (!selectionCheck.valid) {
@@ -113,9 +130,17 @@ const deleteOrderController = async (req, res) => {
           deletedProjectPaymentMethod: plan.paymentMethod,
         }
       ).session(session);
+      // Transactions survive the delete, so they need the same name/type snapshot the invoices
+      // get — once the order is gone their orderId resolves to nothing.
+      await transactionModel.updateMany(
+        { orderId: orderObjectId },
+        {
+          deletedProjectName: plan.serviceName,
+          deletedProjectType: plan.orderType,
+        }
+      ).session(session);
       await updateRequestModel.deleteMany({ updatePlanId: orderObjectId }).session(session);
       await monthlyInvoiceModel.deleteMany({ orderId: orderObjectId }).session(session);
-      await transactionModel.deleteMany({ orderId: orderObjectId }).session(session);
       await partnerCommissionModel.deleteMany({ orderId: orderObjectId }).session(session);
       await orderModel.deleteOne({ _id: orderObjectId }).session(session);
 

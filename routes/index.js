@@ -83,6 +83,7 @@ const deleteOrderController = require('../controller/order/deleteOrder');
 const scanDeleteOrderController = require('../controller/order/scanDeleteOrder');
 const adminCreateProjectOrderController = require('../controller/order/adminCreateProjectOrder');
 const approveProjectOrderController = require('../controller/order/approveProjectOrder');
+const { cancelProjectOrder, getProjectCancellationPreview } = require('../controller/order/cancelProjectOrder');
 const { resendProjectFinalInvoice } = require('../controller/invoice/projectFinalInvoiceController');
 const { viewInvoiceDocument, downloadInvoiceDocument } = require('../controller/invoice/invoiceDocumentController');
 const getCategoryBasePricesController = require('../controller/admin/getCategoryBasePrices');
@@ -200,6 +201,11 @@ router.get("/admin/clients/:customerId/credentials", authToken, getClientCredent
 router.post("/admin/clients/:customerId/reset-password", authToken, resetClientPasswordController);
 router.post("/admin/clients/:customerId/account-status", authToken, updateClientAccountStatusController);
 router.post("/admin/projects/:orderId/approval", authToken, approveProjectOrderController);
+// Cancellation runs before deletion so the money is settled while the payment records still
+// exist. The preview is read-only — it tells the admin what will be refunded and which methods
+// need a reference id before anything is written.
+router.get("/admin/projects/:orderId/cancel-preview", authToken, getProjectCancellationPreview);
+router.post("/admin/projects/:orderId/cancel", authToken, cancelProjectOrder);
 router.post("/admin/clients/:customerId/recharge-wallet", authToken, adminRechargeWallet);
 router.get("/admin/category-base-prices", authToken, getCategoryBasePricesController);
 router.post("/admin/category-base-prices", authToken, updateCategoryBasePriceController);

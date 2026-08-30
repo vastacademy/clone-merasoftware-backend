@@ -857,6 +857,125 @@ const sendPaymentRejectionEmail = async (user, transaction, order, rejectionReas
 };
 
 /**
+ * Send project cancellation + refund email.
+ * Every refund leg is listed with the method it went back through — a wallet leg is already
+ * in the customer's balance, an external leg carries the reference id the admin got when they
+ * sent it, so the customer can look that payment up on their own bank/UPI side.
+ * @param {Object} user - User object with name and email
+ * @param {Object} order - The cancelled order
+ * @param {Array} refunds - Refund legs: { method, amount, referenceId }
+ * @param {String} cancellationReason - Why the project was cancelled
+ * @returns {Promise<Boolean>} - Success status
+ */
+const sendProjectCancellationEmail = async (user, order, refunds = [], cancellationReason = '') => {
+  try {
+    if (!user || !user.email) {
+      console.warn('No user email found for sending project cancellation notification');
+      return false;
+    }
+
+    const METHOD_LABELS = {
+      wallet: 'Wallet',
+      upi: 'UPI',
+      cash: 'Cash',
+      bank_transfer: 'Bank Transfer',
+      combined: 'Combined',
+      demo: 'Demo Credit',
+    };
+
+    const refundTotal = refunds.reduce((sum, entry) => sum + Number(entry.amount || 0), 0);
+
+    const refundRows = refunds.map((entry) => {
+      const label = METHOD_LABELS[entry.method] || entry.method;
+      const note = entry.method === 'wallet'
+        ? 'Credited to your wallet'
+        : `Reference: ${entry.referenceId || 'N/A'}`;
+      return `
+        <tr>
+          <td style="padding: 8px 0; border-bottom: 1px solid #eee;"><strong>${label}</strong></td>
+          <td style="padding: 8px 0; border-bottom: 1px solid #eee; text-align: right;">₹${Number(entry.amount || 0).toLocaleString()}</td>
+          <td style="padding: 8px 0; border-bottom: 1px solid #eee; text-align: right; color: #666; font-size: 13px;">${note}</td>
+        </tr>
+      `;
+    }).join('');
+
+    const refundBlock = refunds.length > 0
+      ? `
+        <div style="background-color: #f0f9f4; padding: 15px; border-radius: 5px; margin: 20px 0; border-left: 4px solid #27ae60;">
+          <h3 style="margin-top: 0; color: #27ae60;">Refund Details</h3>
+          <table style="width: 100%; border-collapse: collapse;">
+            ${refundRows}
+            <tr>
+              <td style="padding: 10px 0;"><strong>Total Refunded</strong></td>
+              <td style="padding: 10px 0; text-align: right;"><strong>₹${refundTotal.toLocaleString()}</strong></td>
+              <td></td>
+            </tr>
+          </table>
+        </div>
+      `
+      : '';
+
+    const reasonBlock = cancellationReason
+      ? `
+        <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
+          <h3 style="margin-top: 0; color: #333;">Reason</h3>
+          <p style="margin: 0;">${cancellationReason}</p>
+        </div>
+      `
+      : '';
+
+    const emailData = {
+      from: `${process.env.FROM_NAME || 'Your Company'} <${process.env.FROM_EMAIL}>`,
+      to: [user.email],
+      subject: 'Project Cancelled',
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <div style="background-color: #34495e; color: white; padding: 20px; text-align: center;">
+            <h1 style="margin: 0;">Project Cancelled</h1>
+          </div>
+
+          <div style="padding: 20px;">
+            <p>Hello ${user.name},</p>
+
+            <p>Your project has been cancelled. The details are below.</p>
+
+            <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
+              <h2 style="margin-top: 0; color: #333;">Project Details</h2>
+              <p><strong>Project:</strong> ${getOrderDisplayName(order)}</p>
+              <p><strong>Cancelled On:</strong> ${new Date().toLocaleString()}</p>
+            </div>
+
+            ${reasonBlock}
+            ${refundBlock}
+
+            <p>If you have any questions about this cancellation or the refund, please contact our support team.</p>
+
+            <p>Best regards,<br>Mera Software Team</p>
+          </div>
+
+          <div style="background-color: #f5f5f5; padding: 15px; text-align: center; font-size: 12px; color: #666;">
+            <p>© ${new Date().getFullYear()} Mera Software. All rights reserved.</p>
+          </div>
+        </div>
+      `
+    };
+
+    const { data, error } = await resend.emails.send(emailData);
+
+    if (error) {
+      console.error('Error sending project cancellation email:', error);
+      return false;
+    }
+
+    console.log('Project cancellation email sent successfully to:', user.email, data);
+    return true;
+  } catch (error) {
+    console.error('Error sending project cancellation email:', error);
+    return false;
+  }
+};
+
+/**
  * Send wallet recharge rejection email
  * @param {Object} user - User object with name and email
  * @param {Object} transaction - Transaction details
@@ -2021,6 +2140,7 @@ module.exports = {
   // Wallet related exports
   sendWalletRechargeConfirmationEmail,
   sendPaymentRejectionEmail,
+  sendProjectCancellationEmail,
   sendWalletRechargeRejectionEmail,
   // Contact form exports
   sendContactFormConfirmation,

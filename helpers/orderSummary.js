@@ -2,6 +2,8 @@ const ORDER_SUMMARY_FIELDS = [
   "userId productId projectSnapshot orderItems isWebsiteProject price totalAmount status projectProgress currentPhase isActive updatesUsed",
   "totalYearlyDaysRemaining currentMonthExpiryDate autoRenewalStatus currentMonthUpdatesUsed",
   "currentMonthUpdatesLimit currentMonthUpdatesRemaining orderVisibility planStatus createdAt updatedAt",
+  // Cancellation/refund facts — the list badge reads orderVisibility, the detail views read the rest.
+  "cancelledAt cancellationReason refunds refundTotal",
 ].join(" ");
 
 const PRODUCT_SUMMARY_FIELDS = [

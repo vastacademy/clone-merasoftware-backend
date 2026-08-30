@@ -4,6 +4,7 @@ const updateRequestModel = require("../models/updateRequestModel");
 const monthlyInvoiceModel = require("../models/monthlyInvoiceModel");
 const transactionModel = require("../models/transactionModel");
 const partnerCommissionModel = require("../models/partnerCommissionModel");
+const { sumReceivedFromTransactions } = require("./orderPaymentTotals");
 
 const collectDriveFileIds = (requests = []) => {
   const fileIds = new Set();
@@ -120,9 +121,14 @@ const buildOrderDeletePlan = async (orderId) => {
       key: "transactions",
       label: "Linked transactions",
       count: relatedTransactions.length,
-      required: true,
+      // Kept, not deleted. A transaction is the only record that real money moved — including
+      // the refund a cancellation issued, whose reference id the customer was given. Deleting
+      // them left the money with no trace at all. They are shown here so the admin can see the
+      // payment history survives; the checklist no longer asks to confirm their removal.
+      required: false,
+      present: false,
       source: "transactionModel",
-      description: "Removes payment and renewal transactions tied to this order.",
+      description: "Kept as the permanent payment record — these are not deleted.",
     }),
     createSection({
       key: "partner_commissions",
@@ -167,6 +173,13 @@ const buildOrderDeletePlan = async (orderId) => {
     serviceName,
     startDate,
     paymentMethod,
+    // Deleting is cleanup, not a business action — the money must already have been settled by
+    // a cancellation first. deleteOrder.js enforces this; the UI reads it to explain why.
+    isCancelled: order?.orderVisibility === "cancelled",
+    cancelledAt: order?.cancelledAt || null,
+    // Same counting rules as helpers/orderPaymentTotals.js — an order that received real money
+    // must be cancelled (settled/refunded) before its record may be deleted.
+    paidTotal: sumReceivedFromTransactions(relatedTransactions),
     sections,
     derivedImpacts,
     requiredSectionKeys,

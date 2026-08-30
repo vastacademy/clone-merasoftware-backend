@@ -63,7 +63,7 @@ const getAdminUserWorkspace = async (req, res) => {
       }),
       transactionModel
         .find({ userId: customerObjectId })
-        .select("transactionId upiTransactionId amount status type sourceType paymentMethod invoiceId orderId installmentNumber date createdAt rejectionReason parentTransactionId")
+        .select("transactionId upiTransactionId amount status type sourceType paymentMethod invoiceId orderId installmentNumber date createdAt rejectionReason parentTransactionId deletedProjectName deletedProjectType")
         .populate({ path: "orderId", select: "productId projectSnapshot servicePlanSnapshot orderItems", populate: { path: "productId", select: "serviceName" } })
         .sort({ createdAt: -1 }),
       monthlyInvoiceModel
