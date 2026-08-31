@@ -1,5 +1,6 @@
 const transactionModel = require("../models/transactionModel");
 const userModel = require("../models/userModel");
+const { prepareUpiPaymentEvidence } = require("./upiPaymentEvidence");
 
 // Shared transaction-creation SSOT.
 //
@@ -49,6 +50,10 @@ const createPaymentTransaction = async ({
   const existing = await transactionModel.findOne({ transactionId });
   if (existing) return existing;
 
+  const paymentEvidence = paymentMethod === "upi"
+    ? await prepareUpiPaymentEvidence({ reference: upiTransactionId, transactionId, capturedVia: "customer" })
+    : undefined;
+
   // Wallet recharge = a customer top-up with no order behind it.
   const isWalletRecharge = !isInstallmentPayment && !orderId;
 
@@ -74,6 +79,7 @@ const createPaymentTransaction = async ({
     transactionId,
     amount: Number(amount),
     upiTransactionId,
+    paymentEvidence,
     type: resolvedType,
     description,
     status,
@@ -230,6 +236,10 @@ const creditWalletInstant = async ({
   const existing = await transactionModel.findOne({ transactionId });
   if (existing) return existing;
 
+  const paymentEvidence = paymentMethod === "upi"
+    ? await prepareUpiPaymentEvidence({ reference, transactionId, capturedVia: "admin" })
+    : undefined;
+
   const updatedUser = await userModel.findByIdAndUpdate(
     userId,
     { $inc: { walletBalance: Number(amount) } },
@@ -242,6 +252,7 @@ const creditWalletInstant = async ({
     transactionId,
     amount: Number(amount),
     upiTransactionId: reference || `ADMIN-${transactionId}`,
+    paymentEvidence,
     type: "deposit",
     description: description || "Admin wallet recharge",
     status: "completed",

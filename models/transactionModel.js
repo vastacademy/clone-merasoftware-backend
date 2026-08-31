@@ -65,6 +65,14 @@ const transactionSchema = new mongoose.Schema(
         paymentDetails: {
             type: Object
         },
+        // Canonical evidence for new external payments. The legacy upiTransactionId field is
+        // retained because old wallet/admin records used it for non-UPI identifiers too.
+        paymentEvidence: {
+            upiReference: { type: String, default: null },
+            upiReferenceKey: { type: String, default: null },
+            capturedVia: { type: String, enum: ["customer", "admin", null], default: null },
+            capturedAt: { type: Date, default: null },
+        },
         verifiedBy: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "user"
@@ -155,6 +163,16 @@ transactionSchema.index({ sourceType: 1, status: 1 });
 // Parent-child payments: one UPI payment can cover several service-plan orders. Approving
 // or rejecting the parent resolves its children, so the children must be findable by parent.
 transactionSchema.index({ parentTransactionId: 1 });
+transactionSchema.index(
+    { "paymentEvidence.upiReferenceKey": 1 },
+    {
+        unique: true,
+        partialFilterExpression: {
+            paymentMethod: "upi",
+            "paymentEvidence.upiReferenceKey": { $exists: true, $type: "string" },
+        },
+    }
+);
 
 const transactionModel = mongoose.model('transaction', transactionSchema);
 module.exports = transactionModel;

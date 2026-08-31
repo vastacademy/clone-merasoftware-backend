@@ -1,6 +1,7 @@
 const userModel = require("../../models/userModel");
 const transactionModel = require("../../models/transactionModel");
 const mongoose = require("mongoose");
+const { prepareUpiPaymentEvidence } = require("../../helpers/upiPaymentEvidence");
 
 const verifyPaymentController = async (req, res) => {
     try {
@@ -24,10 +25,10 @@ const verifyPaymentController = async (req, res) => {
             throw new Error("Transaction ID and Amount are required");
           }
           
-          // For non-wallet payments, require UPI Transaction ID
-          if (paymentMethod !== 'wallet' && !upiTransactionId) {
-            throw new Error("UPI Transaction ID is required for non-wallet payments");
-          }
+          const resolvedPaymentMethod = paymentMethod || 'upi';
+          const paymentEvidence = resolvedPaymentMethod === 'upi'
+            ? await prepareUpiPaymentEvidence({ reference: upiTransactionId, transactionId, capturedVia: 'customer' })
+            : null;
         
         // Check if transaction already exists
         const existingTransaction = await transactionModel.findOne({ transactionId });
@@ -108,7 +109,8 @@ const verifyPaymentController = async (req, res) => {
             // For all payments, use 'pending-approval' (valid enum value)
             // For wallet recharge without order, use null (allowed by default)
             paymentStatus: isWalletRecharge ? null : 'pending-approval',
-            paymentMethod: paymentMethod || 'upi',
+            paymentMethod: resolvedPaymentMethod,
+            paymentEvidence,
             sourceType: resolvedSourceType,
             date: new Date(),
             // Mark as installment payment for order payments

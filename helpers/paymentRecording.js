@@ -4,6 +4,7 @@ const generateInvoiceNumber = require("./generateInvoiceNumber");
 const { getOrderDisplayName } = require("./orderPresentation");
 // Payment SSOT — what has actually been received is derived from completed transactions.
 const { getInvoiceAmountReceived, deriveInvoiceStatus } = require("./orderPaymentTotals");
+const { prepareUpiPaymentEvidence } = require("./upiPaymentEvidence");
 
 const getOrderTotal = (order) =>
   Number(order?.totalAmount || order?.totalPrice || order?.price || 0);
@@ -58,12 +59,16 @@ const markProjectInvoicePaid = async ({
   let transaction = existingTransaction;
   if (!transaction) {
     const transactionId = `INVPAID${String(invoice.invoiceNumber).replace(/[^a-zA-Z0-9]/g, "")}${Date.now()}`;
+    const paymentEvidence = paymentMethod === "upi"
+      ? await prepareUpiPaymentEvidence({ reference: transactionReference, transactionId, capturedVia: "admin" })
+      : undefined;
     transaction = await transactionModel.create({
       userId: customerId,
       orderId: invoice.orderId,
       invoiceId: invoice._id,
       transactionId,
       upiTransactionId: transactionReference || null,
+      paymentEvidence,
       amount: amountNow,
       status: "completed",
       paymentStatus: "approved",

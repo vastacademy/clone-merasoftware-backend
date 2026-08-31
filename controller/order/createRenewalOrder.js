@@ -1,6 +1,7 @@
 const orderModel = require("../../models/orderProductModel");
 const transactionModel = require("../../models/transactionModel");
 const userModel = require("../../models/userModel");
+const { prepareUpiPaymentEvidence } = require("../../helpers/upiPaymentEvidence");
 
 /**
  * Create a renewal order for yearly renewable plans
@@ -137,11 +138,17 @@ const createRenewalOrder = async (req, res) => {
       }
 
       const upiTxnId = generateTransactionId('-U');
+      const paymentEvidence = await prepareUpiPaymentEvidence({
+        reference: upiTransactionId,
+        transactionId: upiTxnId,
+        capturedVia: 'customer',
+      });
       const upiTransaction = new transactionModel({
         userId: userId,
         transactionId: upiTxnId,
         amount: renewalCost,
         upiTransactionId: upiTransactionId,
+        paymentEvidence,
         type: 'renewal',
         sourceType: 'renewal',
         description: `Monthly renewal for ${plan.productId.serviceName} (Renewal #${renewalNumber})`,
@@ -213,11 +220,17 @@ const createRenewalOrder = async (req, res) => {
 
       // UPI portion
       const upiTxnId = generateTransactionId('-U');
+      const paymentEvidence = await prepareUpiPaymentEvidence({
+        reference: upiTransactionId,
+        transactionId: upiTxnId,
+        capturedVia: 'customer',
+      });
       const upiTransaction = new transactionModel({
         userId: userId,
         transactionId: upiTxnId,
         amount: upiAmount,
         upiTransactionId: upiTransactionId,
+        paymentEvidence,
         type: 'renewal',
         sourceType: 'renewal',
         description: `UPI portion for renewal ${plan.productId.serviceName} (Renewal #${renewalNumber})`,

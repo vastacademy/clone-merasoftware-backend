@@ -45,9 +45,10 @@ const adminRechargeWallet = async (req, res) => {
       });
     }
 
-    // A blank/unknown method falls back to a generic 'upi' record (the enum default) — the
-    // admin isn't forced to categorise every credit.
-    const method = PAYMENT_METHODS.includes(paymentMethod) ? paymentMethod : "upi";
+    if (!PAYMENT_METHODS.includes(paymentMethod)) {
+      return res.status(400).json({ message: "Valid payment method is required", error: true, success: false });
+    }
+    const method = paymentMethod;
 
     const customer = await userModel.findById(customerId).select("_id name");
     if (!customer) {
@@ -85,7 +86,7 @@ const adminRechargeWallet = async (req, res) => {
     });
   } catch (error) {
     console.error("Error recharging wallet:", error);
-    return res.status(500).json({
+    return res.status(error.statusCode || 500).json({
       message: error.message || "Failed to recharge wallet",
       error: true,
       success: false,
