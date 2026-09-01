@@ -10,9 +10,6 @@ const {
   markProjectInvoicePaid,
 } = require("../../helpers/paymentRecording");
 const { settleInstallmentInvoice } = require("../../helpers/installmentSettlement");
-// Payment SSOT — an order's paidAmount/remainingAmount are DERIVED from its completed
-// transactions, never accumulated by hand here.
-const { setOrderPaidAmount } = require("../../helpers/orderPaymentTotals");
 const { syncProjectFinalInvoice } = require("../../helpers/projectFinalInvoice");
 
 // Instant wallet payment for an EXISTING order/installment — no admin approval.
@@ -32,10 +29,12 @@ const { syncProjectFinalInvoice } = require("../../helpers/projectFinalInvoice")
 //     here plus a `parentTransactionId`; this debits that part and advances `paidAmount` WITHOUT
 //     marking the installment paid or approving the order. The UPI remainder is a separate pending
 //     transaction (same parentTransactionId) that the admin approves later — that approval marks
-//     the installment paid and flips the order to approved (transactionApprovalController). Both
-//     routes SET paidAmount from the order's completed transactions via setOrderPaidAmount(), so
-//     the UPI leg simply joins the sum once it completes and nothing has to be added by hand. If
+//     the installment paid and flips the order to approved (transactionApprovalController), and its
+//     `paidAmount += upiPart` adds onto the wallet part seeded here, so nothing double-counts. If
 //     the UPI part is later rejected, the paired wallet part is auto-refunded (same controller).
+
+const getOrderTotal = (order) =>
+  Number(order?.totalAmount || order?.totalPrice || order?.price || 0);
 
 const walletPayInstant = async (req, res) => {
   try {
@@ -138,11 +137,9 @@ const walletPayInstant = async (req, res) => {
         // A project invoice is only a payment record; its matching order is the
         // financial aggregate. Keep both sources in lockstep for direct invoice
         // payments as well as the normal installment route below.
-        // Payment SSOT: derived from the order's completed transactions, not accumulated.
-        // deductWalletInstant() above already wrote this debit as a completed transaction, so it
-        // is part of the sum by the time this runs. Was `paidAmount += numericAmount`, which
-        // double-counted the same money if this route ran twice for one payment.
-        await setOrderPaidAmount(order);
+        const amountDue = getOrderTotal(order);
+        order.paidAmount = Math.min(amountDue, Number(order.paidAmount || 0) + numericAmount);
+        order.remainingAmount = Math.max(0, amountDue - Number(order.paidAmount || 0));
         if (projectInvoice.installmentNumber && Array.isArray(order.installments)) {
           const installment = order.installments.find(
             (item) => Number(item.installmentNumber) === Number(projectInvoice.installmentNumber)
@@ -266,24 +263,27 @@ const walletPayInstant = async (req, res) => {
       parentTransactionId: isCombinedPayment ? parentTransactionId : null,
     });
 
-    // Apply the payment to the order — same rule as transactionApprovalController's approval.
-    // Only a FULL settlement marks the installment paid; a partial wallet part leaves the
-    // installment for the UPI approval to finish, while the money it brought still counts.
-    if (isInstallment && targetInstallment && !targetInstallment.paid && isFullSettlement) {
-      targetInstallment.paid = true;
-      targetInstallment.paidDate = new Date();
-      targetInstallment.paymentStatus = "none";
-      targetInstallment.transactionId = transaction.transactionId;
+    // Apply the payment to the order — same math as transactionApprovalController's approval.
+    // Only a FULL settlement marks the installment paid; a partial wallet part just advances the
+    // paid amount and leaves the installment/order for the UPI approval to finish.
+    if (isInstallment && targetInstallment && !targetInstallment.paid) {
+      if (isFullSettlement) {
+        targetInstallment.paid = true;
+        targetInstallment.paidDate = new Date();
+        targetInstallment.paymentStatus = "none";
+        targetInstallment.transactionId = transaction.transactionId;
+      }
+      order.paidAmount = Number(order.paidAmount || 0) + numericAmount;
+    } else {
+      order.paidAmount = Number(order.paidAmount || 0) + numericAmount;
     }
 
-    // Payment SSOT: derived from the order's completed transactions, not accumulated. The debit
-    // above is already one of them. Both branches previously did the same `+= numericAmount`
-    // followed by a clamp — arithmetic that counted a retried payment twice and had to be kept
-    // in step by hand with the identical copy in transactionApprovalController.js.
-    //
-    // For a combined wallet+UPI payment this is exactly right: only the wallet leg is completed
-    // now, so only it is summed; the UPI leg adds itself when it is approved.
-    await setOrderPaidAmount(order);
+    const orderTotal = getOrderTotal(order);
+    order.paidAmount = Math.min(
+      Number(order.paidAmount || 0),
+      orderTotal || Number(order.paidAmount || 0)
+    );
+    order.remainingAmount = Math.max(0, orderTotal - Number(order.paidAmount || 0));
 
     const allInstallmentsPaid =
       Array.isArray(order.installments) &&

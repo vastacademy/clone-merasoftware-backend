@@ -64,68 +64,9 @@ const deriveInvoiceStatus = (amountPaid, amount) => {
   return paid > 0 ? "partially_paid" : "unpaid";
 };
 
-// The order's own price, matching the expression helpers/orderRefundService.js,
-// helpers/paymentRecording.js and helpers/projectFinalInvoice.js all use. remainingAmount must be
-// derived the same way its other writers derive it.
-const getOrderTotal = (order) =>
-  Number(order?.totalAmount || order?.totalPrice || order?.price || 0);
-
-// Refund money that left the business but left NO transaction behind.
-//
-// orderRefundService.js pays a refund out per leg: a wallet leg is credited by the server and
-// gets a transaction row, while any other method is money the admin sent outside this system —
-// "Recorded, not moved" — stored in order.refunds[] with the admin's reference and deliberately
-// no transaction. sumReceivedFromTransactions() therefore cannot see external legs, and an order
-// refunded that way legitimately derives HIGHER than it should. Subtracting them here is what
-// makes a derived paidAmount safe to write on a refunded order.
-const externalRefundTotal = (order) =>
-  (Array.isArray(order?.refunds) ? order.refunds : []).reduce(
-    (total, leg) => (leg && leg.method !== "wallet" ? total + Number(leg.amount || 0) : total),
-    0
-  );
-
-// Whether an order's paidAmount may be DERIVED from its transactions at all.
-//
-// Service-plan orders are excluded, and not as a precaution: helpers/serviceCycleSettlement.js
-// uses paidAmount to mean "what the CURRENT billing cycle was paid", assigning it from that
-// cycle's invoice. The order-level rule here means something different — "what this order's own
-// price has received" — and deliberately ignores `renewal` transactions, so deriving a service
-// order's paidAmount would report a long-running plan as barely paid. The two meanings cannot
-// share one writer; services keep their own.
-const canDeriveOrderPaidAmount = (order) => Boolean(order) && !order.isServicePlan;
-
-// SETS an order's paidAmount/remainingAmount from the money it has actually received, replacing
-// the hand-maintained `+=` / `-=` / clamp arithmetic that each payment path carries its own copy
-// of. Derived, never accumulated: calling it twice for the same payment produces the same answer,
-// where `+= amount` counts that payment twice.
-//
-// Mutates and returns the order WITHOUT saving — the caller decides when to persist, so this can
-// run inside an existing save (and, later, an existing session) rather than forcing a second write.
-//
-// Returns null and touches nothing when the order is one this rule does not own (see
-// canDeriveOrderPaidAmount). Callers must treat null as "not handled here", never as zero.
-const setOrderPaidAmount = async (order, { session = null } = {}) => {
-  if (!canDeriveOrderPaidAmount(order)) return null;
-
-  const received = await getOrderAmountReceived(order._id, { session });
-  const total = getOrderTotal(order);
-
-  // Clamped to the order's own price for the same reason the paths this replaces clamp: an
-  // overpayment is not a larger obligation, and remainingAmount must never go negative.
-  const paid = Math.max(0, Math.min(received - externalRefundTotal(order), total || received));
-
-  order.paidAmount = paid;
-  order.remainingAmount = Math.max(0, total - paid);
-  return order;
-};
-
 module.exports = {
   sumReceivedFromTransactions,
   getOrderAmountReceived,
   getInvoiceAmountReceived,
   deriveInvoiceStatus,
-  getOrderTotal,
-  externalRefundTotal,
-  canDeriveOrderPaidAmount,
-  setOrderPaidAmount,
 };

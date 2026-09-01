@@ -12,9 +12,6 @@ const { syncServiceBillingStatement } = require('../../helpers/serviceBillingSta
 // wallet portion must be returned to the customer.
 const { refundWalletInstant } = require("../../helpers/transactionService");
 const { markOrderApproved } = require("../../helpers/orderLifecycle");
-// Payment SSOT — an order's paidAmount/remainingAmount are DERIVED from its completed
-// transactions, never accumulated by hand here.
-const { setOrderPaidAmount } = require("../../helpers/orderPaymentTotals");
 const { logRejected, ACTOR_TYPE } = require("../../helpers/orderLifecycleLog");
 
 const requireAdmin = (req, res) => {
@@ -81,24 +78,16 @@ const applyOrderMoneyForTransaction = async (order, transaction, { settleInvoice
       installment.paidDate = new Date();
       installment.paymentStatus = "none";
       installment.transactionId = transaction.transactionId;
+      order.paidAmount = Number(order.paidAmount || 0) + amount;
       settledInstallmentNumber = installment.installmentNumber;
     }
+  } else {
+    order.paidAmount = Number(order.paidAmount || 0) + amount;
   }
 
-  // Payment SSOT: SET the order's money from its completed transactions rather than adding this
-  // payment's amount onto whatever was stored. The caller marks `transaction.status = "completed"`
-  // and saves it BEFORE reaching here, so this payment is already part of what is summed.
-  //
-  // Was: `paidAmount += amount` in both branches, then a clamp. That trusted the stored figure to
-  // be right and this call to happen exactly once — if approval ran twice, or ran after a partial
-  // failure, the same money was counted twice. Deriving makes a repeat produce the same answer,
-  // and makes the order agree with its transactions by construction rather than by arithmetic.
-  //
-  // Returns null for a service order, whose paidAmount means "what the current billing cycle was
-  // paid" and belongs to helpers/serviceCycleSettlement.js; leave those exactly as they were.
-  await setOrderPaidAmount(order);
-
   const orderTotal = getOrderTotal(order);
+  order.paidAmount = Math.min(Number(order.paidAmount || 0), orderTotal || Number(order.paidAmount || 0));
+  order.remainingAmount = Math.max(0, orderTotal - Number(order.paidAmount || 0));
 
   const allInstallmentsPaid =
     Array.isArray(order.installments) &&
@@ -298,11 +287,6 @@ const reverseWalletPortionSettlement = async (walletPortion) => {
   const order = await orderProductModel.findById(walletPortion.orderId);
   if (!order) return null;
 
-  // NOT moved onto setOrderPaidAmount(), deliberately. Its caller reverses the settlement HERE
-  // and only afterwards calls refundWalletInstant(), which writes the `type:'refund'` transaction
-  // the SSOT sum subtracts. Deriving at this point would therefore read the money as still
-  // received and undo nothing. The subtraction stays explicit until the refund transaction is
-  // written before the reversal rather than after it.
   const orderTotal = getOrderTotal(order);
   order.paidAmount = Math.max(0, Number(order.paidAmount || 0) - amount);
   order.remainingAmount = Math.max(0, orderTotal - Number(order.paidAmount || 0));
