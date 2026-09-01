@@ -46,20 +46,7 @@ const getAdminUserWorkspace = async (req, res) => {
     }
 
     const [orders, rawOrderRefs, transactions, monthlyInvoices, projectInvoices, updateRequestCounts] = await Promise.all([
-      // The payment-history subpage (PaymentOrderHistorySubpage in AdminClientWorkspace.js) reads
-      // paidAmount / isPartialPayment / currentInstallment / installments off these rows to show
-      // "Paid", "Remaining" and the installment progress. They are added on top of the shared
-      // ORDER_SUMMARY_FIELDS (select() is additive) so only this controller gets them, leaving the
-      // payload of ORDER_SUMMARY_FIELDS's other callers (getUserOrder.js, getMyPaymentWorkspace.js)
-      // unchanged — the same approach getUserOrder.js already uses for its own extra fields.
-      // Without them the fields arrive undefined and a fully-paid order renders as Paid 0 /
-      // Remaining <full price> / "One-time (Full)", contradicting the paid rows on the same screen.
-      applyOrderSummary(
-        orderModel
-          .find({ userId: customerObjectId })
-          .sort({ createdAt: -1 })
-          .select("paidAmount remainingAmount isPartialPayment currentInstallment installments")
-      ),
+      applyOrderSummary(orderModel.find({ userId: customerObjectId }).sort({ createdAt: -1 })),
       // Raw (unpopulated) orderId snapshot — used below to tell "no project linked" (e.g. wallet
       // deposit) apart from "project was deleted" (orderId was set but populate resolves to
       // null because the referenced order document no longer exists).
