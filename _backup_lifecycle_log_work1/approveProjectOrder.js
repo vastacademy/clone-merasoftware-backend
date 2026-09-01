@@ -9,7 +9,6 @@ const {
   buildLineItemsFromOrder,
 } = require("../../helpers/paymentRecording");
 const { syncProjectFinalInvoice } = require("../../helpers/projectFinalInvoice");
-const { logApproved, logRejected, ACTOR_TYPE } = require("../../helpers/orderLifecycleLog");
 
 // Admin approval for a customer-initiated project order that is waiting on approval.
 //
@@ -94,10 +93,8 @@ const approveProjectOrder = async (req, res) => {
           success: false,
         });
       }
-      const fromVisibility = order.orderVisibility;
       order.orderVisibility = "payment-rejected";
       order.rejectionReason = reason;
-      logRejected(order, { actorId: req.userId, actorType: ACTOR_TYPE.ADMIN, reason, fromVisibility });
       await order.save();
       return res.status(200).json({
         message: "Project rejected",
@@ -185,15 +182,9 @@ const approveProjectOrder = async (req, res) => {
       order.paymentComplete = true;
     }
 
-    const fromVisibility = order.orderVisibility;
     order.orderVisibility = "approved";
     if (order.status === "pending") order.status = "in_progress";
     order.rejectionReason = null;
-    // This path sets visibility directly rather than through markOrderApproved(), so it records
-    // its own entry. Guarded on the order not already being approved, matching that helper.
-    if (fromVisibility !== "approved") {
-      logApproved(order, { actorId: req.userId, actorType: ACTOR_TYPE.ADMIN, fromVisibility });
-    }
     await order.save();
     await syncProjectFinalInvoice(order);
 

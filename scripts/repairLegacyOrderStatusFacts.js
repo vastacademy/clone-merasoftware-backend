@@ -1,44 +1,49 @@
-// Repairs the legacy orders whose stored payment/visibility facts never got written by any
-// real payment or approval path, so every status surface derives the wrong answer from them.
+// PHASE 1 of the order-status SSOT work. Repairs the one stored fact the status surfaces read
+// that no code path has ever written: orderVisibility.
 //
 // Background (measured by scripts/readOnlyAuditOrderStatusSsot.js against live data):
-//   - 12 orders carry orderVisibility 'visible'. Nothing in the codebase ever WRITES that
-//     value — it is only the schema default (models/orderProductModel.js). These orders were
-//     created before/outside the approval paths and never transitioned.
-//   - 11 orders carry a paidAmount that disagrees with their completed transactions: 9 read 0
-//     despite fully-paid transactions, and one reads 40000 against a 12000 order.
-//   - The two sets are the same orders. One cause, not two: these orders never went through a
-//     path that maintains those fields by hand.
+//   12 orders carry orderVisibility 'visible'. Nothing in this codebase ever WRITES that value —
+//   grep confirms the only occurrences are the schema default in models/orderProductModel.js and
+//   two read-side allowlists (getOrderDetails.js, partnerCustomers.js) that accept it. These
+//   orders were created before/outside the approval paths and never transitioned.
 //
-// The fix is NOT a new derivation. helpers/orderPaymentTotals.js already owns "how much money
-// has this order actually received" (getOrderAmountReceived), is covered by 15 checks in
-// scripts/verifyOrderPaymentTotals.js, and already encodes the rules a fresh implementation
-// would get wrong — notably that `renewal` transactions do NOT count toward the order's own
-// price. One service order here carries 5 renewals of 3000 against a 3000 price; summing them
-// naively would report it as 18000 received. This script calls that helper and writes nothing
-// it did not derive from it.
+//   That default is what splits the two sides apart. The customer derivation
+//   (frontend/src/helpers/orderPresentation.js) treats 'visible' as approved via isOrderApproved();
+//   the admin derivation (AdminClientWorkspace.js / getAdminUserWorkspace.js) does not read
+//   orderVisibility for that case at all and falls through to `status`, which for these orders
+//   still holds whatever it was created with. Five of the eleven customer-vs-admin disagreements
+//   in the audit come from exactly this.
 //
-// SCOPE IS DELIBERATELY NARROW. Only orders whose stored paidAmount disagrees with the helper,
-// and only the fields below. Everything else on the order is untouched.
+// SCOPE IS DELIBERATELY LIMITED TO orderVisibility.
+// An earlier draft of this script also rewrote paidAmount/remainingAmount from
+// helpers/orderPaymentTotals.js, because the same 11 orders also carry a paidAmount that
+// disagrees with their completed transactions (nine read 0 despite full payment; one reads 40000
+// against a 12000 order). That is a real bug, but it is a MONEY bug, not a status bug — the
+// status engine only needs the correct value to exist, not for the whole field to be re-derived.
+// Mixing it in here would put an accounting change inside a status fix, with different risk and
+// different verification. It is tracked separately and is deliberately NOT done by this script.
 //
-// EXPLICITLY EXCLUDED — orders that have been refunded (any refunds[] entry, or cancelled).
-// Refund accounting is owned by helpers/orderRefundService.js, which tracks refundable as
-// (totalPaid - alreadyRefunded) and legs per payment method. The one cancelled order in this
-// data reads paidAmount 570 vs a derived 1200 precisely BECAUSE it was refunded — that gap is
-// correct bookkeeping, not drift, and overwriting it would corrupt the refund record.
-//
-// VISIBILITY REPAIR RULE — derived from each order's own facts, never guessed:
+// THE REPAIR RULE — derived from each order's own facts, never guessed:
 //   money received > 0  ->  'approved'   (a payment landed; that is what approval means here)
 //   money received = 0  ->  left as-is   (no evidence of payment; not this script's call)
-// 'visible' and 'approved' are already treated identically by isOrderApproved()
-// (frontend/src/helpers/orderVisibility.js) and by the backend's approved allowlists, so this
-// changes no gate — it only removes the schema-default value that the admin-side derivation
-// (AdminClientWorkspace.js) cannot interpret.
+// "Money received" is read through getOrderAmountReceived() (helpers/orderPaymentTotals.js), the
+// existing single source of truth for that question — it is covered by 15 checks in
+// scripts/verifyOrderPaymentTotals.js and already encodes the rules a fresh implementation would
+// get wrong, notably that `renewal` transactions do NOT count toward an order's own price. One
+// service order here carries 5 renewals of 3000 against a 3000 price; a naive sum would read
+// 18000. The helper is used only to ASK the question, not to write paidAmount.
+//
+// This changes no gate: isOrderApproved() (frontend/src/helpers/orderVisibility.js) and the
+// backend's approved allowlists already treat 'visible' and 'approved' identically. It only
+// removes the schema-default value that the admin-side derivation cannot interpret.
+//
+// EXPLICITLY EXCLUDED — refund-owned orders (cancelled, or carrying refunds). Their money is
+// governed by helpers/orderRefundService.js, and a cancelled order must never be moved back to
+// 'approved' (helpers/orderLifecycle.js makes 'cancelled' terminal for exactly this reason).
 //
 // NOT REPAIRED HERE (out of scope by design):
 //   - order.status / currentPhase — these belong to the status engine, not to a data patch.
-//   - remainingAmount — derived by each payment path from paidAmount; recomputed here only
-//     where paidAmount itself changes, using the same Math.max(0, total - paid) those paths use.
+//   - paidAmount / remainingAmount — see the scope note above.
 //
 // DRY-RUN BY DEFAULT. Pass --apply to write.
 //   node scripts/repairLegacyOrderStatusFacts.js
@@ -55,13 +60,8 @@ const line = (s = "") => console.log(s);
 const sep = () => line("-".repeat(78));
 const money = (v) => Number(Number(v || 0).toFixed(2));
 
-// Same total the payment paths use (price is the order's own price; totalAmount is the legacy
-// field some older orders carry instead).
-const getOrderTotal = (order) => Number(order.price ?? order.totalAmount ?? 0);
-
-// An order the refund system owns. Its paidAmount is intentionally net of refunds, so the
-// derived-from-transactions figure will legitimately differ.
-const isRefundOwned = (order) =>
+// An order the refund system owns, or one that is terminally cancelled. Never re-approved.
+const isRefundOwnedOrCancelled = (order) =>
   order.orderVisibility === "cancelled" ||
   (Array.isArray(order.refunds) && order.refunds.length > 0) ||
   Number(order.refundTotal || 0) > 0;
@@ -77,108 +77,65 @@ const main = async () => {
   line("target database host : " + host);
   await mongoose.connect(uri);
   line(APPLY ? "MODE: APPLY (will write)" : "MODE: DRY-RUN (no writes)");
+  line("scope: orderVisibility only — paidAmount is deliberately NOT touched");
   line("");
 
+  // Only the orders carrying the schema default. Everything else is already in a real state.
   const orders = await orderProductModel
-    .find({})
-    .select("price totalAmount paidAmount remainingAmount orderVisibility status projectProgress refunds refundTotal projectSnapshot productId servicePlanSnapshot")
+    .find({ orderVisibility: "visible" })
+    .select("price totalAmount paidAmount orderVisibility status projectProgress currentPhase refunds refundTotal projectSnapshot productId servicePlanSnapshot createdAt")
     .populate("productId", "serviceName")
     .lean();
 
-  let scanned = 0;
-  let skippedRefund = 0;
-  let repaired = 0;
-  let visibilityOnly = 0;
-  const planned = [];
-
-  for (const order of orders) {
-    scanned++;
-
-    const derived = money(await getOrderAmountReceived(order._id));
-    const stored = money(order.paidAmount);
-    const needsPaid = derived !== stored;
-    const needsVisibility = order.orderVisibility === "visible" && derived > 0;
-
-    if (!needsPaid && !needsVisibility) continue;
-
-    if (isRefundOwned(order)) {
-      skippedRefund++;
-      planned.push({
-        order,
-        skip: true,
-        reason: "refund-owned (helpers/orderRefundService.js) — paidAmount is net of refunds by design",
-        stored,
-        derived,
-      });
-      continue;
-    }
-
-    const total = getOrderTotal(order);
-    const change = {
-      order,
-      skip: false,
-      stored,
-      derived,
-      paidChanges: needsPaid,
-      visibilityChanges: needsVisibility,
-      fromVisibility: order.orderVisibility,
-      newRemaining: needsPaid ? Math.max(0, total - derived) : null,
-      oldRemaining: money(order.remainingAmount),
-      total,
-    };
-    planned.push(change);
-
-    if (needsPaid) repaired++;
-    else visibilityOnly++;
-
-    if (APPLY) {
-      const update = {};
-      if (needsPaid) {
-        update.paidAmount = derived;
-        update.remainingAmount = Math.max(0, total - derived);
-      }
-      if (needsVisibility) update.orderVisibility = "approved";
-      await orderProductModel.updateOne({ _id: order._id }, { $set: update });
-    }
-  }
-
-  // ---- report ----
   const nameOf = (o) =>
     o.projectSnapshot?.displayName || o.productId?.serviceName || o.servicePlanSnapshot?.serviceName || "(unnamed)";
 
-  for (const p of planned) {
+  let repaired = 0;
+  let leftAlone = 0;
+  let skippedRefund = 0;
+
+  for (const order of orders) {
+    const received = money(await getOrderAmountReceived(order._id));
+
     sep();
-    line("ORDER " + p.order._id + "   " + nameOf(p.order));
-    if (p.skip) {
-      line("  SKIPPED: " + p.reason);
-      line("    stored paidAmount : " + p.stored);
-      line("    derived from txns : " + p.derived + "   (difference is the refund)");
+    line("ORDER " + order._id + "   " + nameOf(order));
+    line("  created           : " + new Date(order.createdAt).toISOString().slice(0, 10));
+    line("  money received    : " + received + "   (order price: " + money(order.price ?? order.totalAmount) + ")");
+    line("  status / progress : " + order.status + " / " + (order.projectProgress ?? "-") + "%");
+
+    if (isRefundOwnedOrCancelled(order)) {
+      skippedRefund++;
+      line("  => SKIPPED (refund-owned or cancelled — never re-approved)");
       continue;
     }
-    line("  order total       : " + p.total);
-    if (p.paidChanges) {
-      line("  paidAmount        : " + p.stored + "  ->  " + p.derived);
-      line("  remainingAmount   : " + p.oldRemaining + "  ->  " + p.newRemaining);
-    } else {
-      line("  paidAmount        : " + p.stored + "   (already correct, unchanged)");
+
+    if (received <= 0) {
+      leftAlone++;
+      line("  => LEFT AS-IS (no money received — no evidence to approve on)");
+      continue;
     }
-    if (p.visibilityChanges) {
-      line("  orderVisibility   : " + p.fromVisibility + "  ->  approved   (money received: " + p.derived + ")");
-    } else if (p.order.orderVisibility === "visible") {
-      line("  orderVisibility   : visible   (left as-is — no money received, no evidence to approve on)");
+
+    repaired++;
+    line("  => orderVisibility: visible  ->  approved");
+
+    if (APPLY) {
+      await orderProductModel.updateOne(
+        { _id: order._id },
+        { $set: { orderVisibility: "approved" } }
+      );
     }
   }
 
   sep();
   line("");
   line("SUMMARY");
-  line("  orders scanned                    : " + scanned);
-  line("  paidAmount/remaining repaired     : " + repaired);
-  line("  visibility-only repaired          : " + visibilityOnly);
-  line("  skipped (refund-owned)            : " + skippedRefund);
+  line("  orders with orderVisibility 'visible' : " + orders.length);
+  line("  repaired to 'approved'                : " + repaired);
+  line("  left as-is (no money received)        : " + leftAlone);
+  line("  skipped (refund-owned / cancelled)    : " + skippedRefund);
   line("");
   line(APPLY
-    ? "APPLIED. Re-run scripts/verifyOrderPaymentTotals.js and scripts/readOnlyAuditOrderStatusSsot.js to confirm."
+    ? "APPLIED. Re-run scripts/readOnlyAuditOrderStatusSsot.js to confirm the disagreement count dropped."
     : "DRY-RUN complete — nothing was written. Re-run with --apply to write.");
 
   await mongoose.disconnect();

@@ -122,59 +122,6 @@ const projectNodeSchema = new mongoose.Schema({
     }
 }, { _id: false });
 
-// One entry per lifecycle transition an order goes through — the record of WHEN an order
-// reached the state it is in, and who moved it there.
-//
-// Why this exists: the order carries the CURRENT state (orderVisibility, projectProgress) but,
-// apart from cancellation, kept no record of when it got there. `updatedAt` cannot answer it —
-// any later edit overwrites it. So "when was this approved / rejected / started / finished" had
-// no answer at all. Progress changes were already logged this way in projectNodeEvents; this
-// applies the same treatment to the lifecycle.
-//
-// Kept on the order document rather than in its own collection: measured against live data, the
-// heaviest order is 22 KB against MongoDB's 16 MB limit, and lifecycle transitions are a handful
-// per order for its whole life — nothing here can grow unbounded.
-//
-// actorId is nullable, unlike projectNodeEventSchema's. Some transitions genuinely have no human
-// actor: cron/servicePlanRenewalCron.js settles a service cycle, which approves the order via
-// helpers/serviceCycleSettlement.js with no request and no user. Those carry actorType 'system'.
-// Backfilled entries carry 'backfill' and a source note, so a reconstructed date is never
-// mistaken for one that was actually observed.
-const orderLifecycleEventSchema = new mongoose.Schema({
-    eventType: {
-        type: String,
-        enum: ['approved', 'rejected', 'cancelled', 'work_started', 'completed', 'reopened'],
-        required: true
-    },
-    occurredAt: {
-        type: Date,
-        default: Date.now,
-        required: true
-    },
-    actorId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'user',
-        default: null
-    },
-    actorType: {
-        type: String,
-        enum: ['admin', 'customer', 'system', 'backfill'],
-        required: true
-    },
-    // What the order moved from/to, so an entry is readable without replaying everything before it.
-    fromVisibility: { type: String, default: null },
-    toVisibility: { type: String, default: null },
-    progressAtEvent: { type: Number, min: 0, max: 100, default: null },
-    // Admin's stated reason (rejection reason, cancellation reason) where one exists.
-    reason: { type: String, default: null },
-    // For backfilled entries: what the date was reconstructed FROM, so its reliability is visible.
-    derivedFrom: { type: String, default: null },
-    metadata: {
-        type: mongoose.Schema.Types.Mixed,
-        default: {}
-    }
-}, { _id: false });
-
 const projectNodeEventSchema = new mongoose.Schema({
     eventType: {
         type: String,
@@ -348,12 +295,6 @@ const orderSchema = new mongoose.Schema({
     },
     projectNodeEvents: {
         type: [projectNodeEventSchema],
-        default: []
-    },
-    // Lifecycle history — see orderLifecycleEventSchema above. Applies to every order type
-    // (project, plan, service), unlike projectNodeEvents which is project-timeline only.
-    lifecycleEvents: {
-        type: [orderLifecycleEventSchema],
         default: []
     },
     messages: [messageSchema],

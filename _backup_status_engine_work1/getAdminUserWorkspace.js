@@ -100,21 +100,20 @@ const getAdminUserWorkspace = async (req, res) => {
       (a, b) => new Date(b.invoiceDate) - new Date(a.invoiceDate)
     );
 
-    // Bucketing for the workspace counts. Grouped by the engine's stable `code`
-    // (helpers/orderStatusEngine.js, attached by applyOrderSummary) so these counts and the
-    // badges the admin page renders can never disagree — they now come from one decision.
-    //
-    // The previous versions tested order.status for "rejected"/"cancelled"/"canceled", values
-    // absent from the status enum, so those branches never matched and a cancelled order was
-    // counted as active.
     const isCompletedOrder = (order) =>
-      order?.orderState?.code === "completed" || order?.orderState?.code === "plan_closed";
+      (order?.projectProgress || 0) >= 100 ||
+      order?.currentPhase === "completed" ||
+      order?.status === "completed";
 
     const isRejectedOrder = (order) =>
-      order?.orderState?.code === "rejected" || order?.orderState?.code === "cancelled";
+      order?.orderVisibility === "payment-rejected" ||
+      order?.status === "rejected" ||
+      order?.status === "cancelled" ||
+      order?.status === "canceled";
 
     const isPendingOrder = (order) =>
-      order?.orderState?.code === "pending_approval" || order?.orderState?.code === "processing";
+      order?.orderVisibility === "pending-approval" ||
+      order?.status === "pending";
 
     const isActiveOrder = (order) =>
       !isPendingOrder(order) && !isRejectedOrder(order) && !isCompletedOrder(order);

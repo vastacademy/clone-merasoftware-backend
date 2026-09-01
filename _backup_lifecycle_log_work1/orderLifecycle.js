@@ -11,8 +11,6 @@
 // Any of those would silently resurrect a cancelled project — an un-cancel through the back
 // door. This helper is the single place that decides, so the rule cannot drift apart again.
 
-const { logApproved, ACTOR_TYPE } = require("./orderLifecycleLog");
-
 const TERMINAL_VISIBILITIES = new Set(["cancelled"]);
 
 // Can this order still be moved to `approved` by a payment settling against it?
@@ -21,27 +19,10 @@ const canApproveOrder = (order) => !TERMINAL_VISIBILITIES.has(order?.orderVisibi
 // Apply the "money settled, so this order is approved" transition — but only when the order
 // is not in a terminal state. Callers keep their own surrounding logic (installment pointers,
 // paidAmount, status); this owns only the visibility decision.
-// `actor` is optional so the four existing call sites keep working unchanged; those that know
-// who acted pass it, and the one that genuinely has no actor (serviceCycleSettlement.js, driven
-// by cron/servicePlanRenewalCron.js with no request behind it) is recorded as 'system' rather
-// than pretending a person did it.
-//
-// The history entry is only appended when the transition ACTUALLY happens — an order already
-// approved, or terminally cancelled, returns early and logs nothing, so re-running a settle path
-// cannot manufacture a second approval in the timeline.
-const markOrderApproved = (order, { actorId = null, actorType = ACTOR_TYPE.SYSTEM } = {}) => {
+const markOrderApproved = (order) => {
   if (!canApproveOrder(order)) return false;
-  // Nothing to record if it was already approved — but the caller's own logic may still need to
-  // run, so this is not an early return of `false`.
-  const wasAlreadyApproved = order.orderVisibility === "approved";
-  const fromVisibility = order.orderVisibility;
-
   order.orderVisibility = "approved";
   if (order.status === "pending") order.status = "in_progress";
-
-  if (!wasAlreadyApproved) {
-    logApproved(order, { actorId, actorType, fromVisibility });
-  }
   return true;
 };
 

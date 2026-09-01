@@ -1,35 +1,45 @@
 /**
- * Deletes the 8 old `feature_upgrades` catalogue products, ONLY IF nothing depends on them.
+ * Deletes the 8 remaining `feature_upgrades` catalogue products from the old system.
  *
- * DRY RUN BY DEFAULT — prints the decision for each product and writes nothing.
- * Pass --apply to delete the ones that qualify.
+ * DRY RUN BY DEFAULT — prints the full dependency picture for each product and writes nothing.
+ * Pass --apply to delete.
  *
- * Background: the catalogue holds 11 products. Eight were created in Feb 2025 under the
- * `feature_upgrades` category and have never been bought — verified: zero orders reference them
- * by productId, and zero orders carry their name in a servicePlanSnapshot either. The other
- * three are the current service plans created in Aug 2026 (Starter Update Plan, Live Chat
- * Feature, Single Page Adition); two of them are live on a customer's orders and are NOT
- * touched here.
+ * Background: the clone's catalogue holds 11 products. Eight are `feature_upgrades` rows created
+ * in Feb 2025 and belong to the old system the owner is retiring; the other three are the
+ * current `service_plan` products created Aug 2026 (Starter Update Plan, Live Chat Feature,
+ * Single Page Adition), two of which are live on a customer's orders. Only the eight are
+ * targeted here — the three current plans are not in the list and are never touched.
  *
- * This is a sibling of scripts/deleteUnusedPlans.js and keeps its rule verbatim, because the
- * rule is what makes the delete safe rather than merely convenient:
+ * WHY THIS DOES NOT USE deleteUnusedPlans.js's "zero orders or keep" RULE:
+ * that script refuses to delete a product any order references, because a live order pointing at
+ * a missing product would lose its name. That protection does not apply here, and the reason was
+ * verified rather than assumed:
  *
- *   A product is deleted only when it has ZERO orders. If any customer ever bought it —
- *   active or not — the product is KEPT, because deleting it would leave that order pointing
- *   at a product that no longer exists.
+ *   - Seven of the eight ARE referenced by orders — but through `orderItems[].name`, a frozen
+ *     purchase label, not through `productId`. Every one of these orders already carries
+ *     productId: null; the catalogue link was severed long before this script.
+ *   - getOrderDisplayName() (frontend/src/helpers/orderPresentation.js) resolves a name in this
+ *     order: projectSnapshot.displayName -> productId.serviceName -> servicePlanSnapshot.
+ *     serviceName -> orderItems[].name. With productId already null, these orders are ALREADY
+ *     reading their name from orderItems[].name, so removing the catalogue row changes nothing
+ *     they display.
+ *   - The same thing has already happened to 25 other products from these screenshots
+ *     (Restaurant Website, College Website, CRM Based CMS, ...): their catalogue rows are gone,
+ *     their orders remain, and those orders render correctly today. This is the established
+ *     outcome in this database, not a prediction.
  *
- * The check is deliberately stricter than deleteUnusedPlans.js in one way: it also counts
- * orders that merely carry the product's name in servicePlanSnapshot.serviceName. An order
- * whose catalogue product was already detached keeps that frozen name as its only remaining
- * label (see helpers/orderSummary.js and frontend/src/helpers/orderPresentation.js), so a
- * name still in use is evidence the product is not orphaned even when productId is null.
+ * So the check below REPORTS every dependency instead of blocking on it, and the deletion is an
+ * explicit owner decision recorded here. What it still refuses to touch:
  *
- * Targeting is by _id, not by name. Names in this catalogue carry stray whitespace
- * ("  WhatsApp Cloud API Integration  "), so a name match would silently miss rows.
+ *   - Any product outside TARGET_PRODUCT_IDS.
+ *   - Any target that turns out to be referenced by a LIVE productId link — that would be a real
+ *     orphan, different from the frozen-name references above, and aborts the whole batch.
+ *
+ * Orders, transactions, and invoices are never modified. Only the catalogue rows are removed.
  *
  * Usage:
  *   node scripts/deleteUnusedFeatureUpgradeProducts.js            # dry run
- *   node scripts/deleteUnusedFeatureUpgradeProducts.js --apply    # delete the unused ones
+ *   node scripts/deleteUnusedFeatureUpgradeProducts.js --apply    # delete
  */
 require("dotenv").config({ path: require("path").join(__dirname, "..", ".env") });
 const mongoose = require("mongoose");
@@ -39,17 +49,21 @@ const userModel = require("../models/userModel");
 
 const apply = process.argv.includes("--apply");
 
-// The 8 old feature_upgrades products, by _id (all created 2025-02, all unused).
+// The 8 old feature_upgrades products, by _id. Targeted by id, not name: several names in this
+// catalogue carry stray whitespace ("  WhatsApp Cloud API Integration  ") and a name match
+// would silently miss them.
 const TARGET_PRODUCT_IDS = [
-  "67a8a67fc46161fd031d6dc2", // User Management               price 70000
-  "67a8a704c46161fd031d6e43", // Payment Gateway               price 15000
-  "67a8a783c46161fd031d6ec4", // Live Chat                     price 20000
-  "67a8a7e9c46161fd031d6f45", // Product Inventory System      price 25000
-  "67a8a84cc46161fd031d6fc6", // Dynamic Page with Panel       price  8000
+  "67a8a67fc46161fd031d6dc2", // User Management                price 70000
+  "67a8a704c46161fd031d6e43", // Payment Gateway                price 15000
+  "67a8a783c46161fd031d6ec4", // Live Chat                      price 20000
+  "67a8a7e9c46161fd031d6f45", // Product Inventory System       price 25000
+  "67a8a84cc46161fd031d6fc6", // Dynamic Page with Panel        price  8000
   "67a8aa69c46161fd031d70c9", // WhatsApp Cloud API Integration price 18000
-  "67a8ab65c46161fd031d714e", // Dynamic Gallery               price 20000
-  "67ab511c7bc4940983e09ac9", // Add New Page                  price  3500
+  "67a8ab65c46161fd031d714e", // Dynamic Gallery                price 20000
+  "67ab511c7bc4940983e09ac9", // Add New Page                   price  3500
 ];
+
+const escapeRx = (s) => String(s).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
 (async () => {
   const uri = process.env.MONGODB_URI || process.env.MONGO_URI || process.env.MONGODB_URL;
@@ -62,10 +76,10 @@ const TARGET_PRODUCT_IDS = [
   await mongoose.connect(uri);
 
   console.log(`\n${apply ? "APPLY" : "DRY RUN"}`);
-  console.log("=".repeat(72));
+  console.log("=".repeat(78));
 
   const deletable = [];
-  const kept = [];
+  const blockers = [];
   const missing = [];
 
   for (const id of TARGET_PRODUCT_IDS) {
@@ -75,66 +89,81 @@ const TARGET_PRODUCT_IDS = [
     }
 
     const product = await productModel
-      .find({ _id: id })
-      .select("_id serviceName category price sellingPrice isHidden isServicePlan createdAt")
+      .findById(id)
+      .select("_id serviceName category price sellingPrice isHidden createdAt")
       .lean();
 
-    if (!product.length) {
+    if (!product) {
       missing.push(`${id} — not found (already gone?)`);
       continue;
     }
 
-    for (const p of product) {
-      const name = String(p.serviceName || "").trim();
+    const name = String(product.serviceName || "").trim();
+    const rx = new RegExp("^\\s*" + escapeRx(name) + "\\s*$", "i");
 
-      // Two ways an order can still depend on this product.
-      const orders = await orderModel
-        .find({ productId: p._id })
-        .select("_id userId isActive orderVisibility paidAmount")
-        .lean();
+    // A LIVE catalogue link. This is the one that would orphan an order — it aborts the batch.
+    const liveLinked = await orderModel
+      .find({ productId: product._id })
+      .select("_id userId orderVisibility")
+      .lean();
 
-      const snapshotOrders = await orderModel
-        .find({ "servicePlanSnapshot.serviceName": name })
-        .select("_id userId orderVisibility")
-        .lean();
+    // Frozen purchase labels. These already survive without the catalogue row (see header).
+    const byItemName = await orderModel
+      .find({ "orderItems.name": rx })
+      .select("_id userId orderVisibility productId")
+      .lean();
 
-      console.log(`\n"${name}"  (_id=${p._id})`);
-      console.log(`   category : ${p.category}   price=${p.price}  selling=${p.sellingPrice}`);
-      console.log(`   created  : ${p.createdAt ? new Date(p.createdAt).toISOString().slice(0, 10) : "-"}`);
-      console.log(`   orders by productId          : ${orders.length}`);
-      console.log(`   orders by snapshot name      : ${snapshotOrders.length}`);
+    const bySnapshot = await orderModel
+      .find({ "servicePlanSnapshot.serviceName": rx })
+      .select("_id userId orderVisibility productId")
+      .lean();
 
-      for (const order of orders) {
-        const user = await userModel.findById(order.userId).select("email").lean();
-        console.log(
-          `      ${order._id} | ${user?.email || "?"} | isActive=${order.isActive}` +
-            ` | ${order.orderVisibility} | paid=${order.paidAmount}`
-        );
-      }
-      for (const order of snapshotOrders) {
-        const user = await userModel.findById(order.userId).select("email").lean();
-        console.log(`      (snapshot) ${order._id} | ${user?.email || "?"} | ${order.orderVisibility}`);
-      }
+    console.log(`\n"${name}"  (_id=${product._id})`);
+    console.log(`   category : ${product.category}   price=${product.price}  selling=${product.sellingPrice}`);
+    console.log(`   created  : ${product.createdAt ? new Date(product.createdAt).toISOString().slice(0, 10) : "-"}`);
+    console.log(`   live productId links      : ${liveLinked.length}${liveLinked.length ? "   <-- BLOCKS DELETE" : ""}`);
+    console.log(`   orders w/ frozen item name: ${byItemName.length}   (these keep their name without the catalogue row)`);
+    console.log(`   orders w/ snapshot name   : ${bySnapshot.length}`);
 
-      const dependents = orders.length + snapshotOrders.length;
-      if (dependents === 0) {
-        console.log(`   => DELETE (nothing depends on it)`);
-        deletable.push({ ...p, name });
-      } else {
-        console.log(`   => KEEP — ${dependents} order(s) depend on it`);
-        kept.push({ product: { ...p, name }, orderCount: dependents });
-      }
+    for (const order of byItemName) {
+      const user = await userModel.findById(order.userId).select("email").lean();
+      console.log(
+        `      ${order._id} | ${user?.email || "?"} | ${order.orderVisibility}` +
+          ` | productId=${order.productId || "null"}`
+      );
     }
+
+    if (liveLinked.length) {
+      blockers.push(`${name} (${product._id}) — ${liveLinked.length} order(s) still link by productId`);
+      for (const order of liveLinked) {
+        const user = await userModel.findById(order.userId).select("email").lean();
+        console.log(`      LIVE LINK: ${order._id} | ${user?.email || "?"} | ${order.orderVisibility}`);
+      }
+      console.log(`   => BLOCKED (a live productId link would be orphaned)`);
+      continue;
+    }
+
+    console.log(`   => DELETE (owner-approved; no live productId link)`);
+    deletable.push({ ...product, name, frozenRefs: byItemName.length + bySnapshot.length });
   }
 
-  console.log(`\n${"-".repeat(72)}`);
+  console.log(`\n${"-".repeat(78)}`);
   console.log(`Will delete : ${deletable.length}`);
-  deletable.forEach((p) => console.log(`   ${p.name}`));
-  console.log(`Will keep   : ${kept.length}`);
-  kept.forEach((k) => console.log(`   ${k.product.name} (${k.orderCount} order(s))`));
+  deletable.forEach((p) =>
+    console.log(`   ${p.name}${p.frozenRefs ? `   (${p.frozenRefs} order(s) keep their frozen name)` : ""}`));
+  if (blockers.length) {
+    console.log(`Blocked     : ${blockers.length}`);
+    blockers.forEach((b) => console.log(`   ${b}`));
+  }
   if (missing.length) {
     console.log(`Not found   : ${missing.length}`);
     missing.forEach((m) => console.log(`   ${m}`));
+  }
+
+  if (blockers.length) {
+    console.log(`\nAborting — a live productId link must be resolved first. Nothing was written.`);
+    await mongoose.disconnect();
+    process.exit(1);
   }
 
   if (!apply) {
@@ -150,17 +179,16 @@ const TARGET_PRODUCT_IDS = [
   }
 
   const res = await productModel.deleteMany({ _id: { $in: deletable.map((p) => p._id) } });
-  console.log(`\nDeleted ${res.deletedCount} catalogue product(s).`);
+  console.log(`\nDeleted ${res.deletedCount} catalogue product(s). Orders were not modified.`);
 
-  // Verify: every kept product must still exist, every deleted one must be gone.
-  for (const k of kept) {
-    const still = await productModel.exists({ _id: k.product._id });
-    console.log(`   kept "${k.product.name}" still present: ${Boolean(still)}`);
-  }
+  // Verify: every deleted product is gone, and the current service plans are untouched.
   for (const p of deletable) {
     const gone = !(await productModel.exists({ _id: p._id }));
     console.log(`   deleted "${p.name}" removed: ${gone}`);
   }
+  const remaining = await productModel.find({}).select("serviceName category").lean();
+  console.log(`\n   catalogue now holds ${remaining.length} product(s):`);
+  remaining.forEach((p) => console.log(`      ${String(p.serviceName).trim()}  [${p.category}]`));
 
   await mongoose.disconnect();
 })().catch(async (error) => {

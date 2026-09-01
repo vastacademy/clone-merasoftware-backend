@@ -1,7 +1,7 @@
 const orderProductModel = require("../../models/orderProductModel")
 const invoiceModel = require("../../models/invoiceModel");
 const mongoose = require('mongoose');
-const { applyOrderSummary, ORDER_SUMMARY_FIELDS, attachOrderState } = require("../../helpers/orderSummary");
+const { applyOrderSummary, ORDER_SUMMARY_FIELDS } = require("../../helpers/orderSummary");
 const { getDueUnpaidInvoiceFilter } = require("../../helpers/projectDuePayment");
 
 const getUserOrders = async (req, res) => {
@@ -46,10 +46,6 @@ const getUserOrders = async (req, res) => {
         const unpaidOrderIds = new Set(unpaidInvoices.map((invoice) => String(invoice.orderId)));
         orders.forEach((order) => {
             order.hasUnpaidInvoice = unpaidOrderIds.has(String(order._id));
-            // applyOrderSummary already attached orderState, but it ran before hasUnpaidInvoice
-            // existed — and "Payment Pending" is derived from that flag. Recompute now that the
-            // real value is known, so the badge this endpoint feeds is not one state behind.
-            attachOrderState(order);
         });
 
         console.log('Total projects found:', orders.length);

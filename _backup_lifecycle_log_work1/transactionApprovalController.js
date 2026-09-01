@@ -12,7 +12,6 @@ const { syncServiceBillingStatement } = require('../../helpers/serviceBillingSta
 // wallet portion must be returned to the customer.
 const { refundWalletInstant } = require("../../helpers/transactionService");
 const { markOrderApproved } = require("../../helpers/orderLifecycle");
-const { logRejected, ACTOR_TYPE } = require("../../helpers/orderLifecycleLog");
 
 const requireAdmin = (req, res) => {
   if (req.userRole !== "admin") {
@@ -107,9 +106,7 @@ const applyOrderMoneyForTransaction = async (order, transaction, { settleInvoice
 
   // A cancelled order stays cancelled — approving a still-pending payment against it must
   // never resurrect it (see helpers/orderLifecycle.js).
-  // verifiedBy is the admin who approved this transaction — set by approveTransaction() before
-  // this runs — so the lifecycle entry records who actually approved the order.
-  if (markOrderApproved(order, { actorId: transaction.verifiedBy, actorType: ACTOR_TYPE.ADMIN })) {
+  if (markOrderApproved(order)) {
     order.rejectionReason = null;
   }
 
@@ -254,17 +251,7 @@ const rejectLinkedOrderPayment = async (transaction, rejectionReason) => {
     Array.isArray(order.installments) && order.installments.some((installment) => installment.paid);
 
   if (!hasPaidInstallment && Number(order.paidAmount || 0) <= 0) {
-    const fromVisibility = order.orderVisibility;
     order.orderVisibility = "payment-rejected";
-    // Recorded only when the order actually moves to rejected. An order that already has paid
-    // money keeps its visibility (only this transaction was refused), so it gets no lifecycle
-    // entry — the rejection belongs to the transaction, not to the order's own state.
-    logRejected(order, {
-      actorId: transaction?.verifiedBy || null,
-      actorType: ACTOR_TYPE.ADMIN,
-      reason: rejectionReason || "Payment rejected by admin",
-      fromVisibility,
-    });
   }
 
   order.rejectionReason = rejectionReason || "Payment rejected by admin";

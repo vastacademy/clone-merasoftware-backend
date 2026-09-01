@@ -3,7 +3,6 @@ const invoiceModel = require("../../models/invoiceModel");
 const transactionModel = require("../../models/transactionModel");
 const { getDueUnpaidInvoiceFilter } = require("../../helpers/projectDuePayment");
 const { getOrderState } = require("../../helpers/orderStatusEngine");
-const { buildLifecycleTimeline, getCurrentStateSince } = require("../../helpers/orderLifecycleLog");
 
 const toPlainObject = (doc) => {
     if (!doc) return null;
@@ -126,19 +125,10 @@ const getOrderDetails = async (req, res) => {
                     'serviceCurrentCycleStart serviceCurrentCycleEnd',
                     'serviceAccessUsedInCycle serviceAccessUsedTotal servicePlanStatus',
                     'linkedProjectOrderId addedDuringProjectPhase',
-                    // Needed by helpers/orderStatusEngine.js to classify these rows as services
-                    // rather than falling back to a category guess.
-                    'isServicePlan isWebsiteProject',
                 ].join(' '))
                 .populate('productId', 'serviceName category servicePlan formattedDescriptions')
                 .lean()
             : [];
-
-        // Linked services get the same derived state as any other order, so the badge on a
-        // service inside a project reads identically to the badge on that service's own row.
-        linkedServices.forEach((service) => {
-            service.orderState = getOrderState(service);
-        });
 
         // A payment the customer has already SUBMITTED but the admin has not yet verified.
         // Without this, a submitted-but-unapproved payment is invisible to the customer: the
@@ -174,18 +164,9 @@ const getOrderDetails = async (req, res) => {
             hasUnpaidInvoice: Boolean(earliestUnpaidInvoice),
         });
 
-        // Lifecycle history — when this order was approved / started / finished / cancelled, and
-        // who moved it. Built rather than sent raw so the order's own creation appears as the
-        // first entry (createdAt is already an immutable fact; storing a duplicate of it would be
-        // one more thing that can disagree with itself) and everything arrives in time order.
-        const lifecycleTimeline = buildLifecycleTimeline(orderData);
-
         const responseData = {
             ...orderData,
             orderState,
-            lifecycleTimeline,
-            // When the order reached the state it is in now — powers the "since" on a status badge.
-            stateSince: getCurrentStateSince(orderData),
             // Kept for the surfaces still reading the old flat string; orderState.label is the
             // same text and is what new code should read.
             status: orderState.label,

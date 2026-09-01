@@ -1,5 +1,4 @@
 const crypto = require("crypto");
-const { logWorkStarted, logCompleted, logReopened, ACTOR_TYPE } = require("./orderLifecycleLog");
 
 const PROJECT_NODE_STATUS = Object.freeze({
   ACTIVE: "active",
@@ -28,8 +27,7 @@ const getActiveProgress = (order) => {
   return Math.max(...activeNodes.map((node) => Number(node.cumulativeProgress) || 0));
 };
 
-const syncActiveProjectProgress = (order, actorId = null) => {
-  const previousProgress = Number(order.projectProgress) || 0;
+const syncActiveProjectProgress = (order) => {
   const progress = getActiveProgress(order);
   order.projectProgress = progress;
   if (progress >= 100) {
@@ -39,23 +37,6 @@ const syncActiveProjectProgress = (order, actorId = null) => {
     order.status = "in_progress";
     order.currentPhase = "development";
   }
-
-  // Lifecycle history. Recorded here because this is the single function every node mutation
-  // funnels through, so no path that moves progress can forget to log the milestone it crossed.
-  //
-  // work_started is the first time progress leaves 0 — NOT the first node event. Every project
-  // timeline is initialised with an auto-created node at 0% (initializeProjectTimeline below),
-  // so "first node event" is the order's creation date wearing a different name.
-  if (previousProgress <= 0 && progress > 0) {
-    logWorkStarted(order, { actorId, actorType: actorId ? ACTOR_TYPE.ADMIN : ACTOR_TYPE.SYSTEM });
-  }
-  if (progress >= 100 && previousProgress < 100) {
-    logCompleted(order, { actorId, actorType: actorId ? ACTOR_TYPE.ADMIN : ACTOR_TYPE.SYSTEM });
-  }
-  if (previousProgress >= 100 && progress < 100) {
-    logReopened(order, { actorId, actorType: actorId ? ACTOR_TYPE.ADMIN : ACTOR_TYPE.SYSTEM });
-  }
-
   return progress;
 };
 
@@ -128,7 +109,7 @@ const appendProjectNode = ({ order, title, cumulativeProgress, actorId, now = ne
     nextProgress,
     now,
   }));
-  syncActiveProjectProgress(order, actorId);
+  syncActiveProjectProgress(order);
 
   return node;
 };
@@ -206,7 +187,7 @@ const editProjectNode = ({ order, nodeId, title, cumulativeProgress, actorId, no
     now,
   }));
 
-  syncActiveProjectProgress(order, actorId);
+  syncActiveProjectProgress(order);
   return targetNode;
 };
 
@@ -234,7 +215,7 @@ const softDeleteProjectNodes = ({ order, nodeIds, actorId, now = new Date() }) =
     }));
   });
 
-  syncActiveProjectProgress(order, actorId);
+  syncActiveProjectProgress(order);
   return selectedNodes;
 };
 
@@ -276,7 +257,7 @@ const restoreProjectNodes = ({ order, nodeIds, actorId, now = new Date() }) => {
     }));
   });
 
-  syncActiveProjectProgress(order, actorId);
+  syncActiveProjectProgress(order);
   return selectedNodes;
 };
 
@@ -329,7 +310,7 @@ const resetProjectTimeline = ({ order, startingNodeTitle, actorId, now = new Dat
   }));
 
   const result = initializeProjectTimeline({ order, startingNodeTitle, actorId, now });
-  syncActiveProjectProgress(order, actorId);
+  syncActiveProjectProgress(order);
   return result;
 };
 

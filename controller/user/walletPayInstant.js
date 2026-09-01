@@ -4,6 +4,7 @@ const invoiceModel = require("../../models/invoiceModel"); // project invoices (
 const monthlyInvoiceModel = require("../../models/monthlyInvoiceModel"); // recurring-plan invoices
 const { deductWalletInstant } = require("../../helpers/transactionService");
 const { markOrderApproved, isOrderCancelled } = require("../../helpers/orderLifecycle");
+const { ACTOR_TYPE } = require("../../helpers/orderLifecycleLog");
 const { markInvoicePaidAndResumePlan } = require("../../helpers/invoiceLifecycle");
 const {
   markProjectInvoicePaid,
@@ -157,7 +158,8 @@ const walletPayInstant = async (req, res) => {
           if (nextInstallment) order.currentInstallment = nextInstallment.installmentNumber;
           // A cancelled order stays cancelled — settling money against it must never
           // resurrect it (see helpers/orderLifecycle.js).
-          markOrderApproved(order);
+          // The customer paid this from their own wallet, so they are the actor.
+          markOrderApproved(order, { actorId: userId, actorType: ACTOR_TYPE.CUSTOMER });
         }
         if (order.remainingAmount <= 0) order.paymentComplete = true;
         await order.save();
@@ -301,7 +303,7 @@ const walletPayInstant = async (req, res) => {
 
     // Approve the order only when this wallet payment fully settles the amount due. For a combined
     // payment the order stays as-is (pending-approval) until the admin approves the UPI remainder.
-    if (isFullSettlement && markOrderApproved(order)) {
+    if (isFullSettlement && markOrderApproved(order, { actorId: userId, actorType: ACTOR_TYPE.CUSTOMER })) {
       order.rejectionReason = null;
     }
 

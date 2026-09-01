@@ -5,7 +5,6 @@ const { buildRefundBreakdown, buildRefundSuggestion, refundOrderToSource } = req
 const { createNotification } = require("../../helpers/notificationService");
 const { sendProjectCancellationEmail } = require("../../helpers/emailService");
 const { getOrderDisplayName } = require("../../helpers/orderPresentation");
-const { logCancelled, ACTOR_TYPE } = require("../../helpers/orderLifecycleLog");
 
 // Admin-only project cancellation.
 //
@@ -127,21 +126,10 @@ const cancelOneOrder = async ({ order, actorId, reason, refundOptions = {} }) =>
 
   // Re-read: the refund path saves the order, so the copy above is stale by now.
   const cancelled = await orderModel.findById(order._id);
-  const fromVisibility = cancelled.orderVisibility;
   cancelled.orderVisibility = "cancelled";
   cancelled.cancelledAt = new Date();
   cancelled.cancelledBy = actorId;
   cancelled.cancellationReason = reason?.trim() || null;
-  // cancelledAt/cancelledBy/cancellationReason stay exactly where they are — they are read
-  // directly by the detail views. This adds the same fact to the lifecycle timeline so
-  // cancellation appears alongside approval and completion instead of being the one transition
-  // with its own private storage.
-  logCancelled(cancelled, {
-    actorId,
-    actorType: ACTOR_TYPE.ADMIN,
-    reason: reason?.trim() || null,
-    fromVisibility,
-  });
   if (cancelled.isServicePlan) {
     cancelled.servicePlanStatus = "cancelled";
     // Nothing is due on a cancelled service — leaving a date here would keep it in the
