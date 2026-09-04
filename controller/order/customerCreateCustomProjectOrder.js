@@ -16,6 +16,7 @@ const {
 } = require("../../helpers/transactionService");
 const userModel = require("../../models/userModel");
 const { syncProjectFinalInvoice } = require("../../helpers/projectFinalInvoice");
+const { featureCatalogueFilter } = require("../../helpers/featureCatalogue");
 
 // Customer describes a private project instead of buying a catalogue product.
 // Its order owns the complete frozen scope in projectSnapshot.
@@ -27,8 +28,6 @@ const PROJECT_CATEGORIES = [
   "app_development",
 ];
 
-const FEATURE_UPGRADE_CATEGORY = "feature_upgrades";
-
 const CATEGORY_LABELS = {
   standard_websites: "Static Website",
   dynamic_websites: "Dynamic Website",
@@ -39,12 +38,6 @@ const CATEGORY_LABELS = {
 const PAYMENT_TYPES = ["full", "partial", "decide_later"];
 
 const DEFAULT_STARTING_NODE_TITLE = "Project Started";
-
-const MIN_PAGES = 4;
-const MAX_PAGES = 99;
-
-const isPagesFeature = (feature) =>
-  (feature?.serviceName || "").toLowerCase().includes("add new page");
 
 // Same split conventions as adminCreateProjectOrder.js: 2 => 50/50, 3 => 30/30/40.
 // Default progress-gate thresholds (node-system %, admin-editable per project — Layer B):
@@ -85,8 +78,10 @@ const customerCreateCustomProjectOrder = async (req, res) => {
 
     const {
       category,
-      pageCount,
       featureIds: requestedFeatureIds = [],
+      // Per-feature counts for quantity-based features, keyed by feature id — the same
+      // payload shape adminCreateProjectOrder.js accepts.
+      featureQuantities = {},
       budget,
       ownership,
       paymentType = "full",
@@ -133,49 +128,39 @@ const customerCreateCustomProjectOrder = async (req, res) => {
       ? requestedFeatureIds.filter((id) => mongoose.Types.ObjectId.isValid(id))
       : [];
 
-    // Only real, non-hidden feature_upgrades compatible with this category count —
-    // mirrors the exact filter StartNewWebsiteCustomize.js uses on the client.
+    // Only real, non-hidden features offered for this category count — the shared
+    // helpers/featureCatalogue.js rule, so this mirrors exactly what
+    // StartNewWebsiteCustomize.js offers the customer on the client.
     const featureDocs = requestedIds.length
       ? await productModel
           .find({
             _id: { $in: requestedIds },
-            category: FEATURE_UPGRADE_CATEGORY,
             isHidden: { $ne: true },
-            compatibleWith: category,
+            ...featureCatalogueFilter(category),
           })
-          .select("serviceName sellingPrice price compatibleWith")
+          .select("serviceName sellingPrice price isQuantityBased compatibleWith")
           .lean()
       : [];
 
-    // The "Add New Page" feature is priced per page (sellingPrice x pageCount),
-    // clamped to the same MIN/MAX the UI enforces. All other features count once.
-    const clampedPageCount = Math.min(
-      MAX_PAGES,
-      Math.max(MIN_PAGES, Number(pageCount) || MIN_PAGES)
-    );
-
-    const clientProjectFeatures = [];
-    let featuresTotal = 0;
-
-    featureDocs.forEach((feature) => {
+    // Only a quantity-based feature may be bought more than once — decided by the
+    // catalogue flag the admin sets in the Features form, never by the feature's name.
+    // Identical to the mapping in adminCreateProjectOrder.js.
+    const clientProjectFeatures = featureDocs.map((feature) => {
       const unitPrice = feature.sellingPrice || feature.price || 0;
-      if (isPagesFeature(feature)) {
-        const pagesPrice = unitPrice * clampedPageCount;
-        featuresTotal += pagesPrice;
-        clientProjectFeatures.push({
-          featureId: feature._id,
-          name: `${feature.serviceName} (${clampedPageCount} pages)`,
-          price: pagesPrice,
-        });
-      } else {
-        featuresTotal += unitPrice;
-        clientProjectFeatures.push({
-          featureId: feature._id,
-          name: feature.serviceName,
-          price: unitPrice,
-        });
-      }
+      const requestedQuantity = Number(featureQuantities[String(feature._id)]) || 1;
+      const quantity = feature.isQuantityBased ? Math.max(1, requestedQuantity) : 1;
+      return {
+        featureId: feature._id,
+        name: feature.serviceName,
+        unitPrice,
+        price: unitPrice * quantity,
+        quantity,
+      };
     });
+    const featuresTotal = clientProjectFeatures.reduce(
+      (sum, feature) => sum + (feature.price || 0),
+      0
+    );
 
     const finalPrice = basePrice + featuresTotal;
     if (!Number.isFinite(finalPrice) || finalPrice <= 0) {
@@ -211,7 +196,6 @@ const customerCreateCustomProjectOrder = async (req, res) => {
         displayName: CATEGORY_LABELS[category],
         category,
         startingNodeTitle,
-        totalPages: clampedPageCount,
         basePrice,
         referenceTotal: finalPrice,
         finalPrice,
@@ -226,12 +210,15 @@ const customerCreateCustomProjectOrder = async (req, res) => {
           originalPrice: basePrice,
           finalPrice: basePrice,
         },
+        // originalPrice is the PER-UNIT price: downloadInvoice.js prints originalPrice x
+        // quantity, so putting the already-multiplied total here would bill quantity twice
+        // over. Same convention as createOrder.js and adminCreateProjectOrder.js.
         ...clientProjectFeatures.map((feature) => ({
           id: feature.featureId.toString(),
           name: feature.name,
           type: "feature",
-          quantity: 1,
-          originalPrice: feature.price,
+          quantity: feature.quantity,
+          originalPrice: feature.unitPrice,
           finalPrice: feature.price,
         })),
       ],

@@ -268,7 +268,16 @@ const projectSnapshotSchema = new mongoose.Schema({
     features: [{
         featureId: { type: mongoose.Schema.Types.ObjectId, ref: 'product' },
         name: String,
-        price: Number
+        // Total charged for this feature (unitPrice x quantity), mirroring the
+        // finalPrice of its orderItems[] row.
+        price: Number,
+        // Catalogue price of ONE unit at purchase time, so the frozen record never
+        // has to divide price by quantity to recover it.
+        unitPrice: Number,
+        // How many units of a quantity-based feature were bought (1 for a single
+        // feature). Declared so the snapshot keeps it — strict mode was dropping
+        // the quantity the create-project controllers already send.
+        quantity: { type: Number, default: 1 }
     }]
 }, { _id: false });
 

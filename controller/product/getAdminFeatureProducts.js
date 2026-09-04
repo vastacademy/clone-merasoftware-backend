@@ -12,7 +12,7 @@ const getAdminFeatureProductsController = async (req, res) => {
 
     const features = await productModel
       .find({ category: "feature_upgrades" })
-      .select("_id serviceName price sellingPrice isHidden formattedDescriptions packageIncludes keyBenefits compatibleWith createdAt updatedAt")
+      .select("_id serviceName price sellingPrice isHidden isQuantityBased formattedDescriptions packageIncludes keyBenefits compatibleWith createdAt updatedAt")
       .sort({ createdAt: -1 })
       .lean();
 

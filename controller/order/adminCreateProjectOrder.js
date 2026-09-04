@@ -10,6 +10,7 @@ const { initializeProjectTimeline } = require("../../helpers/projectNodeService"
 // project-approval flow so both paths write one transaction + one invoice, never two.
 const { markProjectInvoicePaid } = require("../../helpers/paymentRecording");
 const { syncProjectFinalInvoice } = require("../../helpers/projectFinalInvoice");
+const { featureCatalogueFilter } = require("../../helpers/featureCatalogue");
 
 const PAYMENT_METHODS = ["upi", "bank_transfer", "cash", "wallet"];
 
@@ -20,8 +21,6 @@ const PROJECT_CATEGORIES = [
   "app_development",
 ];
 
-const FEATURE_UPGRADE_CATEGORY = "feature_upgrades";
-
 const CATEGORY_LABELS = {
   standard_websites: "Standard Website",
   dynamic_websites: "Dynamic Website",
@@ -30,7 +29,6 @@ const CATEGORY_LABELS = {
 };
 
 const DEFAULT_STARTING_NODE_TITLE = "Project Started";
-const ADD_NEW_PAGE_FEATURE_NAME = "Add New Page";
 
 // Default progress-gate thresholds (node-system %, admin-editable per project — Layer B):
 // installment #1 (advance) has no threshold (always due at creation, gates nothing);
@@ -141,21 +139,26 @@ const adminCreateProjectOrderController = async (req, res) => {
     const requestedIds = Array.isArray(requestedFeatureIds)
       ? requestedFeatureIds.filter((id) => mongoose.Types.ObjectId.isValid(id))
       : [];
+    // A feature counts only if it is offered for this project's category — the shared
+    // helpers/featureCatalogue.js rule, enforced here because the route is reachable
+    // directly, not only through the admin form that applies the same filter client-side.
     const featureDocs = requestedIds.length
       ? await productModel
-          .find({ _id: { $in: requestedIds }, category: FEATURE_UPGRADE_CATEGORY })
-          .select("serviceName sellingPrice price")
+          .find({ _id: { $in: requestedIds }, ...featureCatalogueFilter(category) })
+          .select("serviceName sellingPrice price isQuantityBased compatibleWith")
           .lean()
       : [];
 
+    // Only a quantity-based feature may be bought more than once — decided by the
+    // catalogue flag the admin sets in the Features form, never by the feature's name.
     const clientProjectFeatures = featureDocs.map((feature) => {
       const unitPrice = feature.sellingPrice || feature.price || 0;
-      const isAddNewPage = feature.serviceName === ADD_NEW_PAGE_FEATURE_NAME;
       const requestedQuantity = Number(featureQuantities[String(feature._id)]) || 1;
-      const quantity = isAddNewPage ? Math.max(1, requestedQuantity) : 1;
+      const quantity = feature.isQuantityBased ? Math.max(1, requestedQuantity) : 1;
       return {
         featureId: feature._id,
         name: feature.serviceName,
+        unitPrice,
         price: unitPrice * quantity,
         quantity,
       };
@@ -192,7 +195,10 @@ const adminCreateProjectOrderController = async (req, res) => {
       },
       orderItems: [
         { id: `project:${category}`, name: `${CATEGORY_LABELS[category]} (Base)`, type: "main", quantity: 1, originalPrice: basePrice, finalPrice: basePrice },
-        ...clientProjectFeatures.map((feature) => ({ id: String(feature.featureId), name: feature.name, type: "feature", quantity: feature.quantity, originalPrice: feature.price, finalPrice: feature.price })),
+        // originalPrice is the PER-UNIT price: downloadInvoice.js prints originalPrice x quantity,
+        // so putting the already-multiplied total here would bill quantity twice over.
+        // Same convention as createOrder.js's feature line items.
+        ...clientProjectFeatures.map((feature) => ({ id: String(feature.featureId), name: feature.name, type: "feature", quantity: feature.quantity, originalPrice: feature.unitPrice, finalPrice: feature.price })),
       ],
     };
 

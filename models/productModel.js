@@ -136,6 +136,20 @@ const productSchema = new mongoose.Schema({
     type: Boolean,
     default: false
   },
+  // Feature capability (category: feature_upgrades). Decided by the admin in the
+  // Features form, never inferred from serviceName — the name is only a label for
+  // the admin list and the invoice.
+  //
+  //   false -> single feature: selected once, charged at its own price.
+  //   true  -> quantity-based: the project form shows a +/- counter and the
+  //            feature is charged sellingPrice x quantity.
+  //
+  // Which categories a feature is offered for is carried by the existing
+  // compatibleWith[] above, where an EMPTY array means "all categories".
+  isQuantityBased: {
+    type: Boolean,
+    default: false
+  },
   // Retirement — permanent, unlike isHidden.
   //
   //   isHidden  = temporarily off sale; still listed for the admin.
