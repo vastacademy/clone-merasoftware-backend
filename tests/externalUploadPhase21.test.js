@@ -27,7 +27,7 @@ const externalUploadLinkController = require("../controller/user/externalUploadL
 
 const ORIGINAL_ENV = {
   NODE_ENV: process.env.NODE_ENV,
-  FRONTEND_URL: process.env.FRONTEND_URL,
+  FORNTEND_URL: process.env.FORNTEND_URL,
   EXTERNAL_UPLOAD_TOKEN_SECRET: process.env.EXTERNAL_UPLOAD_TOKEN_SECRET,
   TOKEN_SECRET_KEY: process.env.TOKEN_SECRET_KEY,
 };
@@ -41,7 +41,7 @@ test.after(() => {
 
 test("token codec creates a high-entropy token and a canonical fragment URL", () => {
   process.env.NODE_ENV = "production";
-  process.env.FRONTEND_URL = "https://portal.example.com/some-path";
+  process.env.FORNTEND_URL = "https://portal.example.com/some-path";
   const token = createExternalUploadToken();
   const publicUrl = new URL(buildExternalUploadUrl(token));
 
@@ -55,8 +55,8 @@ test("token codec creates a high-entropy token and a canonical fragment URL", ()
 
 test("production public URL configuration fails closed", () => {
   process.env.NODE_ENV = "production";
-  delete process.env.FRONTEND_URL;
-  assert.throws(() => buildExternalUploadUrl(createExternalUploadToken()), /FRONTEND_URL/);
+  delete process.env.FORNTEND_URL;
+  assert.throws(() => buildExternalUploadUrl(createExternalUploadToken()), /FORNTEND_URL/);
 });
 
 test("scoped session distinguishes challenge and both access modes", () => {
@@ -209,7 +209,7 @@ test("admin history endpoint returns a bounded cursor page", async () => {
 
 test("a concurrent regeneration conflict keeps the winner active and repairs history", async () => {
   process.env.NODE_ENV = "production";
-  process.env.FRONTEND_URL = "https://portal.example.com";
+  process.env.FORNTEND_URL = "https://portal.example.com";
   const originalMethods = {
     create: externalUploadLinkModel.create,
     findOneAndUpdate: externalUploadLinkModel.findOneAndUpdate,
