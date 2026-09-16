@@ -18,23 +18,23 @@ const digestExternalUploadToken = (token) => (
 
 const getPublicPortalOrigin = () => {
   const isProduction = process.env.NODE_ENV === "production";
-  const configuredOrigin = process.env.CLIENT_PORTAL_URL
-    || (!isProduction ? process.env.FRONTEND_URL || process.env.FORNTEND_URL : "");
+  const configuredOrigin = process.env.FRONTEND_URL
+    || (!isProduction ? process.env.FORNTEND_URL : "");
 
-  if (!configuredOrigin) throw new Error("CLIENT_PORTAL_URL is not configured");
+  if (!configuredOrigin) throw new Error("FRONTEND_URL is not configured");
 
   let parsed;
   try {
     parsed = new URL(configuredOrigin);
   } catch {
-    throw new Error("CLIENT_PORTAL_URL is invalid");
+    throw new Error("FRONTEND_URL is invalid");
   }
 
   const isLocal = parsed.hostname === "localhost" || parsed.hostname === "127.0.0.1";
   if (parsed.protocol !== "https:" && !(isLocal && parsed.protocol === "http:")) {
-    throw new Error("CLIENT_PORTAL_URL must use HTTPS");
+    throw new Error("FRONTEND_URL must use HTTPS");
   }
-  if (parsed.username || parsed.password) throw new Error("CLIENT_PORTAL_URL is invalid");
+  if (parsed.username || parsed.password) throw new Error("FRONTEND_URL is invalid");
 
   return parsed.origin;
 };

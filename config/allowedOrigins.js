@@ -9,7 +9,6 @@ const getAllowedOrigins = () => [
   'https://clone-merasoftware-frontend.vercel.app',
   process.env.FORNTEND_URL,
   process.env.FRONTEND_URL,
-  process.env.CLIENT_PORTAL_URL,
   process.env.STAFF_PORTAL_URL,
   process.env.ADMIN_PORTAL_URL,
   process.env.PARTNER_PORTAL_URL,
