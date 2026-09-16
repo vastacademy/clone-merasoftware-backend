@@ -1,7 +1,5 @@
 const { google } = require('googleapis');
-const path = require('path');
-const fs = require('fs');
-const os = require('os');
+const { Readable } = require('stream');
 
 class GoogleDriveService {
   constructor(keyFilePath, folderName) {
@@ -75,6 +73,7 @@ class GoogleDriveService {
 
   // Upload file to Google Drive
   async uploadFile(fileName, fileBuffer, mimeType, folderId) {
+    let createdFileId = null;
     try {
       console.log(`Starting upload for file: ${fileName}`);
       
@@ -83,13 +82,9 @@ class GoogleDriveService {
         parents: [folderId]
       };
       
-      // Create a temporary file
-      const tempFilePath = path.join(os.tmpdir(), fileName);
-      fs.writeFileSync(tempFilePath, fileBuffer);
-      
       const media = {
         mimeType,
-        body: fs.createReadStream(tempFilePath)
+        body: Readable.from(fileBuffer)
       };
       
       console.log(`Uploading file to Google Drive in folder: ${folderId}`);
@@ -98,6 +93,7 @@ class GoogleDriveService {
         media: media,
         fields: 'id,name,webViewLink'
       });
+      createdFileId = response.data.id;
       
       console.log(`File uploaded with ID: ${response.data.id}`);
       
@@ -110,9 +106,6 @@ class GoogleDriveService {
           type: 'anyone'
         }
       });
-      
-      // Clean up temp file after upload
-      fs.unlinkSync(tempFilePath);
       
       // For images, create an embedable link
       let embedLink = null;
@@ -128,6 +121,11 @@ class GoogleDriveService {
         embedLink: embedLink
       };
     } catch (error) {
+      if (createdFileId) {
+        await this.driveClient.files.delete({ fileId: createdFileId }).catch((cleanupError) => {
+          console.error('Error cleaning up incomplete Drive upload:', cleanupError.message);
+        });
+      }
       console.error('Error uploading file:', error.message);
       if (error.response) {
         console.error('Response error details:', error.response.data);

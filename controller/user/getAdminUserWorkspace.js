@@ -30,7 +30,7 @@ const getAdminUserWorkspace = async (req, res) => {
 
     const customer = await userModel
       .findById(customerObjectId)
-      .select("name email phone status walletBalance createdAt updatedAt isGuest")
+      .select("name email phone status walletBalance createdAt updatedAt isGuest allowLoginFreeUploadLinks")
       .lean();
     // Guests are demo-only accounts (see guestLogin.js) and must never surface
     // in any admin workspace — same boundary getAdminClients.js already

@@ -1,9 +1,7 @@
 const express = require('express')
 
 const router = express.Router()
-const multer = require('multer');
-const path = require('path');
-const { MAX_SERVICE_FILES_PER_UPLOAD, MAX_UPLOAD_FILE_SIZE_BYTES } = require('../config/uploadLimits');
+const upload = require('../middleware/uploadFiles');
 // const fs = require('fs');
 
 const userSignUpController = require("../controller/user/userSignUp")
@@ -113,6 +111,8 @@ const purgeTrashController = require('../controller/trash/purgeTrash');
 const getClientCredentialsController = require('../controller/admin/getClientCredentials');
 const resetClientPasswordController = require('../controller/admin/resetClientPassword');
 const updateClientAccountStatusController = require('../controller/admin/updateClientAccountStatus');
+const externalUploadLinkController = require('../controller/user/externalUploadLinkController');
+const externalUploadController = require('../controller/user/externalUploadController');
 const hideProductController = require('../controller/product/hideProduct');
 const unhideProductController = require('../controller/product/unhideProduct');
 const getHiddenProductsController = require('../controller/product/getHiddenProducts');
@@ -137,47 +137,6 @@ const {
   sendPaymentRecordReminder,
 } = require('../controller/invoice/monthlyInvoiceController');
 
-const memoryStorage = multer.memoryStorage();
-
-// Configure multer
-const upload = multer({
-  storage: memoryStorage,
-  limits: {
-    fileSize: MAX_UPLOAD_FILE_SIZE_BYTES,
-    // This is the system safety ceiling. The selected service's saved limit is
-    // enforced later in submitUpdateRequest after its order is loaded.
-    files: MAX_SERVICE_FILES_PER_UPLOAD
-  },
-  fileFilter: function(req, file, cb) {
-    // Get file extension and mime type
-    const ext = path.extname(file.originalname).toLowerCase();
-    const mimeType = file.mimetype;
-    
-    // Allow specific file types
-    if (
-      ext === '.jpg' || ext === '.jpeg' || 
-      ext === '.txt' || ext === '.rtf' || 
-      ext === '.pdf' || ext === '.doc' || ext === '.docx'
-    ) {
-      // Additional MIME type verification
-      if (
-        mimeType === 'image/jpeg' || 
-        mimeType === 'text/plain' || 
-        mimeType === 'application/rtf' || 
-        mimeType === 'application/pdf' || 
-        mimeType === 'application/msword' || 
-        mimeType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-      ) {
-        cb(null, true);
-      } else {
-        cb(new Error('Invalid file type'));
-      }
-    } else {
-      cb(new Error('Only JPG, JPEG, TXT, RTF, PDF, DOC, DOCX files are allowed'));
-    }
-  }
-});
-
 //user
 router.post("/signup", userSignUpController);
 router.post("/guest-login", guestLoginController);
@@ -191,6 +150,20 @@ router.get("/admin/plan-products", authToken, getAdminPlanProductsController);
 router.get("/admin/feature-products", authToken, getAdminFeatureProductsController);
 router.post("/admin/services/create", authToken, createServicePlanController);
 router.get("/admin/user-workspace", authToken, getAdminUserWorkspace);
+router.get("/admin/clients/:customerId/upload-links", authToken, externalUploadLinkController.list);
+router.post("/admin/clients/:customerId/upload-links", authToken, externalUploadLinkController.generate);
+router.post("/admin/clients/:customerId/upload-links/:linkId/revoke", authToken, externalUploadLinkController.revoke);
+router.post("/external-upload/exchange", externalUploadController.requireAllowedOrigin, externalUploadController.exchange);
+router.post("/external-upload/credentials", externalUploadController.requireAllowedOrigin, externalUploadController.verifyCredentials);
+router.get("/external-upload/session", externalUploadController.getSession);
+router.post(
+  "/external-upload/submit",
+  externalUploadController.requireAllowedOrigin,
+  externalUploadController.requireAccess,
+  externalUploadController.reserveSingleUse,
+  externalUploadController.parseFiles,
+  externalUploadController.submit,
+);
 router.get("/my-payment-workspace", authToken, getMyPaymentWorkspace);
 router.get("/admin/delete-order/:orderId/scan", authToken, scanDeleteOrderController);
 router.delete("/admin/delete-order/:orderId", authToken, deleteOrderController);
@@ -235,6 +208,7 @@ router.post("/role-switch", authToken, userRoleSwitchController);
 router.get("/user-details", authToken, userDetailsController)
 router.get("/userLogout", userLogout)
 router.post("/update-profile", authToken, updateUserProfileController);
+router.post("/my-upload-link-preference", authToken, externalUploadLinkController.updatePreference);
 router.post("/complete-profile", authToken, completeUserDetailsController);
 router.post("/update-partner-customer/:customerId", authToken, updatePartnerCustomer);
 

@@ -30,7 +30,7 @@ const FOLDER_NAME = 'ClientUpdateFiles';
 
 // Error handling wrapper
 const asyncHandler = (fn) => (req, res, next) => {
-  Promise.resolve(fn(req, res, next)).catch(err => {
+  return Promise.resolve(fn(req, res, next)).catch(err => {
     console.error('Error in async handler:', err);
     return res.status(500).json({
       message: err.message || 'Internal server error',
@@ -68,6 +68,10 @@ const submitUpdateRequest = asyncHandler(async (req, res) => {
   if (req.body.instructions) {
     try {
       instructions = JSON.parse(req.body.instructions);
+      if (!Array.isArray(instructions)) throw new Error('Instructions must be an array');
+      instructions = instructions
+        .filter((item) => item && typeof item.text === 'string' && item.text.trim())
+        .map((item) => ({ ...item, text: item.text.trim() }));
       console.log("Parsed instructions count:", instructions.length);
     } catch (e) {
       console.error('Error parsing instructions:', e);
@@ -77,6 +81,10 @@ const submitUpdateRequest = asyncHandler(async (req, res) => {
         success: false
       });
     }
+  }
+
+  if ((req.files || []).length === 0 && instructions.length === 0) {
+    return res.status(400).json({ message: 'Add at least one file or instruction', error: true, success: false });
   }
   
   // Validate the update plan exists and belongs to the user
@@ -227,9 +235,6 @@ const submitUpdateRequest = asyncHandler(async (req, res) => {
   const adminSettings = await AdminSettings.getSettings();
   const fileExpirationDays = adminSettings.fileExpirationDays;
   
-  // Create Google Drive folder for this request
-  const folderId = await driveService.createFolder();
-  
   // Process uploaded files and upload to Google Drive
   const fileObjects = [];
   if (req.files && req.files.length > 0) {
@@ -297,15 +302,49 @@ const submitUpdateRequest = asyncHandler(async (req, res) => {
       } catch (error) {
         console.error('Error processing file:', error);
         console.error('File type:', file.mimetype, 'File name:', file.originalname);
-       
+        await Promise.all(fileObjects.map((storedFile) => (
+          driveService.deleteFile(storedFile.driveFileId).catch((cleanupError) => {
+            console.error('Could not clean up Drive file after failed upload:', cleanupError.message);
+          })
+        )));
+        throw error;
       }
     }
   }
   
   // Create update request document
+  let serviceAllowanceReserved = false;
+  let requestPersisted = false;
   try {
     console.log("***** DATABASE SAVE DEBUGGING *****");
     console.log("Files object structure:", JSON.stringify(fileObjects));
+
+    if (isServiceUpload) {
+      const snapshot = updatePlan.servicePlanSnapshot || {};
+      const reservationFilter = {
+        _id: new ObjectId(planId),
+        userId: new ObjectId(userId),
+        servicePlanStatus: 'active',
+        isActive: true,
+        planStatus: { $ne: 'closed' },
+        autoRenewalStatus: { $ne: 'paused' },
+      };
+      if (snapshot.limitScope !== 'unlimited') {
+        reservationFilter.$expr = {
+          $lt: [
+            { $ifNull: ['$serviceAccessUsedInCycle', 0] },
+            Number(snapshot.portalAccessCount || 0),
+          ],
+        };
+      }
+      const reservedOrder = await orderModel.findOneAndUpdate(
+        reservationFilter,
+        { $inc: { serviceAccessUsedInCycle: 1, serviceAccessUsedTotal: 1 } },
+        { new: true },
+      ).select('_id');
+      if (!reservedOrder) throw new Error('Selected service upload limit or availability changed');
+      serviceAllowanceReserved = true;
+    }
 
     // Create the update request
     const updateRequest = new updateRequestModel({
@@ -321,14 +360,13 @@ const submitUpdateRequest = asyncHandler(async (req, res) => {
     
     // Save the request
     await updateRequest.save();
+    requestPersisted = true;
     
     // Spend the allowance this upload was made against — each kind spends its own, and a
     // project spends nothing at all. A project has no allowance, so incrementing one on it
     // is not just useless but wrong: it left updatesUsed=1 sitting on project orders,
     // a legacy plan's counter on something that has no plan.
-    const updateFields = isServiceUpload
-      ? { serviceAccessUsedInCycle: 1, serviceAccessUsedTotal: 1 }
-      : isLegacyUpload
+    const updateFields = isLegacyUpload
         ? { updatesUsed: 1 }
         : null;
 
@@ -355,20 +393,18 @@ const submitUpdateRequest = asyncHandler(async (req, res) => {
       );
     }
 
-    // Populate the update request for email notifications
-    const populatedRequest = await updateRequestModel.findById(updateRequest._id)
-      .populate('userId', 'name email')
-      .populate({
-        path: 'updatePlanId',
-        populate: {
-          path: 'productId',
-          select: 'serviceName validityPeriod updateCount'
-        }
-      });
-    
     // Send email notifications
     console.log("Sending email notifications...");
     try {
+      const populatedRequest = await updateRequestModel.findById(updateRequest._id)
+        .populate('userId', 'name email')
+        .populate({
+          path: 'updatePlanId',
+          populate: {
+            path: 'productId',
+            select: 'serviceName validityPeriod updateCount'
+          }
+        });
       // Admin emails
       const adminEmails = ['vacomputers.com@gmail.com', 'syncvap@gmail.com'];
 
@@ -402,6 +438,19 @@ const submitUpdateRequest = asyncHandler(async (req, res) => {
       }
     });
   } catch (error) {
+    if (serviceAllowanceReserved && !requestPersisted) {
+      await orderModel.updateOne(
+        { _id: new ObjectId(planId) },
+        { $inc: { serviceAccessUsedInCycle: -1, serviceAccessUsedTotal: -1 } },
+      ).catch((rollbackError) => console.error('Could not release service upload reservation:', rollbackError.message));
+    }
+    if (!requestPersisted) {
+      await Promise.all(fileObjects.map((storedFile) => (
+        driveService.deleteFile(storedFile.driveFileId).catch((cleanupError) => {
+          console.error('Could not clean up Drive file after failed request:', cleanupError.message);
+        })
+      )));
+    }
     console.error('Database error:', error);
     console.error('Error details:', error.errors ? JSON.stringify(error.errors) : 'No detailed errors');
     return res.status(500).json({

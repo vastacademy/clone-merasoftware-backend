@@ -115,6 +115,16 @@ const userSchema = new mongoose.Schema({
         type: Boolean,
         default: true
     },
+    // Client-controlled consent for a generated link to skip credential verification.
+    // This grants upload-only convenience, never portal access.
+    allowLoginFreeUploadLinks: { type: Boolean, default: false },
+    uploadLinkConsentHistory: {
+        type: [{
+            enabled: { type: Boolean, required: true },
+            changedAt: { type: Date, default: Date.now }
+        }],
+        default: []
+    },
     // Soft-delete (Trash system). deletedAt null = active/visible everywhere as
     // before; a date = the record is in Trash (hidden from all admin lists/search)
     // and is permanently purged 30 days later. Restoring clears it back to null.
