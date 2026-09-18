@@ -10,16 +10,6 @@ const ORDER_SUMMARY_FIELDS = [
   // project/plan and to read its real state: without isServicePlan a service is classified by its
   // category and answered from progress, which is how a paused service came to read "Completed".
   "isServicePlan servicePlanStatus",
-  // What the service is ALLOWED, and how much of it is spent. Both are written on the order at
-  // purchase (helpers/servicePlanPurchase.js) and maintained there — servicePlanSnapshot is
-  // frozen, serviceAccessUsedInCycle is incremented by submitUpdateRequest.js and reset each
-  // cycle by serviceCycleSettlement.js. The detail endpoint returns the whole order document, so
-  // the plan page could read them; this feed sent neither, so every list surface fell back to the
-  // LEGACY plan's catalogue field (productId.updateCount) and reported "0 update(s) left" for a
-  // service whose allowance was sitting right here. Verified before adding: all 8 live service
-  // orders carry a populated snapshot. Nothing is computed differently — the figure is only
-  // being sent to the surfaces that already claim to show it.
-  "servicePlanSnapshot serviceAccessUsedInCycle servicePlanEndDate serviceCurrentCycleNumber serviceCurrentCycleEnd serviceTotalCycles serviceNextBillingDate",
 ].join(" ");
 
 const PRODUCT_SUMMARY_FIELDS = [
