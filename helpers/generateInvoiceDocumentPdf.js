@@ -26,6 +26,17 @@ const ordinal = (value) => {
 
 const isStatementInvoice = (invoice) => STATEMENT_TYPES.has(invoice?.invoiceType);
 
+// Same wording as frontend/src/helpers/invoicePresentation.js's getInvoiceStatusText — the
+// database's own words (unpaid, partially_paid, overdue) are for the system, not the reader.
+const STATUS_TEXT = {
+  paid: "PAID",
+  partially_paid: "PART PAID",
+  unpaid: "DUE",
+  overdue: "OVERDUE",
+  cancelled: "CANCELLED",
+};
+const statusText = (status) => STATUS_TEXT[status] || "DUE";
+
 // Statement layout — carried over verbatim from the admin-only generator this replaces, so
 // the document an admin has always downloaded is unchanged. Only its reach is new.
 const renderStatement = (doc, { invoice, order, customer, transactions }) => {
@@ -37,8 +48,7 @@ const renderStatement = (doc, { invoice, order, customer, transactions }) => {
   let y = 48;
   doc.fontSize(20).fillColor("#0f172a").text(isService ? "SERVICE BILLING STATEMENT" : "FINAL PROJECT INVOICE", 48, y);
   y += 32;
-  doc.fontSize(10).fillColor("#475569").text(`Invoice: ${invoice.invoiceNumber}`, 48, y);
-  doc.text(`Updated: ${date(invoice.updatedAt || invoice.invoiceDate)}`, 360, y, { align: "right" });
+  doc.fontSize(10).fillColor("#475569").text(`Updated: ${date(invoice.updatedAt || invoice.invoiceDate)}`, 48, y);
   y += 28;
   doc.fillColor("#0f172a").fontSize(11).text(`${isService ? "Service" : "Project"}: ${getOrderDisplayName(order, isService ? "Service" : "Project")}`, 48, y);
   y += 17;
@@ -66,7 +76,7 @@ const renderStatement = (doc, { invoice, order, customer, transactions }) => {
       doc.fontSize(10).fillColor("#0f172a").text(label, 48, y);
       doc.text(money(transaction.amount), 420, y, { align: "right" });
       y += 15;
-      doc.fontSize(8).fillColor("#64748b").text(`Ref: ${transaction.upiTransactionId || transaction.transactionId} · ${date(transaction.date || transaction.createdAt)}`, 48, y);
+      doc.fontSize(8).fillColor("#64748b").text(date(transaction.date || transaction.createdAt), 48, y);
       y += 19;
     });
   }
@@ -97,10 +107,9 @@ const renderInvoice = (doc, { invoice, order, customer }) => {
   doc.fontSize(22).fillColor("#111827").text("INVOICE", { align: "center" });
   doc.moveDown(1.4);
   doc.fontSize(10).fillColor("#374151");
-  doc.text(`Invoice number: ${invoice.invoiceNumber}`);
   doc.text(`Issued: ${date(invoice.invoiceDate)}`);
   doc.text(`Due: ${date(invoice.dueDate)}`);
-  doc.text(`Status: ${String(invoice.status || "unpaid").replace(/_/g, " ").toUpperCase()}`);
+  doc.text(`Status: ${statusText(invoice.status)}`);
   if (invoice.installmentNumber) doc.text(`Installment: ${ordinal(invoice.installmentNumber)}`);
   doc.moveDown();
   doc.fontSize(12).fillColor("#111827").text("Bill To");
