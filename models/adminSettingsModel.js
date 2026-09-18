@@ -7,6 +7,14 @@ const adminSettingsSchema = new mongoose.Schema({
     min: 1,
     max: 365
   },
+  // Wallet amount credited to a customer when a new lead is linked to them via
+  // the Add Lead "Reference" flow (createLead.js). Admin-editable so it isn't
+  // hardcoded in controller code.
+  leadReferralRewardAmount: {
+    type: Number,
+    default: 500,
+    min: 0
+  },
   // Other admin settings can be added here
 }, {
   timestamps: true

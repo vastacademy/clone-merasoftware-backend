@@ -54,7 +54,9 @@ const transactionSchema = new mongoose.Schema(
         paymentMethod: {
             type: String,
             // "demo" is additive: guest dummy-wallet-credit only, never real money.
-            enum: ["wallet", "upi", "combined", "cash", "bank_transfer", "demo"],
+            // "reward" is additive: automatic system-credited rewards (e.g. lead
+            // reference), never a manually recorded payment method.
+            enum: ["wallet", "upi", "combined", "cash", "bank_transfer", "demo", "reward"],
             default: "upi"
         },
          // Add parentTransactionId for combined payments

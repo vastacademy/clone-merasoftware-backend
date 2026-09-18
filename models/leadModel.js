@@ -140,6 +140,16 @@ const leadSchema = new mongoose.Schema({
     ref: "user",
     default: null,
   },
+  // Existing customer who referred this lead (Source = "Reference" in the Add Lead
+  // form, matched against userModel). Tracking only — deliberately separate from
+  // userModel.referredBy/referrals, which power the Partner authorization system
+  // (partnerCustomers.js / updatePartnerCustomer.js let a "partner" view/edit users
+  // they referred). Linking a lead here must never grant that access.
+  referredByUserId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "user",
+    default: null,
+  },
   // Set while a live temporary guest account (userModel.isGuest) exists for this
   // lead. Cleared (not the lead itself) once the guest expires or is converted.
   // Deliberately separate from convertedToUserId: that field means "permanently
