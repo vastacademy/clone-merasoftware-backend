@@ -2,7 +2,7 @@ const path = require("path");
 const leadModel = require("../../models/leadModel");
 const GoogleDriveService = require("../../helpers/googleDriveService");
 
-const ALLOWED_STATUSES = ["New", "Contacted", "Qualified", "Proposal Sent", "Won", "Lost"];
+const ALLOWED_STATUSES = ["New", "Contacted", "Proposal Sent", "Negative"];
 
 // Path to the Google Drive credentials file (same resolution as uploadProposal.js).
 let KEY_FILE_PATH;
@@ -108,6 +108,58 @@ const updateLeadController = async (req, res) => {
 
       return res.json({
         message: "Follow-up added",
+        data: savedLead,
+        success: true,
+        error: false,
+      });
+    }
+
+    // Edit an existing follow-up's badge/note in place. Editing the badge on the
+    // MOST RECENT follow-up also updates the lead's current status, since the
+    // lead's status always mirrors the latest follow-up's badge (same rule as add).
+    if (action === "editFollowUp") {
+      const { followUpId } = req.body;
+      const followUp = lead.followUps.id(followUpId);
+      if (!followUp) {
+        return res.status(404).json({
+          message: "Follow-up not found",
+          error: true,
+          success: false,
+        });
+      }
+
+      const badge = (req.body.badge || "").trim();
+      if (!ALLOWED_STATUSES.includes(badge)) {
+        return res.status(400).json({
+          message: "Please select a valid stage badge",
+          error: true,
+          success: false,
+        });
+      }
+
+      const note = (req.body.note || "").trim();
+      if (!note) {
+        return res.status(400).json({
+          message: "Please provide a follow-up note",
+          error: true,
+          success: false,
+        });
+      }
+
+      followUp.badge = badge;
+      followUp.note = note;
+
+      const latestFollowUp = [...lead.followUps].sort(
+        (a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0)
+      )[0];
+      if (latestFollowUp && String(latestFollowUp._id) === String(followUp._id)) {
+        lead.status = badge;
+      }
+
+      const savedLead = await lead.save();
+
+      return res.json({
+        message: "Follow-up updated",
         data: savedLead,
         success: true,
         error: false,
